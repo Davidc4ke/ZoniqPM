@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoniq - Story Detail Page Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #FF6B35;
+            --orange-light: #FFF7F3;
+            --dark: #2D1810;
+            --off-white: #FAFAF9;
+            --warm-gray: #E8E4E0;
+            --medium-gray: #9A948D;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+        }
+        
+        * { font-family: 'Inter', sans-serif; }
+        body { background: var(--off-white); color: var(--dark); }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--warm-gray);
+        }
+        
+        .btn-primary {
+            background: var(--orange);
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background: #E55A2B;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--dark);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--warm-gray);
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+        
+        .btn-ghost {
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--medium-gray);
+            transition: all 0.2s ease;
+        }
+        .btn-ghost:hover {
+            background: var(--warm-gray);
+            color: var(--dark);
+        }
+        
+        .tab-active {
+            border-bottom: 2px solid var(--orange);
+            color: var(--orange);
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+        }
+        .status-high { background: #FEE2E2; color: #DC2626; }
+        .status-medium { background: #FEF3C7; color: #D97706; }
+        .status-low { background: #E5E7EB; color: #6B7280; }
+        
+        .progress-bar {
+            height: 6px;
+            background: var(--warm-gray);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+        .progress-red { background: #EF4444; }
+        .progress-amber { background: #F59E0B; }
+        .progress-green { background: #10B981; }
+        
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.125rem 0.5rem;
+            background: #F3E8FF;
+            color: #7C3AED;
+            border-radius: 4px;
+            font-size: 0.625rem;
+            font-weight: 600;
+        }
+        
+        .criterion-item {
+            background: var(--off-white);
+            border-radius: 8px;
+            border: 1px solid var(--warm-gray);
+            transition: all 0.2s ease;
+        }
+        .criterion-item:hover {
+            border-color: var(--orange);
+        }
+        
+        .step-item {
+            background: var(--off-white);
+            border-radius: 8px;
+            border: 1px solid var(--warm-gray);
+        }
+        
+        .code-block {
+            background: #1F2937;
+            color: #E5E7EB;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.6875rem;
+            line-height: 1.5;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .code-line-number {
+            color: #6B7280;
+            user-select: none;
+            text-align: right;
+            padding-right: 1rem;
+        }
+        
+        .gap-panel {
+            background: #FFFBEB;
+            border: 1px solid #FCD34D;
+            border-radius: 8px;
+        }
+        
+        .gap-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid #FDE68A;
+        }
+        .gap-item:last-child {
+            border-bottom: none;
+        }
+        
+        .comment-item {
+            background: var(--off-white);
+            border-radius: 8px;
+            border: 1px solid var(--warm-gray);
+        }
+        
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+        }
+        
+        .review-banner {
+            background: linear-gradient(135deg, #DBEAFE 0%, #EFF6FF 100%);
+            border-bottom: 2px solid #3B82F6;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        
+        <!-- PAGE TITLE -->
+        <div class="mb-6">
+            <h1 class="text-xl font-bold text-[#FF6B35]">Story Detail Page — Full Design</h1>
+            <p class="text-[#9A948D] text-sm mt-1">Complete ticket view with tabs, AI generation, review mode, and gap warnings</p>
+        </div>
+
+        <!-- TWO VIEWS SIDE BY SIDE -->
+        <div class="grid grid-cols-2 gap-6">
+            
+            <!-- VIEW 1: STORY DETAIL - NORMAL MODE -->
+            <div>
+                <div class="text-sm font-semibold mb-2 text-[#9A948D]">📄 Story Detail — Dev Plan Tab</div>
+                <div class="bg-[#FAFAF9] rounded-2xl border border-[#E8E4E0] overflow-hidden" style="height: 780px;">
+                    
+                    <!-- HEADER WITH BREADCRUMBS -->
+                    <header class="bg-white border-b border-[#E8E4E0] px-4 py-2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <button class="btn-ghost flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                    </svg>
+                                    Back
+                                </button>
+                                <div class="flex items-center gap-1.5 text-xs text-[#9A948D]">
+                                    <span class="hover:text-[#FF6B35] cursor-pointer">Claims Portal</span>
+                                    <span>›</span>
+                                    <span class="text-[#2D1810] font-medium">#47</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <kbd class="px-1.5 py-1 rounded bg-[#E8E4E0] text-[10px] font-mono text-[#9A948D]">⌘K</kbd>
+                                <div class="w-7 h-7 rounded-full bg-[#FF6B35] flex items-center justify-center text-white text-xs font-bold">D</div>
+                            </div>
+                        </div>
+                    </header>
+                    
+                    <!-- STORY HEADER -->
+                    <div class="bg-white border-b border-[#E8E4E0] p-4">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-[#9A948D] text-sm">#47</span>
+                                    <h1 class="text-lg font-bold">Approval Workflow by Role</h1>
+                                    <span class="status-badge status-high">🔴 HIGH</span>
+                                </div>
+                                <p class="text-sm text-[#9A948D]">Implement multi-level approval based on user role and amount</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Metadata Row -->
+                        <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[#9A948D]">Status:</span>
+                                <span class="font-medium text-[#F59E0B]">In Progress</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[#9A948D]">Assignee:</span>
+                                <div class="flex items-center gap-1">
+                                    <div class="w-4 h-4 rounded-full bg-[#10B981] flex items-center justify-center text-white text-[8px] font-bold">A</div>
+                                    <span class="font-medium">Aisha</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[#9A948D]">Project:</span>
+                                <span class="font-medium text-[#FF6B35] cursor-pointer hover:underline">Claims Portal</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[#9A948D]">Due:</span>
+                                <span class="font-medium">Mar 15, 2026</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[#9A948D]">Complete:</span>
+                                <div class="flex items-center gap-2 flex-1">
+                                    <span class="font-bold text-[#F59E0B]">65%</span>
+                                    <div class="progress-bar flex-1 max-w-[100px]">
+                                        <div class="progress-fill progress-amber" style="width: 65%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[#9A948D]">Created:</span>
+                                <span class="font-medium">Feb 28 by Marcus</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <button class="btn-secondary text-xs">Edit</button>
+                                <button class="btn-secondary text-xs flex items-center gap-1">
+                                    Change Status
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                <button class="btn-ghost text-red-500">Delete</button>
+                            </div>
+                            <button class="btn-primary text-xs">Save Changes</button>
+                        </div>
+                    </div>
+                    
+                    <!-- TABS -->
+                    <div class="bg-white border-b border-[#E8E4E0] px-4">
+                        <div class="flex items-center gap-1">
+                            <button class="px-3 py-2.5 text-xs font-medium text-[#9A948D] hover:text-[#2D1810]">Overview</button>
+                            <button class="px-3 py-2.5 text-xs font-medium text-[#9A948D] hover:text-[#2D1810] flex items-center gap-1">
+                                Acceptance Criteria
+                                <span class="bg-[#E8E4E0] text-[#9A948D] px-1.5 py-0.5 rounded text-[10px]">4</span>
+                            </button>
+                            <button class="px-3 py-2.5 text-xs font-medium tab-active flex items-center gap-1">
+                                Dev Plan
+                                <span class="bg-[#FF6B35] text-white px-1.5 py-0.5 rounded text-[10px]">5</span>
+                            </button>
+                            <button class="px-3 py-2.5 text-xs font-medium text-[#9A948D] hover:text-[#2D1810]">Test Scripts</button>
+                            <button class="px-3 py-2.5 text-xs font-medium text-[#9A948D] hover:text-[#2D1810] flex items-center gap-1">
+                                Activity
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- MAIN CONTENT AREA -->
+                    <div class="flex" style="height: calc(100% - 220px);">
+                        <!-- TAB CONTENT -->
+                        <div class="flex-1 p-4 overflow-y-auto">
+                            
+                            <!-- Regenerate Bar -->
+                            <div class="flex items-center justify-between mb-4">
+                                <button class="btn-secondary text-xs flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                    </svg>
+                                    Regenerate Dev Plan
+                                </button>
+                                <span class="text-[10px] text-[#9A948D]">Last generated: Feb 28, 2:30 PM</span>
+                            </div>
+                            
+                            <!-- Implementation Steps -->
+                            <div class="space-y-3">
+                                <h3 class="text-xs font-bold text-[#9A948D] uppercase tracking-wide">Implementation Steps</h3>
+                                
+                                <!-- Step 1 - Expanded -->
+                                <div class="step-item p-3">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                            </svg>
+                                            <span class="font-semibold text-sm">Step 1: Create ApprovalLevel Enumeration</span>
+                                            <span class="ai-badge">✨ AI</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <input type="checkbox" class="w-4 h-4 rounded border-[#E8E4E0] text-[#10B981] focus:ring-[#10B981]" checked>
+                                            <span class="text-[10px] text-[#10B981] font-medium">Done</span>
+                                        </div>
+                                    </div>
+                                    <div class="pl-6 text-xs text-[#9A948D] mb-2">
+                                        Create an enumeration in Mendix with values: Manager ($0-$5,000), Director ($5,001-$25,000), VP (>$25,000)
+                                    </div>
+                                    <div class="pl-6 flex items-center gap-2 p-2 bg-blue-50 rounded-lg border border-blue-100">
+                                        <span class="text-sm">💡</span>
+                                        <span class="text-xs text-blue-700">Mendix hint: Domain Model > Add > Enumeration</span>
+                                    </div>
+                                    <div class="pl-6 flex items-center gap-2 mt-2">
+                                        <button class="btn-ghost text-[10px]">Edit</button>
+                                        <button class="btn-ghost text-[10px] text-red-500">Delete</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Step 2 - Collapsed -->
+                                <div class="step-item p-3">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                            </svg>
+                                            <span class="font-semibold text-sm">Step 2: Extend User Entity with Role/Delegation</span>
+                                            <span class="ai-badge">✨ AI</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <input type="checkbox" class="w-4 h-4 rounded border-[#E8E4E0] text-[#10B981] focus:ring-[#10B981]" checked>
+                                            <span class="text-[10px] text-[#10B981] font-medium">Done</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Step 3 - Collapsed -->
+                                <div class="step-item p-3">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                            </svg>
+                                            <span class="font-semibold text-sm">Step 3: Create ApprovalRequest Entity</span>
+                                            <span class="ai-badge">✨ AI</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <input type="checkbox" class="w-4 h-4 rounded border-[#E8E4E0] text-[#10B981] focus:ring-[#10B981]" checked>
+                                            <span class="text-[10px] text-[#10B981] font-medium">Done</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Step 4 - In Progress -->
+                                <div class="step-item p-3 border-[#FF6B35] bg-[#FFF7F3]">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                            </svg>
+                                            <span class="font-semibold text-sm">Step 4: Implement Approval Microflow</span>
+                                            <span class="ai-badge">✨ AI</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <input type="checkbox" class="w-4 h-4 rounded border-[#E8E4E0] text-[#10B981] focus:ring-[#10B981]">
+                                            <span class="text-[10px] text-[#9A948D] font-medium">Pending</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Step 5 - Pending -->
+                                <div class="step-item p-3">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                            </svg>
+                                            <span class="font-semibold text-sm">Step 5: Add Delegation Logic</span>
+                                            <span class="ai-badge">✨ AI</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <input type="checkbox" class="w-4 h-4 rounded border-[#E8E4E0] text-[#10B981] focus:ring-[#10B981]">
+                                            <span class="text-[10px] text-[#9A948D] font-medium">Pending</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Step 6 - Pending -->
+                                <div class="step-item p-3">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                            </svg>
+                                            <span class="font-semibold text-sm">Step 6: Create Approval UI Pages</span>
+                                            <span class="ai-badge">✨ AI</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <input type="checkbox" class="w-4 h-4 rounded border-[#E8E4E0] text-[#10B981] focus:ring-[#10B981]">
+                                            <span class="text-[10px] text-[#9A948D] font-medium">Pending</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Add Step Button -->
+                            <button class="btn-secondary text-xs mt-4 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add Step
+                            </button>
+                            
+                            <!-- Next Action -->
+                            <div class="mt-4 p-3 bg-green-50 rounded-lg border border-green-100">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-green-600 text-sm">✅</span>
+                                        <span class="text-xs text-green-700">Dev Plan complete? Generate test scripts for validation.</span>
+                                    </div>
+                                    <button class="btn-primary text-xs">Generate Test Scripts →</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- GAP SIDEBAR -->
+                        <div class="w-52 border-l border-[#E8E4E0] bg-white p-3">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-xs font-bold flex items-center gap-1.5">
+                                    <span class="text-[#F59E0B]">⚠️</span>
+                                    GAPS (2)
+                                </h3>
+                            </div>
+                            
+                            <div class="gap-panel">
+                                <div class="gap-item">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-[#F59E0B] text-xs">⚠️</span>
+                                        <div class="flex-1">
+                                            <p class="text-[10px] font-medium text-[#92400E] mb-1">Missing:</p>
+                                            <p class="text-[10px] text-[#92400E]">Approver unavailable scenario</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1 mt-2">
+                                        <button class="text-[10px] text-[#9A948D] hover:text-[#2D1810]">Dismiss</button>
+                                        <span class="text-[#9A948D]">·</span>
+                                        <button class="text-[10px] text-[#FF6B35] font-medium">Address</button>
+                                    </div>
+                                </div>
+                                <div class="gap-item">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-[#F59E0B] text-xs">⚠️</span>
+                                        <div class="flex-1">
+                                            <p class="text-[10px] font-medium text-[#92400E] mb-1">Missing:</p>
+                                            <p class="text-[10px] text-[#92400E]">Delegation rules for vacation</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1 mt-2">
+                                        <button class="text-[10px] text-[#9A948D] hover:text-[#2D1810]">Dismiss</button>
+                                        <span class="text-[#9A948D]">·</span>
+                                        <button class="text-[10px] text-[#FF6B35] font-medium">Address</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn-ghost text-[10px] w-full mt-2">Dismiss All</button>
+                            
+                            <!-- Severity Legend -->
+                            <div class="mt-4 pt-3 border-t border-[#E8E4E0]">
+                                <p class="text-[9px] text-[#9A948D] uppercase font-medium mb-2">Severity</p>
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-1.5 text-[10px]">
+                                        <span class="text-red-500">🚫</span>
+                                        <span class="text-[#9A948D]">Critical — Blocks Ready</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 text-[10px]">
+                                        <span class="text-amber-500">⚠️</span>
+                                        <span class="text-[#9A948D]">Warning — Shown</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 text-[10px]">
+                                        <span class="text-blue-500">💡</span>
+                                        <span class="text-[#9A948D]">Suggestion — Optional</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- VIEW 2: REVIEW MODE -->
+            <div>
+                <div class="text-sm font-semibold mb-2 text-[#9A948D]">🔍 Review Mode (For David)</div>
+                <div class="bg-[#FAFAF9] rounded-2xl border border-[#E8E4E0] overflow-hidden" style="height: 780px;">
+                    
+                    <!-- REVIEW BANNER -->
+                    <div class="review-banner px-4 py-2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-blue-600 text-sm">🔍</span>
+                                <span class="text-sm font-semibold text-blue-700">REVIEW MODE</span>
+                                <span class="text-xs text-blue-600">Reviewing story #47 submitted by Aisha</span>
+                            </div>
+                            <button class="text-xs text-blue-600 hover:text-blue-800 font-medium">Exit Review Mode</button>
+                        </div>
+                    </div>
+                    
+                    <!-- COMPACT HEADER -->
+                    <div class="bg-white border-b border-[#E8E4E0] p-4">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-[#9A948D] text-sm">#47</span>
+                                    <h1 class="text-lg font-bold">Approval Workflow by Role</h1>
+                                    <span class="status-badge status-high">🔴 HIGH</span>
+                                </div>
+                                <div class="flex items-center gap-4 text-xs text-[#9A948D]">
+                                    <span>Submitted by: <strong class="text-[#2D1810]">Aisha</strong></span>
+                                    <span>Feb 28, 4:45 PM</span>
+                                    <span class="text-blue-600 font-medium">In Review</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- AI Summary -->
+                        <div class="bg-[#FFF7F3] rounded-lg p-3 border border-[#FFD4BF]">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-xs font-semibold text-[#FF6B35]">🤖 AI Summary</div>
+                            </div>
+                            <p class="text-xs text-[#2D1810]">This story implements multi-level approval based on amount: Manager up to $5K, Director $5K-$25K, VP above $25K. Includes delegation for unavailable approvers.</p>
+                        </div>
+                        
+                        <!-- Completeness -->
+                        <div class="flex items-center gap-3 mt-3">
+                            <span class="text-xs text-[#9A948D]">Completeness:</span>
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="font-bold text-[#10B981]">85%</span>
+                                <div class="progress-bar flex-1">
+                                    <div class="progress-fill progress-green" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <span class="text-xs text-[#F59E0B]">⚠️ 2 gaps flagged</span>
+                        </div>
+                    </div>
+                    
+                    <!-- REVIEW CONTENT -->
+                    <div class="p-4 overflow-y-auto" style="height: calc(100% - 180px);">
+                        
+                        <!-- Acceptance Criteria - Collapsed -->
+                        <div class="card p-3 mb-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-semibold text-sm flex items-center gap-2">
+                                    Acceptance Criteria
+                                    <span class="bg-[#10B981] text-white px-1.5 py-0.5 rounded text-[10px]">4</span>
+                                </h3>
+                                <button class="text-[10px] text-[#FF6B35] font-medium">Expand</button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div class="flex items-center gap-1.5">
+                                    <input type="checkbox" class="w-3 h-3 rounded border-[#E8E4E0]">
+                                    <span>AC1: Manager approval ≤ $5K</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <input type="checkbox" class="w-3 h-3 rounded border-[#E8E4E0]">
+                                    <span>AC2: Director approval $5K-$25K</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <input type="checkbox" class="w-3 h-3 rounded border-[#E8E4E0]">
+                                    <span>AC3: VP approval > $25K</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <input type="checkbox" class="w-3 h-3 rounded border-[#E8E4E0]">
+                                    <span>AC4: Delegation when unavailable</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Dev Plan - Collapsed -->
+                        <div class="card p-3 mb-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-semibold text-sm flex items-center gap-2">
+                                    Dev Plan
+                                    <span class="bg-[#F59E0B] text-white px-1.5 py-0.5 rounded text-[10px]">3/6</span>
+                                </h3>
+                                <button class="text-[10px] text-[#FF6B35] font-medium">Expand</button>
+                            </div>
+                            <div class="space-y-1.5 text-xs">
+                                <div class="flex items-center gap-1.5 text-[#10B981]">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="line-through text-[#9A948D]">Step 1: Create ApprovalLevel Enumeration</span>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-[#10B981]">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="line-through text-[#9A948D]">Step 2: Extend User Entity</span>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-[#10B981]">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="line-through text-[#9A948D]">Step 3: Create ApprovalRequest Entity</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <div class="w-3 h-3 rounded border border-[#E8E4E0]"></div>
+                                    <span>Step 4: Implement Approval Microflow</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <div class="w-3 h-3 rounded border border-[#E8E4E0]"></div>
+                                    <span>Step 5: Add Delegation Logic</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <div class="w-3 h-3 rounded border border-[#E8E4E0]"></div>
+                                    <span>Step 6: Create Approval UI Pages</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Feedback Input -->
+                        <div class="card p-3 mb-3">
+                            <h3 class="font-semibold text-sm mb-2 flex items-center gap-2">
+                                💬 Add Feedback
+                            </h3>
+                            <textarea 
+                                rows="3" 
+                                placeholder="Type feedback or @mention team members..."
+                                class="w-full outline-none bg-[#FAFAF9] border border-[#E8E4E0] rounded-lg p-2.5 text-sm resize-none focus:border-[#FF6B35]"
+                            ></textarea>
+                            <div class="flex items-center justify-between mt-2">
+                                <button class="btn-ghost text-[10px] flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                                    </svg>
+                                    Attach
+                                </button>
+                                <button class="btn-secondary text-xs">Post Feedback</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Review Actions -->
+                        <div class="card p-3">
+                            <div class="flex items-center justify-between">
+                                <button class="btn-secondary text-xs px-6 py-2 flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                    </svg>
+                                    Request Changes
+                                </button>
+                                <button class="btn-primary text-xs px-6 py-2 flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Approve Story
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECOND ROW: MORE TABS -->
+        <div class="grid grid-cols-3 gap-6 mt-6">
+            
+            <!-- ACCEPTANCE CRITERIA TAB -->
+            <div>
+                <div class="text-sm font-semibold mb-2 text-[#9A948D]">📋 Acceptance Criteria Tab</div>
+                <div class="bg-[#FAFAF9] rounded-2xl border border-[#E8E4E0] overflow-hidden" style="height: 400px;">
+                    <div class="bg-white border-b border-[#E8E4E0] px-3 py-2">
+                        <span class="text-xs font-medium">Acceptance Criteria</span>
+                        <span class="bg-[#7C3AED] text-white px-1.5 py-0.5 rounded text-[10px] ml-2">4</span>
+                    </div>
+                    <div class="p-3 overflow-y-auto" style="height: calc(100% - 40px);">
+                        <!-- Generate Bar -->
+                        <div class="flex items-center gap-2 mb-3">
+                            <input type="text" placeholder="Paste notes to regenerate criteria..." class="flex-1 text-xs bg-white border border-[#E8E4E0] rounded-lg px-2.5 py-1.5 outline-none focus:border-[#FF6B35]">
+                            <button class="btn-primary text-[10px]">Generate</button>
+                        </div>
+                        
+                        <div class="text-[10px] text-[#9A948D] mb-3">Last generated: Feb 28, 2:34 PM</div>
+                        
+                        <!-- Criteria List -->
+                        <div class="space-y-2">
+                            <div class="criterion-item p-2.5">
+                                <div class="flex items-start gap-2">
+                                    <input type="checkbox" class="w-4 h-4 mt-0.5 rounded border-[#E8E4E0]">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-1.5 mb-1">
+                                            <span class="text-xs font-semibold">AC1: Manager approval for amounts ≤ $5,000</span>
+                                            <span class="ai-badge">✨ AI</span>
+                                        </div>
+                                        <p class="text-[10px] text-[#9A948D]">Given a request with amount ≤ $5,000<br>When a Manager submits approval<br>Then the request is approved</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 mt-2 pl-6">
+                                    <button class="text-[10px] text-[#9A948D] hover:text-[#2D1810]">Edit</button>
+                                    <button class="text-[10px] text-red-400 hover:text-red-600">Delete</button>
+                                </div>
+                            </div>
+                            
+                            <div class="criterion-item p-2.5">
+                                <div class="flex items-start gap-2">
+                                    <input type="checkbox" class="w-4 h-4 mt-0.5 rounded border-[#E8E4E0]">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-1.5 mb-1">
+                                            <span class="text-xs font-semibold">AC2: Director approval for amounts $5,001-$25,000</span>
+                                            <span class="ai-badge">✨ AI</span>
+                                        </div>
+                                        <p class="text-[10px] text-[#9A948D]">Given a request with amount between $5,001-$25,000...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="criterion-item p-2.5">
+                                <div class="flex items-start gap-2">
+                                    <input type="checkbox" class="w-4 h-4 mt-0.5 rounded border-[#E8E4E0]">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-1.5 mb-1">
+                                            <span class="text-xs font-semibold">AC3: VP approval for amounts > $25,000</span>
+                                            <span class="ai-badge">✨ AI</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="criterion-item p-2.5">
+                                <div class="flex items-start gap-2">
+                                    <input type="checkbox" class="w-4 h-4 mt-0.5 rounded border-[#E8E4E0]">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-1.5 mb-1">
+                                            <span class="text-xs font-semibold">AC4: Delegation when approver is unavailable</span>
+                                            <span class="ai-badge">✨ AI</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn-secondary text-[10px] mt-3 flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Add Criterion
+                        </button>
+                        
+                        <!-- Next Step -->
+                        <div class="mt-3 p-2 bg-green-50 rounded-lg border border-green-100 text-[10px] text-green-700">
+                            ✅ Ready to generate Dev Plan? <button class="font-bold text-green-800 ml-1">Generate Dev Plan →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- TEST SCRIPTS TAB -->
+            <div>
+                <div class="text-sm font-semibold mb-2 text-[#9A948D]">🧪 Test Scripts Tab</div>
+                <div class="bg-[#FAFAF9] rounded-2xl border border-[#E8E4E0] overflow-hidden" style="height: 400px;">
+                    <div class="bg-white border-b border-[#E8E4E0] px-3 py-2 flex items-center justify-between">
+                        <span class="text-xs font-medium">Test Scripts</span>
+                        <button class="text-[10px] text-[#9A948D] flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            Regenerate
+                        </button>
+                    </div>
+                    <div class="p-3 overflow-y-auto" style="height: calc(100% - 40px);">
+                        <div class="text-[10px] text-[#9A948D] mb-2">approval-workflow.spec.ts</div>
+                        
+                        <!-- Code Block -->
+                        <div class="code-block p-2.5 text-[10px] leading-relaxed overflow-x-auto">
+                            <div class="flex">
+                                <div class="code-line-number pr-3 select-none" style="min-width: 30px;">
+                                    1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17
+                                </div>
+                                <div class="flex-1">
+                                    <span class="text-purple-400">import</span> { test, expect } <span class="text-purple-400">from</span> <span class="text-green-400">'@playwright/test'</span>;<br><br>
+                                    test.<span class="text-yellow-400">describe</span>(<span class="text-green-400">'Approval Workflow'</span>, () => {<br>
+                                    &nbsp;&nbsp;test(<span class="text-green-400">'Manager approval ≤ $5K'</span>, <span class="text-purple-400">async</span> ({ page }) => {<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-gray-500">// Login as manager</span><br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-purple-400">await</span> page.<span class="text-yellow-400">goto</span>(<span class="text-green-400">'/login'</span>);<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-purple-400">await</span> page.<span class="text-yellow-400">fill</span>(<span class="text-green-400">'[data-testid="email"]'</span>,<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-green-400">'manager@test.com'</span>);<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-purple-400">await</span> page.<span class="text-yellow-400">click</span>(<span class="text-green-400">'[data-testid="login"]'</span>);<br><br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-gray-500">// Create approval request</span><br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-purple-400">await</span> page.<span class="text-yellow-400">goto</span>(<span class="text-green-400">'/requests/new'</span>);<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-purple-400">await</span> page.<span class="text-yellow-400">fill</span>(<span class="text-green-400">'[data-testid="amount"]'</span>, <span class="text-green-400">'3000'</span>);<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-purple-400">await</span> page.<span class="text-yellow-400">click</span>(<span class="text-green-400">'[data-testid="submit"]'</span>);<br>
+                                    &nbsp;&nbsp;});<br>
+                                    });
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="flex items-center gap-2 mt-3">
+                            <button class="btn-secondary text-[10px] flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                                Copy
+                            </button>
+                            <button class="btn-secondary text-[10px] flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                Download .spec.ts
+                            </button>
+                            <button class="btn-ghost text-[10px]">Edit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ACTIVITY TAB -->
+            <div>
+                <div class="text-sm font-semibold mb-2 text-[#9A948D]">💬 Activity Tab</div>
+                <div class="bg-[#FAFAF9] rounded-2xl border border-[#E8E4E0] overflow-hidden" style="height: 400px;">
+                    <div class="bg-white border-b border-[#E8E4E0] px-3 py-2">
+                        <div class="flex items-center gap-3">
+                            <button class="text-xs font-medium text-[#FF6B35] border-b-2 border-[#FF6B35] pb-1">💬 Comments</button>
+                            <button class="text-xs font-medium text-[#9A948D] pb-1">📜 History</button>
+                        </div>
+                    </div>
+                    <div class="p-3 overflow-y-auto" style="height: calc(100% - 40px);">
+                        <div class="space-y-2.5">
+                            <!-- Comment 1 -->
+                            <div class="comment-item p-2.5">
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <div class="w-5 h-5 rounded-full bg-[#FF6B35] flex items-center justify-center text-white text-[8px] font-bold">D</div>
+                                    <span class="text-xs font-semibold">David</span>
+                                    <span class="text-[10px] text-[#9A948D]">Feb 28, 3:45 PM</span>
+                                </div>
+                                <p class="text-[11px] text-[#2D1810] mb-1.5">@Aisha looks good overall. One question: what happens if someone changes the amount after partial approval?</p>
+                                <div class="flex items-center gap-2">
+                                    <button class="text-[10px] text-[#9A948D] flex items-center gap-1">👍 2</button>
+                                    <button class="text-[10px] text-[#9A948D]">Reply</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Comment 2 -->
+                            <div class="comment-item p-2.5 ml-4">
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <div class="w-5 h-5 rounded-full bg-[#10B981] flex items-center justify-center text-white text-[8px] font-bold">A</div>
+                                    <span class="text-xs font-semibold">Aisha</span>
+                                    <span class="text-[10px] text-[#9A948D]">Feb 28, 4:12 PM</span>
+                                </div>
+                                <p class="text-[11px] text-[#2D1810] mb-1.5">@David good catch! I'll add a criterion for amount change scenarios.</p>
+                                <div class="flex items-center gap-2">
+                                    <button class="text-[10px] text-[#9A948D] flex items-center gap-1">👍 1</button>
+                                    <button class="text-[10px] text-[#9A948D]">Reply</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Comment 3 -->
+                            <div class="comment-item p-2.5">
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <div class="w-5 h-5 rounded-full bg-[#F59E0B] flex items-center justify-center text-white text-[8px] font-bold">M</div>
+                                    <span class="text-xs font-semibold">Marcus</span>
+                                    <span class="text-[10px] text-[#9A948D]">Feb 28, 4:30 PM</span>
+                                </div>
+                                <p class="text-[11px] text-[#2D1810]">Yes that's what the client mentioned too!</p>
+                                <div class="flex items-center gap-2">
+                                    <button class="text-[10px] text-[#9A948D] flex items-center gap-1">👍</button>
+                                    <button class="text-[10px] text-[#9A948D]">Reply</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Add Comment -->
+                        <div class="mt-3 pt-3 border-t border-[#E8E4E0]">
+                            <textarea 
+                                rows="2" 
+                                placeholder="💬 Add a comment..."
+                                class="w-full outline-none bg-white border border-[#E8E4E0] rounded-lg p-2 text-xs resize-none focus:border-[#FF6B35]"
+                            ></textarea>
+                            <div class="flex items-center justify-between mt-1.5">
+                                <div class="flex items-center gap-1">
+                                    <button class="btn-ghost text-[10px]">@ mention</button>
+                                    <button class="btn-ghost text-[10px]">Attach</button>
+                                </div>
+                                <button class="btn-primary text-[10px]">Post</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SUMMARY -->
+        <div class="mt-8 p-5 bg-white rounded-xl border border-[#E8E4E0]">
+            <h2 class="font-bold text-lg mb-4 text-[#FF6B35]">✅ Story Detail Page — Complete Design</h2>
+            <div class="grid grid-cols-4 gap-6">
+                <div>
+                    <h3 class="font-semibold text-sm mb-2">📄 Page Header</h3>
+                    <ul class="text-sm text-[#9A948D] space-y-1">
+                        <li>• Breadcrumbs navigation</li>
+                        <li>• Story # + title</li>
+                        <li>• Priority badge</li>
+                        <li>• Full metadata grid</li>
+                        <li>• Action buttons</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-sm mb-2">📑 Tab Navigation</h3>
+                    <ul class="text-sm text-[#9A948D] space-y-1">
+                        <li>• Overview (notes, attachments)</li>
+                        <li>• Acceptance Criteria</li>
+                        <li>• Dev Plan (steps, hints)</li>
+                        <li>• Test Scripts (code)</li>
+                        <li>• Activity (comments, history)</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-sm mb-2">🤖 AI Generation</h3>
+                    <ul class="text-sm text-[#9A948D] space-y-1">
+                        <li>• Acceptance Criteria from notes</li>
+                        <li>• Dev Plan from criteria</li>
+                        <li>• Test Scripts from plan</li>
+                        <li>• Gap detection inline</li>
+                        <li>• Regenerate options</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-sm mb-2">🔍 Review Mode</h3>
+                    <ul class="text-sm text-[#9A948D] space-y-1">
+                        <li>• AI-generated summary</li>
+                        <li>• Collapsed criteria/plan</li>
+                        <li>• Completeness score</li>
+                        <li>• Quick feedback input</li>
+                        <li>• Approve/Request Changes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

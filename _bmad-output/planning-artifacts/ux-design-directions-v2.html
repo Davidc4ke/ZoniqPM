@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoniq - Refined Design Direction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-grotesk@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #FF6B35;
+            --orange-light: #FFF7F3;
+            --dark: #2D1810;
+            --off-white: #FAFAF9;
+            --warm-gray: #E8E4E0;
+            --medium-gray: #9A948D;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+        }
+        
+        * {
+            font-family: 'General Sans', sans-serif;
+        }
+        
+        h1, h2, h3, h4, h5, h6, .font-heading {
+            font-family: 'Clash Grotesk', sans-serif;
+        }
+        
+        body {
+            background: var(--off-white);
+            color: var(--dark);
+        }
+        
+        .universal-input-prominent {
+            background: linear-gradient(135deg, #FFF7F3 0%, white 100%);
+            border: 2px solid var(--orange);
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .universal-input-prominent:focus-within {
+            box-shadow: 0 8px 30px rgba(255, 107, 53, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--warm-gray);
+            transition: all 0.2s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(45, 24, 16, 0.08);
+            border-color: var(--warm-gray);
+        }
+        
+        .btn-primary {
+            background: var(--orange);
+            color: white;
+            font-weight: 600;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #E55A2B;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--dark);
+            color: white;
+            font-weight: 600;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #3D2820;
+        }
+        
+        .btn-ghost {
+            background: transparent;
+            color: var(--dark);
+            font-weight: 500;
+            padding: 0.625rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--warm-gray);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-ghost:hover {
+            background: var(--warm-gray);
+            border-color: var(--medium-gray);
+        }
+        
+        .story-item {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            background: var(--off-white);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .story-item:hover {
+            background: var(--warm-gray);
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.urgent { background: #FEE2E2; color: #DC2626; }
+        .status-badge.ready { background: #D1FAE5; color: #059669; }
+        .status-badge.progress { background: #FEF3C7; color: #D97706; }
+        .status-badge.review { background: #DBEAFE; color: #2563EB; }
+        .status-badge.testing { background: #E9D5FF; color: #9333EA; }
+        .status-badge.done { background: #E5E7EB; color: #6B7280; }
+        
+        .counter-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .counter-pill.in-progress { background: #FEF3C7; color: #D97706; }
+        .counter-pill.testing { background: #E9D5FF; color: #9333EA; }
+        .counter-pill.review { background: #DBEAFE; color: #2563EB; }
+        .counter-pill.done { background: #D1FAE5; color: #059669; }
+        .counter-pill.blocked { background: #FEE2E2; color: #DC2626; }
+        
+        .progress-bar {
+            height: 6px;
+            background: var(--warm-gray);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--orange);
+            border-radius: 3px;
+        }
+        
+        .kanban-preview {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+        }
+        
+        .kanban-column {
+            background: var(--off-white);
+            border-radius: 8px;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        
+        .kanban-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin: 0 auto 0.25rem;
+        }
+
+        .quick-action {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid var(--warm-gray);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .quick-action:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-6">
+    <div class="max-w-7xl mx-auto">
+        <!-- Page Title -->
+        <div class="mb-6">
+            <h1 class="font-heading text-2xl font-bold text-[#FF6B35]">Refined Direction 3: Compact Header + Enhanced Dashboard</h1>
+            <p class="text-[#9A948D] mt-1">Universal input prominent, quick actions, enhanced project status, Kanban integration</p>
+        </div>
+
+        <!-- Main App Mockup -->
+        <div class="bg-[#FAFAF9] rounded-2xl border border-[#E8E4E0] overflow-hidden">
+            
+            <!-- Header with Prominent Universal Input -->
+            <header class="bg-white border-b border-[#E8E4E0] p-4">
+                <div class="flex items-center gap-6">
+                    <!-- Logo -->
+                    <div class="font-heading font-bold text-xl flex items-center gap-2">
+                        <span class="text-2xl">🔮</span>
+                        <span>ZONIQ</span>
+                    </div>
+                    
+                    <!-- Prominent Universal Input -->
+                    <div class="flex-1 max-w-2xl">
+                        <div class="universal-input-prominent rounded-xl px-5 py-3">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xl">✨</span>
+                                <input type="text" 
+                                       placeholder="Paste notes, 'Open story 47', 'What needs review?'..." 
+                                       class="flex-1 outline-none bg-transparent text-base font-medium placeholder:text-[#9A948D]">
+                                <button class="btn-primary text-sm px-4">
+                                    Ask
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="flex items-center gap-2">
+                        <button class="quick-action">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Create
+                        </button>
+                        <button class="quick-action">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                            Edit
+                        </button>
+                        <button class="quick-action">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                            </svg>
+                            Kanban
+                        </button>
+                        <button class="p-2 rounded-lg hover:bg-[#E8E4E0]">
+                            <svg class="w-5 h-5 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </button>
+                        <kbd class="px-2 py-1.5 rounded-lg bg-[#E8E4E0] text-xs font-mono text-[#9A948D]">⌘K</kbd>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Main Content -->
+            <div class="p-6">
+                <div class="grid grid-cols-3 gap-6">
+                    
+                    <!-- Assigned to You -->
+                    <div class="card p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-heading font-bold flex items-center gap-2">
+                                <span>📋</span> Assigned to You
+                            </h3>
+                            <span class="text-xs bg-[#FF6B35] text-white px-2 py-1 rounded-full font-semibold">3</span>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <div class="story-item">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="status-badge urgent">🔴 Urgent</span>
+                                        <span class="font-semibold text-sm">#47 Approval Workflow</span>
+                                    </div>
+                                    <span class="text-sm font-semibold text-[#FF6B35]">85%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="story-item">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="status-badge ready">🟢 Ready</span>
+                                        <span class="font-semibold text-sm">#52 Export to PDF</span>
+                                    </div>
+                                    <span class="text-sm font-semibold text-[#FF6B35]">40%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 40%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="story-item">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="status-badge progress">🟡 In Progress</span>
+                                        <span class="font-semibold text-sm">#58 Data Validation</span>
+                                    </div>
+                                    <span class="text-sm font-semibold text-[#FF6B35]">20%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 20%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full mt-4 text-sm text-[#9A948D] hover:text-[#2D1810] font-medium">
+                            View all assigned →
+                        </button>
+                    </div>
+                    
+                    <!-- Review Queue -->
+                    <div class="card p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-heading font-bold flex items-center gap-2">
+                                <span>🔍</span> Review Queue
+                            </h3>
+                            <span class="text-xs bg-[#2563EB] text-white px-2 py-1 rounded-full font-semibold">5</span>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <div class="story-item">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="status-badge ready">🟢 Ready</span>
+                                        <span class="font-semibold text-sm">#44 Login Flow</span>
+                                    </div>
+                                    <span class="text-xs text-[#9A948D]">Aisha</span>
+                                </div>
+                            </div>
+                            
+                            <div class="story-item">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="status-badge ready">🟢 Ready</span>
+                                        <span class="font-semibold text-sm">#45 Dashboard</span>
+                                    </div>
+                                    <span class="text-xs text-[#9A948D]">Marcus</span>
+                                </div>
+                            </div>
+                            
+                            <div class="story-item">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="status-badge ready">🟢 Ready</span>
+                                        <span class="font-semibold text-sm">#46 API Integration</span>
+                                    </div>
+                                    <span class="text-xs text-[#9A948D]">Aisha</span>
+                                </div>
+                            </div>
+                            
+                            <div class="story-item">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="status-badge review">🔵 Review</span>
+                                        <span class="font-semibold text-sm">#49 Search Feature</span>
+                                    </div>
+                                    <span class="text-xs text-[#9A948D]">Tom</span>
+                                </div>
+                            </div>
+                            
+                            <div class="story-item">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="status-badge ready">🟢 Ready</span>
+                                        <span class="font-semibold text-sm">#51 Notifications</span>
+                                    </div>
+                                    <span class="text-xs text-[#9A948D]">Lisa</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full mt-4 text-sm text-[#9A948D] hover:text-[#2D1810] font-medium">
+                            View all reviews →
+                        </button>
+                    </div>
+                    
+                    <!-- Project Status (Enhanced) -->
+                    <div class="card p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-heading font-bold flex items-center gap-2">
+                                <span>📊</span> Project Status
+                            </h3>
+                            <button class="text-xs text-[#FF6B35] hover:underline font-medium">View Kanban →</button>
+                        </div>
+                        
+                        <!-- Project 1: Claims Portal -->
+                        <div class="mb-5">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-semibold">Claims Portal</span>
+                                <span class="text-[#FF6B35] font-bold">72%</span>
+                            </div>
+                            <div class="progress-bar mb-2">
+                                <div class="progress-fill" style="width: 72%"></div>
+                            </div>
+                            
+                            <!-- Status Counters -->
+                            <div class="flex flex-wrap gap-1.5 mb-3">
+                                <span class="counter-pill progress">🟡 8 In Progress</span>
+                                <span class="counter-pill testing">🟣 4 Testing</span>
+                                <span class="counter-pill review">🔵 5 Review</span>
+                                <span class="counter-pill done">🟢 16 Done</span>
+                                <span class="counter-pill blocked">🔴 2 Blocked</span>
+                            </div>
+                            
+                            <!-- Mini Kanban Preview -->
+                            <div class="kanban-preview">
+                                <div class="kanban-column">
+                                    <div class="kanban-dot bg-[#9A948D]"></div>
+                                    <div class="text-xs font-semibold">3</div>
+                                    <div class="text-[10px] text-[#9A948D]">Backlog</div>
+                                </div>
+                                <div class="kanban-column">
+                                    <div class="kanban-dot bg-[#F59E0B]"></div>
+                                    <div class="text-xs font-semibold">8</div>
+                                    <div class="text-[10px] text-[#9A948D]">Progress</div>
+                                </div>
+                                <div class="kanban-column">
+                                    <div class="kanban-dot bg-[#9333EA]"></div>
+                                    <div class="text-xs font-semibold">4</div>
+                                    <div class="text-[10px] text-[#9A948D]">Testing</div>
+                                </div>
+                                <div class="kanban-column">
+                                    <div class="kanban-dot bg-[#2563EB]"></div>
+                                    <div class="text-xs font-semibold">5</div>
+                                    <div class="text-[10px] text-[#9A948D]">Review</div>
+                                </div>
+                                <div class="kanban-column">
+                                    <div class="kanban-dot bg-[#10B981]"></div>
+                                    <div class="text-xs font-semibold">16</div>
+                                    <div class="text-[10px] text-[#9A948D]">Done</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Project 2: Policy Management -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-semibold">Policy Management</span>
+                                <span class="text-[#FF6B35] font-bold">45%</span>
+                            </div>
+                            <div class="progress-bar mb-2">
+                                <div class="progress-fill" style="width: 45%"></div>
+                            </div>
+                            
+                            <!-- Status Counters -->
+                            <div class="flex flex-wrap gap-1.5 mb-3">
+                                <span class="counter-pill progress">🟡 6 In Progress</span>
+                                <span class="counter-pill testing">🟣 2 Testing</span>
+                                <span class="counter-pill review">🔵 3 Review</span>
+                                <span class="counter-pill done">🟢 9 Done</span>
+                                <span class="counter-pill blocked">🔴 0 Blocked</span>
+                            </div>
+                            
+                            <!-- Mini Kanban Preview -->
+                            <div class="kanban-preview">
+                                <div class="kanban-column">
+                                    <div class="kanban-dot bg-[#9A948D]"></div>
+                                    <div class="text-xs font-semibold">5</div>
+                                    <div class="text-[10px] text-[#9A948D]">Backlog</div>
+                                </div>
+                                <div class="kanban-column">
+                                    <div class="kanban-dot bg-[#F59E0B]"></div>
+                                    <div class="text-xs font-semibold">6</div>
+                                    <div class="text-[10px] text-[#9A948D]">Progress</div>
+                                </div>
+                                <div class="kanban-column">
+                                    <div class="kanban-dot bg-[#9333EA]"></div>
+                                    <div class="text-xs font-semibold">2</div>
+                                    <div class="text-[10px] text-[#9A948D]">Testing</div>
+                                </div>
+                                <div class="kanban-column">
+                                    <div class="kanban-dot bg-[#2563EB]"></div>
+                                    <div class="text-xs font-semibold">3</div>
+                                    <div class="text-[10px] text-[#9A948D]">Review</div>
+                                </div>
+                                <div class="kanban-column">
+                                    <div class="kanban-dot bg-[#10B981]"></div>
+                                    <div class="text-xs font-semibold">9</div>
+                                    <div class="text-[10px] text-[#9A948D]">Done</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Activity (Optional Second Row) -->
+                <div class="mt-6">
+                    <div class="card p-5">
+                        <h3 class="font-heading font-bold mb-4 flex items-center gap-2">
+                            <span>👥</span> Team Activity Today
+                        </h3>
+                        <div class="flex gap-4 overflow-x-auto pb-2">
+                            <div class="flex items-center gap-3 px-4 py-2 rounded-lg bg-[#FAFAF9] whitespace-nowrap">
+                                <div class="w-8 h-8 rounded-full bg-[#FF6B35] flex items-center justify-center text-white text-sm font-semibold">A</div>
+                                <div>
+                                    <div class="text-sm font-medium">Aisha moved #47 to Review</div>
+                                    <div class="text-xs text-[#9A948D]">2 min ago</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 px-4 py-2 rounded-lg bg-[#FAFAF9] whitespace-nowrap">
+                                <div class="w-8 h-8 rounded-full bg-[#10B981] flex items-center justify-center text-white text-sm font-semibold">M</div>
+                                <div>
+                                    <div class="text-sm font-medium">Marcus created #62 Report Export</div>
+                                    <div class="text-xs text-[#9A948D]">15 min ago</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 px-4 py-2 rounded-lg bg-[#FAFAF9] whitespace-nowrap">
+                                <div class="w-8 h-8 rounded-full bg-[#F59E0B] flex items-center justify-center text-white text-sm font-semibold">T</div>
+                                <div>
+                                    <div class="text-sm font-medium">Tom completed #44 Login Flow</div>
+                                    <div class="text-xs text-[#9A948D]">1 hour ago</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 px-4 py-2 rounded-lg bg-[#FAFAF9] whitespace-nowrap">
+                                <div class="w-8 h-8 rounded-full bg-[#9333EA] flex items-center justify-center text-white text-sm font-semibold">L</div>
+                                <div>
+                                    <div class="text-sm font-medium">Lisa started #51 Notifications</div>
+                                    <div class="text-xs text-[#9A948D]">2 hours ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary of Changes -->
+        <div class="mt-8 p-6 bg-white rounded-xl border border-[#E8E4E0]">
+            <h2 class="font-heading font-bold text-xl mb-4">✨ Refined Design Elements</h2>
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold mb-2">🔮 Prominent Universal Input</h3>
+                    <ul class="text-sm text-[#9A948D] space-y-1">
+                        <li>• Orange border + gradient background for visibility</li>
+                        <li>• Larger padding and sparkle icon</li>
+                        <li>• Built-in "Ask" button</li>
+                        <li>• Hover/focus animation draws attention</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">⚡ Quick Actions Bar</h3>
+                    <ul class="text-sm text-[#9A948D] space-y-1">
+                        <li>• Create, Edit, Kanban buttons</li>
+                        <li>• Settings + Command palette access</li>
+                        <li>• Ghost style, hover turns orange</li>
+                        <li>• Always visible, not hidden</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">📊 Enhanced Project Status</h3>
+                    <ul class="text-sm text-[#9A948D] space-y-1">
+                        <li>• Status counters: In Progress, Testing, Review, Done, Blocked</li>
+                        <li>• Mini Kanban preview with column counts</li>
+                        <li>• "View Kanban" quick link</li>
+                        <li>• Visual status distribution at a glance</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">📋 Story Cards with Progress</h3>
+                    <ul class="text-sm text-[#9A948D] space-y-1">
+                        <li>• Status badges (Urgent, Ready, In Progress, etc.)</li>
+                        <li>• Percentage completion visible</li>
+                        <li>• Progress bar for quick visual</li>
+                        <li>• Assignee shown in review queue</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

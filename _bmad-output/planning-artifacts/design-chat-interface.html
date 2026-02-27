@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoniq - Chat Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-grotesk@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #FF6B35;
+            --orange-light: #FFF7F3;
+            --dark: #2D1810;
+            --off-white: #FAFAF9;
+            --warm-gray: #E8E4E0;
+            --medium-gray: #9A948D;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+        }
+        
+        * { font-family: 'General Sans', sans-serif; }
+        h1, h2, h3, h4, h5, h6, .font-heading { font-family: 'Clash Grotesk', sans-serif; }
+        body { background: #E8E4E0; color: var(--dark); }
+        
+        .app-container {
+            background: var(--off-white);
+            max-width: 1440px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .btn-primary {
+            background: var(--orange);
+            color: white;
+            font-weight: 600;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background: #E55A2B;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--dark);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--warm-gray);
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover { border-color: var(--orange); color: var(--orange); }
+        
+        .btn-ghost {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.875rem;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid var(--warm-gray);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-ghost:hover { border-color: var(--orange); color: var(--orange); }
+        
+        .view-tab {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        .view-tab:hover { background: var(--warm-gray); }
+        .view-tab.active {
+            background: var(--orange);
+            color: white;
+        }
+        
+        .ai-message {
+            background: linear-gradient(135deg, #FFF7F3 0%, white 100%);
+            border: 1px solid var(--orange);
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            max-width: 85%;
+        }
+        
+        .user-message {
+            background: white;
+            border: 1px solid var(--warm-gray);
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            max-width: 85%;
+        }
+        
+        .story-item {
+            padding: 0.875rem 1rem;
+            border-radius: 8px;
+            background: var(--off-white);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .story-item:hover { background: var(--warm-gray); }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.125rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-badge.ready { background: #D1FAE5; color: #059669; }
+        
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .avatar-sm {
+            width: 28px;
+            height: 28px;
+            font-size: 0.75rem;
+        }
+        
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem 3rem;
+        }
+        
+        .gap-warning {
+            background: #FFFBEB;
+            border: 1px solid #FCD34D;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+        }
+        
+        .input-area {
+            background: white;
+            border-top: 1px solid var(--warm-gray);
+            padding: 1.5rem 3rem;
+        }
+        
+        .chat-input-wrapper {
+            background: var(--off-white);
+            border: 1px solid var(--warm-gray);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            transition: border-color 0.2s ease;
+        }
+        
+        .chat-input-wrapper:focus-within {
+            border-color: var(--orange);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- HEADER -->
+        <header class="bg-white border-b border-[#E8E4E0] px-6 py-3">
+            <div class="flex items-center justify-between">
+                <!-- Logo + View Tabs -->
+                <div class="flex items-center gap-4">
+                    <div class="font-heading font-bold text-lg flex items-center gap-2.5">
+                        <svg class="w-8 h-8" viewBox="0 0 707.49 707.49" xmlns="http://www.w3.org/2000/svg">
+                            <rect fill="#FE3D03" width="707.49" height="707.49" rx="80"/>
+                            <path fill="#28170F" d="M271.9,459.21c0,5.79-4.7,10.49-10.49,10.49h-33.59c-5.79,0-10.49-4.7-10.49-10.49v-33.59c0-5.79,4.7-10.49,10.49-10.49h33.6c5.78,0,10.47-4.68,10.48-10.46,0,0,0-.02,0-.03v-19.95c0-5.79,4.7-10.49,10.49-10.49h19.95c5.79,0,10.49-4.7,10.49-10.49v-19.95c0-5.79,4.7-10.49,10.49-10.49h60.87c5.79,0,10.49-4.7,10.49-10.49v-19.95c0-5.79-4.7-10.49-10.49-10.49h-142.72c-5.79,0-10.49-4.7-10.49-10.49v-33.59c0-5.79,4.7-10.49,10.49-10.49h142.72c5.79,0,10.49,4.7,10.49,10.49v33.59c0,5.79,4.7,10.49,10.49,10.49h19.95c5.79,0,10.49,4.7,10.49,10.49v19.95c0,5.79-4.7,10.49-10.49,10.49h-19.95c-5.79,0-10.48,4.69-10.48,10.48v19.95c0,5.79-4.7,10.49-10.49,10.49h-60.87c-5.79,0-10.49,4.7-10.49,10.49v19.95c0,5.79,4.7,10.49,10.49,10.49h142.72c5.79,0,10.49,4.7,10.49,10.49v33.59c0,5.79-4.7,10.49-10.49,10.49h-142.72c-5.79,0-10.49-4.7-10.49-10.49v-33.59c0-5.79-4.7-10.49-10.49-10.49h-19.94c-4.34,0-8.07,2.64-9.66,6.41-.02.04-.02.09-.04.13-.5,1.22-.78,2.55-.78,3.95v33.59Z"/>
+                            <circle fill="#28170F" cx="462.88" cy="265.07" r="27.28"/>
+                        </svg>
+                        <span>ZONIQ</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-1.5 ml-4">
+                        <button class="view-tab active text-sm">💬 Chat</button>
+                        <button class="view-tab text-sm">📊 Dashboard</button>
+                    </div>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="flex items-center gap-2">
+                    <button class="btn-ghost text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Create
+                    </button>
+                    <button class="btn-ghost text-sm">Kanban</button>
+                    <kbd class="px-2 py-1.5 rounded bg-[#E8E4E0] text-xs font-mono text-[#9A948D]">⌘K</kbd>
+                </nav>
+                
+                <!-- User -->
+                <div class="flex items-center gap-3">
+                    <div class="avatar bg-[#FF6B35]">D</div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- CHAT AREA -->
+        <div class="chat-container">
+            <div class="max-w-4xl mx-auto space-y-6">
+                
+                <!-- User Message 1 -->
+                <div class="flex gap-3">
+                    <div class="avatar bg-[#E8E4E0] text-[#2D1810]">D</div>
+                    <div class="user-message">
+                        <p class="text-sm leading-relaxed">Client wants an approval workflow based on role hierarchy. Managers approve up to $5k, Directors up to $25k, VP anything above. Need email notifications when pending approval. Also should handle when someone is on vacation.</p>
+                        <p class="text-xs text-[#9A948D] mt-2">2:30 PM</p>
+                    </div>
+                </div>
+                
+                <!-- AI Response 1 -->
+                <div class="flex gap-3">
+                    <div class="avatar bg-[#FF6B35]">AI</div>
+                    <div class="ai-message">
+                        <p class="text-sm font-semibold mb-3">📝 I'll create a story for this. I detected a few potential gaps:</p>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="gap-warning">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[#F59E0B]">⚠️</span>
+                                    <span class="text-sm text-[#92400E]">What happens if approver is unavailable (not just vacation)?</span>
+                                </div>
+                            </div>
+                            <div class="gap-warning">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[#F59E0B]">⚠️</span>
+                                    <span class="text-sm text-[#92400E]">Rejection workflow — what happens when request is denied?</span>
+                                </div>
+                            </div>
+                            <div class="gap-warning">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[#F59E0B]">⚠️</span>
+                                    <span class="text-sm text-[#92400E]">Can amounts be changed after partial approval?</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-3 border border-[#E8E4E0] mb-4">
+                            <div class="text-xs text-[#9A948D] mb-1">Story Title</div>
+                            <div class="font-semibold">Approval Workflow by Role Hierarchy</div>
+                            <div class="text-xs text-[#9A948D] mt-1">Project: Claims Portal</div>
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            <button class="btn-primary text-sm">Create Story</button>
+                            <button class="btn-secondary text-sm">Edit Title</button>
+                            <button class="btn-secondary text-sm">Different Project</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User Message 2 -->
+                <div class="flex gap-3">
+                    <div class="avatar bg-[#E8E4E0] text-[#2D1810]">D</div>
+                    <div class="user-message">
+                        <p class="text-sm leading-relaxed">Create it. Also, what do I need to review?</p>
+                        <p class="text-xs text-[#9A948D] mt-2">2:32 PM</p>
+                    </div>
+                </div>
+                
+                <!-- AI Response 2 -->
+                <div class="flex gap-3">
+                    <div class="avatar bg-[#FF6B35]">AI</div>
+                    <div class="ai-message">
+                        <p class="text-sm mb-4">
+                            ✅ <strong>Story #63 created</strong> for Claims Portal. 
+                            <a href="#" class="text-[#FF6B35] hover:underline font-medium">View Story →</a>
+                        </p>
+                        
+                        <p class="text-sm font-semibold mb-3">You have <strong>5 stories</strong> ready for review:</p>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="story-item flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="status-badge ready">🟢 Ready</span>
+                                    <div>
+                                        <span class="font-semibold text-sm">#44 Login Flow</span>
+                                        <p class="text-xs text-[#9A948D]">Claims Portal · 100%</p>
+                                    </div>
+                                </div>
+                                <div class="avatar-sm avatar bg-[#10B981]">A</div>
+                            </div>
+                            
+                            <div class="story-item flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="status-badge ready">🟢 Ready</span>
+                                    <div>
+                                        <span class="font-semibold text-sm">#45 Dashboard Widget</span>
+                                        <p class="text-xs text-[#9A948D]">Claims Portal · 95%</p>
+                                    </div>
+                                </div>
+                                <div class="avatar-sm avatar bg-[#F59E0B]">M</div>
+                            </div>
+                            
+                            <div class="story-item flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="status-badge ready">🟢 Ready</span>
+                                    <div>
+                                        <span class="font-semibold text-sm">#46 API Integration</span>
+                                        <p class="text-xs text-[#9A948D]">Policy Mgmt · 100%</p>
+                                    </div>
+                                </div>
+                                <div class="avatar-sm avatar bg-[#10B981]">A</div>
+                            </div>
+                            
+                            <div class="story-item flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="status-badge ready">🟢 Ready</span>
+                                    <div>
+                                        <span class="font-semibold text-sm">#51 Email Notifications</span>
+                                        <p class="text-xs text-[#9A948D]">Claims Portal · 100%</p>
+                                    </div>
+                                </div>
+                                <div class="avatar-sm avatar bg-[#10B981]">A</div>
+                            </div>
+                            
+                            <div class="story-item flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="status-badge ready">🟢 Ready</span>
+                                    <div>
+                                        <span class="font-semibold text-sm">#55 User Settings</span>
+                                        <p class="text-xs text-[#9A948D]">Policy Mgmt · 88%</p>
+                                    </div>
+                                </div>
+                                <div class="avatar-sm avatar bg-[#8B5CF6]">T</div>
+                            </div>
+                        </div>
+                        
+                        <p class="text-xs text-[#9A948D]">
+                            Say <strong>"open #44"</strong> to view a story, or <strong>"review all"</strong> for the full review queue.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- User Message 3 -->
+                <div class="flex gap-3">
+                    <div class="avatar bg-[#E8E4E0] text-[#2D1810]">D</div>
+                    <div class="user-message">
+                        <p class="text-sm leading-relaxed">Assign #47 to Aisha</p>
+                        <p class="text-xs text-[#9A948D] mt-2">2:35 PM</p>
+                    </div>
+                </div>
+                
+                <!-- AI Response 3 -->
+                <div class="flex gap-3">
+                    <div class="avatar bg-[#FF6B35]">AI</div>
+                    <div class="ai-message">
+                        <p class="text-sm">
+                            ✅ Done. Story <strong>#47 Approval Workflow</strong> has been assigned to Aisha.
+                        </p>
+                        <div class="flex gap-2 mt-3">
+                            <button class="btn-secondary text-sm">View Story</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User Message 4 -->
+                <div class="flex gap-3">
+                    <div class="avatar bg-[#E8E4E0] text-[#2D1810]">D</div>
+                    <div class="user-message">
+                        <p class="text-sm leading-relaxed">What's the status of Claims Portal?</p>
+                        <p class="text-xs text-[#9A948D] mt-2">2:36 PM</p>
+                    </div>
+                </div>
+                
+                <!-- AI Response 4 - Inline Status Card -->
+                <div class="flex gap-3">
+                    <div class="avatar bg-[#FF6B35]">AI</div>
+                    <div class="ai-message">
+                        <p class="text-sm font-semibold mb-3">📊 Claims Portal — 72% Complete</p>
+                        
+                        <div class="bg-white rounded-lg p-4 border border-[#E8E4E0] mb-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">Progress</span>
+                                <span class="text-[#FF6B35] font-bold">72%</span>
+                            </div>
+                            <div class="w-full h-3 bg-[#E8E4E0] rounded-full overflow-hidden mb-4">
+                                <div class="h-full bg-[#FF6B35] rounded-full" style="width: 72%"></div>
+                            </div>
+                            
+                            <div class="grid grid-cols-5 gap-2 text-center text-xs mb-4">
+                                <div class="p-2 bg-[#FAFAF9] rounded">
+                                    <div class="font-bold text-base">3</div>
+                                    <div class="text-[#9A948D]">Backlog</div>
+                                </div>
+                                <div class="p-2 bg-[#FAFAF9] rounded">
+                                    <div class="font-bold text-base">8</div>
+                                    <div class="text-[#9A948D]">Active</div>
+                                </div>
+                                <div class="p-2 bg-[#FAFAF9] rounded">
+                                    <div class="font-bold text-base">4</div>
+                                    <div class="text-[#9A948D]">Testing</div>
+                                </div>
+                                <div class="p-2 bg-[#FAFAF9] rounded">
+                                    <div class="font-bold text-base">5</div>
+                                    <div class="text-[#9A948D]">Review</div>
+                                </div>
+                                <div class="p-2 bg-[#FAFAF9] rounded">
+                                    <div class="font-bold text-base">16</div>
+                                    <div class="text-[#9A948D]">Done</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-2 text-sm">
+                                <span class="text-[#F59E0B]">⚠️</span>
+                                <span class="text-[#9A948D]">2 stories have blockers</span>
+                                <button class="text-[#FF6B35] font-medium hover:underline">Show blocked →</button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            <button class="btn-primary text-sm">View Project</button>
+                            <button class="btn-secondary text-sm">Open Kanban</button>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- CHAT INPUT -->
+        <div class="input-area">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-end gap-3">
+                    <div class="flex-1 chat-input-wrapper">
+                        <textarea 
+                            rows="1" 
+                            placeholder="Continue conversation... or try 'Open #47' · 'What's blocked?' · 'Create story for...'"
+                            class="w-full outline-none bg-transparent text-sm resize-none leading-relaxed"
+                        ></textarea>
+                    </div>
+                    <button class="btn-primary px-5 py-2.5">Send</button>
+                </div>
+                <div class="flex items-center justify-between mt-2 px-1">
+                    <span class="text-xs text-[#9A948D]">
+                        Try: "Open #44" · "Assign #47 to Aisha" · "What's blocked?" · "Create story for Policy"
+                    </span>
+                    <button class="text-xs text-[#9A948D] hover:text-[#2D1810]">Clear chat history</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FOOTER INFO -->
+        <div class="px-6 pb-6">
+            <div class="max-w-4xl mx-auto bg-white rounded-xl border border-[#E8E4E0] p-5 mt-4">
+                <h2 class="font-heading font-bold text-lg mb-4 text-[#FF6B35]">💬 Chat Interface</h2>
+                <div class="grid grid-cols-4 gap-6">
+                    <div>
+                        <h3 class="font-semibold text-sm mb-2">🎯 Capabilities</h3>
+                        <ul class="text-sm text-[#9A948D] space-y-1">
+                            <li>• Create stories from notes</li>
+                            <li>• Navigate to stories</li>
+                            <li>• Query project status</li>
+                            <li>• Execute actions</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-sm mb-2">📝 Story Creation</h3>
+                        <ul class="text-sm text-[#9A948D] space-y-1">
+                            <li>• Paste notes → AI creates</li>
+                            <li>• Gap detection inline</li>
+                            <li>• Title suggestion</li>
+                            <li>• Project auto-detection</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-sm mb-2">🔍 Status Queries</h3>
+                        <ul class="text-sm text-[#9A948D] space-y-1">
+                            <li>• Project progress</li>
+                            <li>• Review queue</li>
+                            <li>• Blocked stories</li>
+                            <li>• Team activity</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-sm mb-2">⚡ Quick Actions</h3>
+                        <ul class="text-sm text-[#9A948D] space-y-1">
+                            <li>• Assign stories</li>
+                            <li>• Change status</li>
+                            <li>• Open story/page</li>
+                            <li>• Chained commands</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

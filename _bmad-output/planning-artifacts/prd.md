@@ -120,10 +120,10 @@ AI-assisted coding is rising. Requirements quality is becoming the new bottlenec
 
 | Requirement | Target |
 |-------------|--------|
-| AI generation speed | Quick (sub-second to a few seconds) |
+| AI generation speed | <10 seconds for 95% of requests |
 | Uptime | 90%+ |
-| UX | Easy and clear |
-| Data security | Secure — holding client data |
+| UX | Core tasks completable in <5 clicks without documentation |
+| Data security | All data encrypted at rest and in transit |
 | Access control | Authenticated users only |
 
 ### Measurable Outcomes
@@ -153,7 +153,7 @@ Back at her desk, she pastes her messy notes into Zoniq. Within seconds, the AI 
 - Testable acceptance criteria
 - Gap flags: "Missing: what happens when approver is on leave?"
 
-She fills the gaps, clicks "Generate Dev Plan" — a step-by-step implementation guide appears. She clicks "Generate Test Script" — browser automation scaffolding ready.
+She fills the gaps, clicks "Generate Dev Plan" — a step-by-step implementation guide appears. She clicks "Generate Test Script" — browser automation scaffolding ready. *If AI generation fails, she can retry or manually edit the generated content.*
 
 **Resolution:**
 She marks the story "Ready." David reviews it and says "This is clear — nice work." No "what did you mean by..." questions. No rework. She feels confident, not anxious.
@@ -257,6 +257,7 @@ Both AI providers (Big Model, Claude) should use a similar interface to allow ea
 - Same input/output contracts
 - Provider-agnostic prompt templates
 - Configuration-based provider selection
+- API versioning: Major versions allow breaking changes; minor versions remain backward-compatible
 
 ---
 
