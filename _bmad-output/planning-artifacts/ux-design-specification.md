@@ -590,6 +590,85 @@ All cards throughout the dashboard use a consistent warm gray background (`#F5F2
 - **Font sizes:** Minimum 14px for readability
 - **Interactive targets:** Minimum 44px touch targets
 
+### CSS Variables Reference
+
+**Core Colors (`shared-styles.css`):**
+
+```css
+:root {
+    --orange: #FF6B35;
+    --orange-light: #FFF7F3;
+    --dark: #2D1810;
+    --off-white: #FAFAF9;
+    --warm-gray: #E8E4E0;
+    --medium-gray: #9A948D;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --error: #EF4444;
+}
+```
+
+**Status Colors:**
+
+```css
+:root {
+    --status-ready-bg: #D1FAE5;
+    --status-ready-text: #059669;
+    --status-progress-bg: #FEF3C7;
+    --status-progress-text: #D97706;
+    --status-review-bg: #DBEAFE;
+    --status-review-text: #2563EB;
+}
+```
+
+**Kanban Column Colors:**
+
+```css
+:root {
+    --kanban-backlog: #9A948D;
+    --kanban-active: #F59E0B;
+    --kanban-testing: #9333EA;
+    --kanban-review: #2563EB;
+    --kanban-done: #10B981;
+}
+```
+
+**Key Component Classes:**
+
+| Class | Purpose |
+|-------|---------|
+| `.app-container` | Main app wrapper, max-width 1280px |
+| `.universal-input-hero` | Hero input with orange border |
+| `.card` | Base card component |
+| `.btn-primary` | Orange primary button |
+| `.btn-secondary` | White with border button |
+| `.btn-ghost` | Transparent hover button |
+| `.btn-ghost-icon` | Icon-only button |
+| `.nav-item` | Topbar navigation link |
+| `.nav-item.active` | Active navigation state |
+| `.story-card` | Dashboard story card |
+| `.story-card.assigned` | Assigned story variant |
+| `.story-card.review` | Review queue variant |
+| `.topbar` | Sticky navigation header |
+| `.avatar` | User avatar |
+| `.avatar-initials` | Initials circle |
+| `.dropdown` | Dropdown container |
+| `.dropdown-menu` | Dropdown panel |
+| `.tab-active` | Active tab indicator |
+| `.progress-bar` / `.progress-fill` | Progress indicator |
+| `.kanban-mini` | Mini kanban display |
+| `.code-block` | Syntax highlighted code |
+| `.comment-item` | Comment card |
+| `.inline-editable` | Editable text field |
+
+**Animation Transitions:**
+
+```css
+transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+```
+
+**Reference File:** `_bmad-output/planning-artifacts/shared-styles.css`
+
 ## Design Direction Decision
 
 ### Chosen Direction
@@ -602,91 +681,126 @@ All cards throughout the dashboard use a consistent warm gray background (`#F5F2
 |---------|-------------|
 | **Logo** | Zoniq brand mark — orange square with brown abstract icon |
 | **Hero Universal Input** | Below header, expands for long text, auto-detects project |
-| **Navigation Header** | Create, Edit, Kanban, Settings, ⌘K (expandable for future nav) |
-| **Dashboard View** | Three-column: Assigned, Review Queue, Project Status |
-| **Chat Mode** | Full conversation history, AI creates/updates stories inline |
-| **Mode Toggle** | Switch between Chat and Dashboard views |
+| **Navigation Header** | Dashboard, Kanban, Projects + role-specific: Masterdata, Accounts |
+| **Create Dropdown** | New Ticket, New Project, New Story, New Document |
+| **AI Chat Button** | Separate chat access in topbar |
+| **Profile Dropdown** | User info, View Profile, Settings, Sign Out |
+| **Dashboard View** | Three-column: Assigned, Review Queue, Projects |
+| **Team Activity** | Horizontal scrolling activity feed |
 
 ### Home Screen Layout
 
 **Default: Dashboard View**
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│  [LOGO] ZONIQ     [Create] [Edit] [Kanban] [⚙️] [⌘K]               │
-├─────────────────────────────────────────────────────────────────────┤
-│  ┌───────────────────────────────────────────────────────────────┐  │
-│  │ ✨ [Paste notes, or try 'What do I review?'...] [Ask]         │  │
-│  │ Try: "Open story 47" • "What's blocked?"      0 chars        │  │
-│  └───────────────────────────────────────────────────────────────┘  │
-├─────────────────────────────────────────────────────────────────────┤
-│  ┌───────────────────┬───────────────────┬───────────────────┐      │
-│  │ 📋 Assigned       │ 🔍 Review         │ 📊 Projects       │      │
-│  │       (3)         │       (5)         │                   │      │
-│  │                   │                   │                   │      │
-│  │   [stories]       │   [stories]       │  [mini kanban     │      │
-│  │   with %          │   with owner      │   per project]    │      │
-│  │                   │                   │                   │      │
-│  │                   │                   │                   │      │
-│  └───────────────────┴───────────────────┴───────────────────┘      │
-│  ┌───────────────────────────────────────────────────────────────┐  │
-│  │ 👥 Team Activity — [Aisha moved #47] [Marcus created]         │  │
-│  └───────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  [LOGO] ZONIQ   [Dashboard] [Kanban] [Projects] [Masterdata] [Accounts]     │
+│                                                        [Create▾] [💬] [👤]  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │ 🔮 [Paste notes, or try 'What do I need to review?'...]        [Ask] │  │
+│  │ Try: "Open story 47" · "What's blocked?" · "Assign #52 to Aisha"     │  │
+│  │                                                            0 chars    │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ┌───────────────────┬───────────────────┬───────────────────┐              │
+│  │ 📋 Assigned       │ 🔍 Review         │ 📊 Projects       │              │
+│  │       (3)         │       (5)         │   View Kanban →   │              │
+│  │                   │                   │                   │              │
+│  │   [story cards]   │   [story cards]   │  [mini kanban     │              │
+│  │   warm gray bg    │   warm gray bg    │   per project]    │              │
+│  │                   │                   │  [progress bars]  │              │
+│  │                   │                   │                   │              │
+│  └───────────────────┴───────────────────┴───────────────────┘              │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │ 👥 Team Activity — Today                                              │  │
+│  │ [A moved #47] [M created #62] [T completed #44] [A generated plan]... │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Chat Mode (after clicking Ask)**
+**Create Dropdown Menu:**
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│  [LOGO] ZONIQ     [Chat] [Dashboard]  [Create] [Kanban] [⌘K]   │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  [D] User: Paste notes...                                       │
-│                                                                 │
-│  [AI] 📝 Creating story. Gaps detected:                         │
-│       ⚠️ Approver unavailable scenario                          │
-│       [Create Story] [Edit Title]                               │
-│                                                                 │
-│  [D] Create it. What do I review?                               │
-│                                                                 │
-│  [AI] ✅ Story #63 created. You have 5 stories to review:       │
-│       #44 Login Flow (Aisha)                                    │
-│       #45 Dashboard (Marcus)                                    │
-│       ...                                                       │
-│                                                                 │
-├─────────────────────────────────────────────────────────────────┤
-│  [Continue conversation...]                          [Send]     │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────┐
+│ ○  New Ticket   │
+│ 📁 New Project  │
+│ 📋 New Story    │
+│ ─────────────── │
+│ 📄 New Document │
+└─────────────────┘
 ```
+
+**Profile Dropdown Menu:**
+```
+┌─────────────────────┐
+│ David               │
+│ david@zoniq.dev     │
+│ ─────────────────── │
+│ 👤 View Profile     │
+│ ⚙️ Settings         │
+│ ─────────────────── │
+│ 🚪 Sign Out         │
+└─────────────────────┘
+```
+
+### Unified Topbar Navigation
+
+| Nav Item | Visibility | Icon | Description |
+|----------|------------|------|-------------|
+| **Dashboard** | All users | Grid | Home dashboard with assigned stories |
+| **Kanban** | All users | Table | Full kanban board view |
+| **Projects** | All users | Folder | Project list and management |
+| **Masterdata** | Admins/Managers | Database | System configuration data |
+| **Accounts** | Admins/Managers | Users | User management |
 
 ### Mini Kanban Columns
 
-| Column | Color | Meaning |
-|--------|-------|---------|
-| Backlog | Gray | Not started |
-| In Progress | Amber | Active work |
-| Testing | Purple | QA/testing |
-| Review | Blue | Awaiting review |
-| Done | Green | Complete |
+| Column | Color | Hex | Meaning |
+|--------|-------|-----|---------|
+| Backlog | Gray | `#9A948D` | Not started |
+| Active | Amber | `#F59E0B` | In progress |
+| Testing | Purple | `#9333EA` | QA/testing |
+| Review | Blue | `#2563EB` | Awaiting review |
+| Done | Green | `#10B981` | Complete |
 
-### Story Card Elements
+### Story Card Design (Dashboard)
 
-- Status badge (Urgent/Ready/In Progress/Review)
-- Story number + title
-- Percentage complete
-- Progress bar
-- Assignee (in review queue)
+**Unified Card Structure:**
+```
+┌─────────────────────────────────────────────┐
+│ 🔴  #47 Approval Workflow            [A]    │  ← Priority · Title · Assignee
+│                                             │
+│ Implement multi-level approval based on     │  ← Description
+│ user role and amount                        │
+│                                             │
+│ 📂 Claims Portal · In Progress              │  ← Project · Status
+└─────────────────────────────────────────────┘
+```
+
+| Element | Position | Style |
+|---------|----------|-------|
+| **Priority dot** | Left of title | Red/Amber/Gray |
+| **Story # + title** | Header left | Font-semibold |
+| **Assignee avatar** | Header right (top-right) | Initials circle |
+| **Description** | Body | Truncated, 2 lines max |
+| **Project name** | Footer left | With folder icon |
+| **Status badge** | Footer right (bottom-right) | Colored pill |
+
+**Card Background:** All dashboard cards use warm gray (`#F5F2EF`) for visual consistency.
 
 ### Design Rationale
 
-1. **Hero input encourages AI-first** — Prominent placement, expands for long notes
-2. **Chat mode supports conversational workflow** — Create → refine → query in one flow
-3. **Dashboard provides at-a-glance status** — All personas see relevant info immediately
-4. **Mini Kanban shows project health** — Visual distribution without clicking away
-5. **Mode toggle gives user control** — Switch contexts when needed
+1. **Hero input encourages AI-first** — Prominent placement with orange border, expands for long notes
+2. **Expanded navigation** — Role-aware items appear based on user permissions
+3. **Dashboard provides at-a-glance status** — Three columns show all relevant info
+4. **Mini Kanban shows project health** — Visual distribution with progress percentages
+5. **Team Activity horizontal scroll** — Compact activity feed saves vertical space
 
 ### Visual Reference
 
-Full interactive mockup: `_bmad-output/planning-artifacts/ux-design-final.html`
+Interactive mockups:
+- Home Page: `_bmad-output/planning-artifacts/design-home-page.html`
+- Story Details: `_bmad-output/planning-artifacts/design-story-details.html`
+- Shared Styles: `_bmad-output/planning-artifacts/shared-styles.css`
 
 ## User Journey Flows
 
@@ -952,8 +1066,9 @@ flowchart TD
 
 | Attribute | Specification |
 |-----------|---------------|
-| **Content** | Story #, title, status badge, priority, assignee avatar, due date |
-| **Actions** | Edit, Delete, Change status |
+| **Content** | Story #, title (inline-editable), description (inline-editable) |
+| **Metadata Grid** | Status, Priority, Assignee, Project, Module, Due Date, Quality % |
+| **Actions** | Delete (⋮ menu) |
 
 #### 10. StoryTabs
 
@@ -961,63 +1076,106 @@ flowchart TD
 
 | Tab | Content |
 |-----|---------|
-| **Overview** | Description, notes, attachments |
-| **Acceptance Criteria** | AI-generated + manual criteria list |
-| **Dev Plan** | AI-generated implementation steps |
-| **Test Scripts** | AI-generated Playwright scripts |
+| **Context** | Questions + Context Sources (Notes, Documents, URLs, Project Files) |
+| **Requirements** | Given/When/Then criteria list |
+| **Implementation** | Grouped sections with steps (Domain Model, Microflow Logic, etc.) |
+| **Quality Assurance** | UAT test steps + Automated tests |
+| **Deployment** | Release info, tasks, environment status |
 | **Activity** | Comments, history log |
 
-#### 11. AcceptanceCriteriaList
+#### 11. QuestionsList
 
-**Purpose:** Display and manage acceptance criteria for a story.
-
-| Attribute | Specification |
-|-----------|---------------|
-| **Content** | Criteria items with checkboxes, AI-generated badge |
-| **Actions** | Add, edit, delete, regenerate (AI) |
-| **States** | Checked/unchecked, editing |
-
-#### 12. DevPlanViewer
-
-**Purpose:** Display AI-generated development plan with step management.
+**Purpose:** Display and manage questions about a story.
 
 | Attribute | Specification |
 |-----------|---------------|
-| **Content** | Ordered steps with descriptions, Mendix domain hints |
-| **Actions** | Regenerate, edit, mark step complete |
-| **States** | Collapsed/expanded per step |
+| **Content** | Questions with asker, status (answered/unanswered) |
+| **Actions** | Add question, answer question |
+| **States** | Answered (green check), Unanswered (empty checkbox) |
 
-#### 13. TestScriptViewer
+#### 12. ContextSources
+
+**Purpose:** Manage context attached to a story.
+
+| Attribute | Specification |
+|-----------|---------------|
+| **Content** | Notes, Documents, URLs, Project Files |
+| **Actions** | Add context source (dropdown: Note, Upload, URL, Project File) |
+| **Variants** | Note (orange bg), Document (blue bg), URL (green bg), Project File (amber bg) |
+
+#### 13. RequirementsList
+
+**Purpose:** Display and manage requirements in Given/When/Then format.
+
+| Attribute | Specification |
+|-----------|---------------|
+| **Content** | Requirements with Given/When/Then structure |
+| **Actions** | Add, edit, delete |
+| **States** | Verified/unverified |
+
+#### 14. ImplementationSection
+
+**Purpose:** Grouped implementation steps organized by category.
+
+| Attribute | Specification |
+|-----------|---------------|
+| **Content** | Section header (icon + name), steps with checkboxes |
+| **Section Types** | Domain Model (purple), Microflow Logic (amber), Page Logic (green), Security Check (red) |
+| **Actions** | Add step, edit section, delete section |
+| **States** | Expanded/collapsed, step complete/pending/current |
+
+#### 15. UATTestSteps
+
+**Purpose:** Display UAT test steps with checkboxes.
+
+| Attribute | Specification |
+|-----------|---------------|
+| **Content** | Numbered steps with description, instructions |
+| **Actions** | Add step, mark complete |
+| **States** | Complete/incomplete |
+
+#### 16. AutomatedTests
 
 **Purpose:** Display AI-generated Playwright test scripts.
 
 | Attribute | Specification |
 |-----------|---------------|
-| **Content** | Playwright code block, syntax highlighted |
-| **Actions** | Copy to clipboard, regenerate, download |
-| **Features** | Line numbers, scrollable |
+| **Content** | Playwright code block, syntax highlighted, line numbers |
+| **Actions** | Copy to clipboard, download .spec.ts, edit, regenerate |
+| **Features** | Passing count badge |
 
-#### 14. GapWarningPanel
+#### 17. DeploymentPanel
 
-**Purpose:** Show detected gaps before "Ready" status can be set.
+**Purpose:** Manage release information and deployment status.
 
 | Attribute | Specification |
 |-----------|---------------|
-| **Content** | List of gaps with descriptions, severity |
-| **Actions** | Dismiss, "Mark as addressed" |
-| **States** | Collapsed sidebar / expanded panel |
+| **Content** | Release info (date, version), release tasks, environment deployment status |
+| **Actions** | Add task, add environment, mark deployed |
+| **States** | Deployed (green), Pending (gray) |
 
-#### 15. CommentThread
+#### 18. AIChatSidebar
+
+**Purpose:** Tab-aware AI assistance for story detail page.
+
+| Attribute | Specification |
+|-----------|---------------|
+| **Content** | Chat messages, tab-aware responses, quick actions |
+| **Layout** | Fixed right sidebar, 320px wide (expands to 480px) |
+| **Features** | Context-aware suggestions, gap detection, action buttons |
+| **States** | Per-tab content (Context, Requirements, Implementation, QA, Deployment, Activity) |
+
+#### 19. CommentThread
 
 **Purpose:** Review feedback and discussion on stories.
 
 | Attribute | Specification |
 |-----------|---------------|
-| **Content** | Comments with author, timestamp, replies |
-| **Actions** | Add comment, reply, @mention |
+| **Content** | Comments with author avatar, timestamp, replies (threaded) |
+| **Actions** | Add comment, reply, @mention, react (👍) |
 | **States** | Default, composing |
 
-#### 16. ActivityLog
+#### 20. ActivityLog
 
 **Purpose:** Story history (status changes, edits, AI generations).
 
@@ -1025,9 +1183,9 @@ flowchart TD
 |-----------|---------------|
 | **Content** | Timeline of changes with actor, timestamp |
 
-#### 17. ActivityFeed
+#### 21. ActivityFeed
 
-**Purpose:** Show recent team activity on dashboard.
+**Purpose:** Show recent team activity on dashboard (horizontal scroll).
 
 | Attribute | Specification |
 |-----------|---------------|
@@ -1035,7 +1193,27 @@ flowchart TD
 | **States** | Default, hover (highlight) |
 | **Accessibility** | List semantics, relative time |
 
-#### 18. AttachmentUploader
+#### 22. Topbar
+
+**Purpose:** Unified navigation header.
+
+| Attribute | Specification |
+|-----------|---------------|
+| **Content** | Logo, nav items (role-aware), Create dropdown, AI Chat button, Profile dropdown |
+| **Features** | Sticky positioning, role-based visibility |
+| **States** | Nav item active (orange bg) |
+
+#### 23. NavItem
+
+**Purpose:** Navigation link in topbar.
+
+| Attribute | Specification |
+|-----------|---------------|
+| **Content** | Icon + label |
+| **States** | Default, hover (warm gray bg), active (orange bg + text) |
+| **Accessibility** | Focus-visible outline |
+
+#### 24. AttachmentUploader
 
 **Purpose:** Client docs, screenshots, reference materials.
 
@@ -1162,13 +1340,36 @@ Button, Input, Textarea, Card, Badge, Dialog, Command, Progress, Avatar, Dropdow
 
 ### Navigation Patterns
 
-**Primary Navigation (Header):**
-| Position | Element |
-|----------|---------|
-| Left | Logo + brand name "ZONIQ" |
-| Center-left | Nav items: Dashboard, Kanban, Projects |
-| Center | Universal input (hero) |
-| Right | ⌘K trigger, User avatar/menu |
+**Primary Navigation (Topbar):**
+
+| Position | Element | Visibility |
+|----------|---------|------------|
+| Left | Logo + brand name "ZONIQ" | All users |
+| Center-left | Dashboard, Kanban, Projects | All users |
+| Center-left | Masterdata, Accounts | Admins/Managers only |
+| Right | Create dropdown, AI Chat button, Profile dropdown | All users |
+
+**Role-Based Navigation Visibility:**
+
+| Nav Item | Developer | PM | Senior/Admin |
+|----------|-----------|-----|--------------|
+| Dashboard | ✓ | ✓ | ✓ |
+| Kanban | ✓ | ✓ | ✓ |
+| Projects | ✓ | ✓ | ✓ |
+| Masterdata | ✗ | ✗ | ✓ |
+| Accounts | ✗ | ✗ | ✓ |
+
+**Create Dropdown Options:**
+- New Ticket
+- New Project
+- New Story
+- New Document (divider before this)
+
+**Profile Dropdown:**
+- User name + email (non-clickable header)
+- View Profile
+- Settings
+- Sign Out
 
 **Command Palette (⌘K):**
 - Opens with `Cmd/Ctrl + K`
@@ -1269,766 +1470,404 @@ Button, Input, Textarea, Card, Badge, Dialog, Command, Progress, Avatar, Dropdow
 
 ### Page Overview
 
-The Story Detail page is the primary workspace for working with individual stories. It serves all personas but with different priorities:
+The Story Detail page is the primary workspace for working with individual stories. It features a 2-column layout with main content and an AI Chat sidebar.
 
 | Persona | Primary Use | Focus |
 |---------|-------------|-------|
-| **Aisha (Developer)** | Building stories | Dev plan, test scripts, acceptance criteria |
-| **Marcus (PM)** | Creating stories | Overview, notes, acceptance criteria generation |
+| **Aisha (Developer)** | Building stories | Implementation steps, QA tests, requirements |
+| **Marcus (PM)** | Creating stories | Context sources, requirements generation |
 | **David (Senior)** | Reviewing stories | Quick scan, approval/rejection, comments |
 
 ### Full Page Layout
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  [← Back]   Claims Portal > #47 Approval Workflow              [⌘K] [👤]   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │ #47  Approval Workflow by Role                              🔴 HIGH │   │
-│  │                                                                     │   │
-│  │ Implement multi-level approval based on user role and amount       │   │
-│  │                                                                     │   │
-│  │ ┌─────────────────────────────────────────────────────────────────┐│   │
-│  │ │ Status: In Progress   │  Assignee: [Aisha avatar] Aisha        ││   │
-│  │ │ Project: Claims Portal│  Due: Mar 15, 2026                     ││   │
-│  │ │ Complete: 65% ██████░░│  Created: Feb 28, 2026 by Marcus      ││   │
-│  │ └─────────────────────────────────────────────────────────────────┘│   │
-│  │                                                                     │   │
-│  │ [Edit] [Change Status ▾] [Delete]                    [Save Changes]│   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │ Overview │ Acceptance Criteria │ Dev Plan │ Test Scripts │ Activity │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
-│                                                                             │
-│  ┌───────────────────────────────────────────────────────┬───────────────┐ │
-│  │                                                       │               │ │
-│  │  [TAB CONTENT AREA - see below for each tab]          │  ⚠️ GAPS (2)  │ │
-│  │                                                       │  ──────────── │ │
-│  │                                                       │               │ │
-│  │                                                       │  ⚠️ Missing:  │ │
-│  │                                                       │  Approver     │ │
-│  │                                                       │  unavailable  │ │
-│  │                                                       │  scenario     │ │
-│  │                                                       │               │ │
-│  │                                                       │  ⚠️ Missing:  │ │
-│  │                                                       │  Delegation   │ │
-│  │                                                       │  rules        │ │
-│  │                                                       │               │ │
-│  │                                                       │  [Dismiss All]│ │
-│  │                                                       │               │ │
-│  └───────────────────────────────────────────────────────┴───────────────┘ │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│  [LOGO] ZONIQ   [Dashboard] [Kanban] [Projects] [Masterdata] [Accounts]         │
+│                                                        [Create▾] [💬] [👤]      │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│  #47  Approval Workflow by Role                                        [🔧 ⋮]   │
+│  Implement multi-level approval based on user role and request amount           │
+│  ─────────────────────────────────────────────────────────────────────────────  │
+│  Status      Priority    Assignee   Project        Module    Due Date   Quality │
+│  ● In Progress  ● High   [A] Aisha  Claims Portal  Approvals  Mar 15   65% ████ │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│  Context(2) │ Requirements(2) │ Implementation(6) │ QA(5) │ Deployment │ Activity│
+├────────────────────────────────────────────────────┬────────────────────────────┤
+│                                                    │  🔮 AI Assistant           │
+│  [TAB CONTENT AREA]                                │  ──────────────────────    │
+│                                                    │                            │
+│  • Context: Questions + Context Sources            │  [Tab-aware AI responses]  │
+│  • Requirements: Given/When/Then criteria          │                            │
+│  • Implementation: Sections with steps             │  • Story summary           │
+│  • QA: UAT steps + Automated tests                 │  • Gap detection           │
+│  • Deployment: Release info, tasks, environments   │  • Implementation guidance │
+│  • Activity: Comments + History                    │  • Test coverage summary   │
+│                                                    │  • Deployment checklist    │
+│                                                    │                            │
+│                                                    │  [Quick Actions]           │
+└────────────────────────────────────────────────────┴────────────────────────────┘
 ```
 
 ### Page Header (StoryHeader Component)
 
-| Element | Description | Actions |
-|---------|-------------|---------|
-| **Back button** | Returns to previous context (Dashboard, Kanban, or Project) | Click to navigate back |
-| **Breadcrumbs** | Project > Story # | Clickable project name |
-| **Story # + Title** | "#47 Approval Workflow by Role" | Inline editable on click |
-| **Priority badge** | 🔴 HIGH / 🟡 MEDIUM / ⚪ LOW | Dropdown to change |
-| **Description** | Brief summary of story purpose | Inline editable |
-| **Status** | In Progress / Ready / Review / Done | Dropdown to change |
-| **Assignee** | Avatar + name | Dropdown to reassign |
-| **Project** | Linked project name | Click to view project |
-| **Due date** | Calendar date | Date picker |
-| **Completeness** | Percentage + progress bar | Auto-calculated |
-| **Created info** | Date + author | Non-editable |
-| **Action buttons** | Edit, Change Status, Delete, Save | Context-aware |
+**Metadata Grid (7 columns):**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **Status** | Dropdown | Backlog / Ready / In Progress / Testing / Review / Done |
+| **Priority** | Dropdown | High (red) / Medium (amber) / Low (gray) |
+| **Assignee** | Dropdown | User with avatar initials |
+| **Project** | Dropdown | Linked project (orange text) |
+| **Module** | Dropdown | Project module (e.g., Approvals, User Management) |
+| **Due Date** | Date | Target completion date |
+| **Quality** | Progress | Percentage + progress bar (amber if <80%) |
+
+**Story Actions (⋮ menu):** Delete
 
 ### Tab Navigation (StoryTabs Component)
 
 **Tab Bar Layout:**
 ```
-┌─────────┬─────────────────────┬──────────┬──────────────┬──────────┐
-│Overview │ Acceptance Criteria │ Dev Plan │ Test Scripts │ Activity │
-│   (1)   │         (4)         │   (5)    │      (0)     │    •     │
-└─────────┴─────────────────────┴──────────┴──────────────┴──────────┘
-          ↑ Badge shows count of items
+┌──────────┬───────────────┬────────────────┬──────────────┬────────────┬──────────┐
+│ Context  │ Requirements  │ Implementation │ Quality      │ Deployment │ Activity │
+│   (2)    │      (2)      │      (6)       │    (5)       │            │    •     │
+└──────────┴───────────────┴────────────────┴──────────────┴────────────┴──────────┘
+            ↑ Badge shows count of items
 ```
 
 ---
 
-### Tab 1: Overview
+### Tab 1: Context
 
-**Purpose:** Story context, original notes, and attachments
+**Purpose:** Questions + Context Sources for the story
 
+**Questions Section:**
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                                                                     │
-│  DESCRIPTION                                                        │
-│  ─────────────────────────────────────────────────────────────────  │
-│  Implement multi-level approval workflow based on user role and    │
-│  request amount. Managers approve up to $5K, Directors up to $25K, │
-│  VP approval required for amounts above $25K.                       │
-│                                                                     │
-│  ─────────────────────────────────────────────────────────────────  │
-│                                                                     │
-│  ORIGINAL NOTES                                                     │
+│  ❓ Questions                                    2 unanswered        │
 │  ─────────────────────────────────────────────────────────────────  │
 │  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ Client wants approval workflow. Different levels based on $ │   │
-│  │ amounts. Managers can do small stuff, directors medium, VPs │   │
-│  │ for big amounts. Need to handle when someone is on leave.   │   │
-│  │ Also what happens if approver quits or is unavailable?      │   │
-│  │                                           - Marcus, Feb 28  │   │
+│  │ ☐ What happens if the amount changes after partial approval?│   │
+│  │   Asked by David · Feb 28                    [Unanswered]   │   │
+│  │   ┌─────────────────────────────────────────────────────┐   │   │
+│  │   │ Type your answer...                                 │   │   │
+│  │   └─────────────────────────────────────────────────────┘   │   │
 │  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ─────────────────────────────────────────────────────────────────  │
-│                                                                     │
-│  ATTACHMENTS (2)                                                    │
-│  ─────────────────────────────────────────────────────────────────  │
-│  ┌─────────────────────────────────────────────────────┐           │
-│  │ 📄 approval-flow-diagram.png               [View][x]│           │
-│  │ 📄 client-email-approval-requirements.pdf  [View][x]│           │
-│  └─────────────────────────────────────────────────────┘           │
-│  [+ Add Attachment]                                                 │
-│                                                                     │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ ☐ Should there be a time limit for approval responses?      │   │
+│  │   Asked by Marcus · Feb 28                  [Unanswered]   │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ ☑ How should delegation be configured?             [Answered]│   │
+│  │   Answered by Aisha · Via delegation rules in user settings  │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│  [+ Add Question]                                                   │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-**Overview Content:**
-
-| Section | Content | Actions |
-|---------|---------|---------|
-| **Description** | Full story description | Edit inline, auto-save |
-| **Original Notes** | Raw notes/voice transcript from creation | View only, expandable |
-| **Attachments** | Uploaded files (images, PDFs, docs) | Upload, view, download, delete |
-
----
-
-### Tab 2: Acceptance Criteria
-
-**Purpose:** AI-generated and manual acceptance criteria management
-
+**Context Sources Section:**
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ✨ [Paste notes to regenerate criteria, or add manually...] │   │
-│  │                                                 [Generate]  │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ACCEPTANCE CRITERIA (4)                          Last generated:  │
-│  ────────────────────────────────────────────────  Feb 28, 2:34 PM │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ☐ AC1: Manager approval for amounts ≤ $5,000         ✨ AI   │   │
-│  │   Given a request with amount ≤ $5,000                       │   │
-│  │   When a Manager submits approval                            │   │
-│  │   Then the request is approved                               │   │
-│  │                                          [Edit] [Delete]     │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ☐ AC2: Director approval for amounts $5,001-$25,000  ✨ AI   │   │
-│  │   Given a request with amount between $5,001-$25,000         │   │
-│  │   When a Director submits approval                           │   │
-│  │   Then the request is approved                               │   │
-│  │                                          [Edit] [Delete]     │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ☐ AC3: VP approval for amounts > $25,000             ✨ AI   │   │
-│  │   Given a request with amount > $25,000                      │   │
-│  │   When a VP submits approval                                 │   │
-│  │   Then the request is approved                               │   │
-│  │                                          [Edit] [Delete]     │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ☐ AC4: Delegation when approver is unavailable        ✨ AI   │   │
-│  │   Given an approver is marked as unavailable                 │   │
-│  │   When a request requires their approval                     │   │
-│  │   Then the request is routed to their delegate               │   │
-│  │                                          [Edit] [Delete]     │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  [+ Add Criterion]                                                  │
-│                                                                     │
+│  Context Sources                                                    │
 │  ─────────────────────────────────────────────────────────────────  │
-│  ✅ Ready to generate Dev Plan?                                     │
-│  [Generate Dev Plan →]                                              │
-│                                                                     │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ 📝 Client Meeting Notes                              [✕]    │   │
+│  │     Note · Added Feb 28 by Marcus                           │   │
+│  │     Client wants approval workflow with different levels... │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ 📄 approval-flow-diagram.png                         [✕]    │   │
+│  │     Document · 245 KB · Added Feb 28                        │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ 🔗 Mendix Workflow Documentation                     [✕]    │   │
+│  │     URL · docs.mendix.com · Added Feb 28                   │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ 📁 /modules/Approvals/UserRole.entity               [✕]    │   │
+│  │     Project File · Entity definition · Added Feb 28        │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│  [+ Add Context Source ▾]                                          │
+│    → Add Note | Upload Document | Add URL | Link Project File     │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-**Acceptance Criteria States:**
+**Context Source Types:**
 
-| State | Visual | Behavior |
-|-------|--------|----------|
-| **Unchecked** | ☐ Empty checkbox | Click to mark complete |
-| **Checked** | ☑ Filled checkbox, strikethrough | Click to unmark |
-| **AI-generated** | ✨ badge + purple tint | Can be edited/regenerated |
-| **Manual** | No badge | Added by user |
-| **Editing** | Textarea appears | Save/Cancel buttons |
-
-**Actions:**
-
-| Action | Location | Behavior |
-|--------|----------|----------|
-| **Generate** | Top input bar | AI generates from notes/description |
-| **Regenerate** | Dropdown from Generate | Discard current, generate fresh |
-| **Add Criterion** | Bottom of list | Open inline form |
-| **Edit** | Per criterion | Inline edit mode |
-| **Delete** | Per criterion | Confirmation dialog |
+| Type | Icon | Color | Description |
+|------|------|-------|-------------|
+| **Note** | Pencil | Orange (`#FFF7F3` bg) | Freeform text notes |
+| **Document** | File | Blue (`#EFF6FF` bg) | Uploaded files (PDF, images) |
+| **URL** | Link | Green (`#F0FDF4` bg) | External links |
+| **Project File** | Folder | Amber (`#FEF3C7` bg) | Mendix project files |
 
 ---
 
-### Tab 3: Dev Plan
+### Tab 2: Requirements
 
-**Purpose:** AI-generated implementation steps with Mendix-specific guidance
+**Purpose:** AI-generated and manual requirements in Given/When/Then format
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ Dev Plan not generated yet.                                 │   │
-│  │ Acceptance criteria ready? [Generate Dev Plan]              │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  OR (after generation):                                             │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 🔄 [Regenerate Dev Plan]                    Last: Feb 28    │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  IMPLEMENTATION STEPS                                               │
+│  REQUIREMENTS (2)                                                   │
 │  ─────────────────────────────────────────────────────────────────  │
-│                                                                     │
 │  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ▼ Step 1: Create ApprovalLevel Enumeration           ☐ Done│   │
+│  │ ○  Manager approval for amounts ≤ $5,000             [✕]    │   │
 │  │   ──────────────────────────────────────────────────────── │   │
-│  │   Create an enumeration in Mendix with values:             │   │
-│  │   - Manager ($0-$5,000)                                    │   │
-│  │   - Director ($5,001-$25,000)                              │   │
-│  │   - VP (>$25,000)                                          │   │
-│  │                                                             │   │
-│  │   💡 Mendix hint: Domain Model > Add > Enumeration         │   │
-│  │                                          [Edit] [Delete]    │   │
+│  │   Given  a request with amount ≤ $5,000                     │   │
+│  │   When  a Manager submits approval                          │   │
+│  │   Then  the request is approved                             │   │
 │  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
 │  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ▶ Step 2: Extend User Entity with Role/Delegation   ☐ Done  │   │
-│  │   [Collapsed - click to expand]                             │   │
+│  │ ○  Director approval for amounts $5,001-$25,000      [✕]    │   │
+│  │   ──────────────────────────────────────────────────────── │   │
+│  │   Given  a request with amount between $5,001-$25,000       │   │
+│  │   When  a Director submits approval                         │   │
+│  │   Then  the request is approved                             │   │
 │  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ▶ Step 3: Create ApprovalRequest Entity            ☐ Done   │   │
-│  │   [Collapsed - click to expand]                             │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ▶ Step 4: Implement Approval Microflow              ☐ Done   │   │
-│  │   [Collapsed - click to expand]                             │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ▶ Step 5: Add Delegation Logic                     ☐ Done   │   │
-│  │   [Collapsed - click to expand]                             │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ▶ Step 6: Create Approval UI Pages                  ☐ Done   │   │
-│  │   [Collapsed - click to expand]                             │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  [+ Add Step]                                                       │
-│                                                                     │
-│  ─────────────────────────────────────────────────────────────────  │
-│  ✅ Dev Plan complete? Generate test scripts for validation.        │
-│  [Generate Test Scripts →]                                          │
-│                                                                     │
+│  [+ Add Requirement]                                                │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-**Dev Plan Step Structure:**
+**Requirement Card Structure:**
 
 | Element | Description |
 |---------|-------------|
-| **Step # + Title** | Collapsible header with step number |
-| **Description** | Detailed implementation instructions |
-| **Mendix Hint** | Contextual Mendix-specific guidance (💡 icon) |
-| **Done checkbox** | Mark step as completed |
-| **Actions** | Edit, Delete, reorder (drag handle) |
-
-**Dev Plan States:**
-
-| State | Visual | Behavior |
-|-------|--------|----------|
-| **Not Generated** | Empty state + Generate button | Prompt to generate |
-| **Generating** | Skeleton loader | Show progress |
-| **Generated** | Collapsed steps | Expand to view details |
-| **Step Expanded** | Full content visible | Collapse to hide |
-| **Step Done** | Checkbox filled, green tint | Tracked in completeness |
+| **Checkbox** | Mark as verified/complete |
+| **Title** | Requirement summary (inline editable) |
+| **Given** | Precondition |
+| **When** | Action/trigger |
+| **Then** | Expected outcome |
+| **Delete** | Remove button (top-right) |
 
 ---
 
-### Tab 4: Test Scripts
+### Tab 3: Implementation
 
-**Purpose:** AI-generated Playwright test scripts for automation
+**Purpose:** Grouped implementation steps organized by section
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ Test scripts not generated yet.                             │   │
-│  │ Dev plan complete? [Generate Test Scripts]                  │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  OR (after generation):                                             │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 🔄 [Regenerate Tests]                          Last: Feb 28 │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  TEST FILE: approval-workflow.spec.ts                               │
+│  IMPLEMENTATION                                                     │
 │  ─────────────────────────────────────────────────────────────────  │
 │                                                                     │
 │  ┌─────────────────────────────────────────────────────────────┐   │
-│  │  1 │ import { test, expect } from '@playwright/test';       │   │
-│  │  2 │                                                          │   │
-│  │  3 │ test.describe('Approval Workflow', () => {              │   │
-│  │  4 │   test('Manager approval for amounts ≤ $5,000', async  │   │
-│  │  5 │     ({ page }) => {                                      │   │
-│  │  6 │     // Login as manager                                  │   │
-│  │  7 │     await page.goto('/login');                          │   │
-│  │  8 │     await page.fill('[data-testid="email"]',            │   │
-│  │  9 │       'manager@test.com');                              │   │
-│  │ 10 │     await page.fill('[data-testid="password"]',         │   │
-│  │ 11 │       'password');                                       │   │
-│  │ 12 │     await page.click('[data-testid="login-btn"]');      │   │
-│  │ 13 │                                                          │   │
-│  │ 14 │     // Create approval request                          │   │
-│  │ 15 │     await page.goto('/requests/new');                   │   │
-│  │ 16 │     await page.fill('[data-testid="amount"]', '3000');  │   │
-│  │ 17 │     await page.click('[data-testid="submit"]');         │   │
-│  │ 18 │                                                          │   │
-│  │ 19 │     // Verify approval                                  │   │
-│  │ 20 │     await expect(page.locator('.status'))               │   │
-│  │ 21 │       .toHaveText('Approved');                          │   │
-│  │ 22 │   });                                                    │   │
-│  │ ..│ ...                                                       │   │
+│  │ 🟪 Domain Model                                    [✎] [🗑] │   │
+│  │     (3 steps)                                                │   │
+│  │   ┌─────────────────────────────────────────────────────┐   │   │
+│  │   │ ✓ Create ApprovalLevel Enumeration         [☑]      │   │   │
+│  │   │   Manager ($0-$5K), Director ($5K-$25K), VP (>$25K) │   │   │
+│  │   └─────────────────────────────────────────────────────┘   │   │
+│  │   ┌─────────────────────────────────────────────────────┐   │   │
+│  │   │ ✓ Extend User Entity with Role/Delegation  [☑]      │   │   │
+│  │   │   Add approval level and delegate association       │   │   │
+│  │   └─────────────────────────────────────────────────────┘   │   │
+│  │   ┌─────────────────────────────────────────────────────┐   │   │
+│  │   │ ✓ Create ApprovalRequest Entity            [☑]      │   │   │
+│  │   │   Fields: amount, status, requester, approver       │   │   │
+│  │   └─────────────────────────────────────────────────────┘   │   │
+│  │   [+ Add Step]                                              │   │
 │  └─────────────────────────────────────────────────────────────┘   │
 │                                                                     │
 │  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ [📋 Copy to Clipboard]  [⬇️ Download .spec.ts]  [Edit]      │   │
+│  │ 🟠 Microflow Logic                                  [✎] [🗑] │   │
+│  │     (2 steps) · Current step highlighted                    │   │
+│  │   ┌─────────────────────────────────────────────────────┐   │   │
+│  │   │ 1 Implement Approval Microflow              [☐]     │   │   │
+│  │   │   Route requests based on amount thresholds         │   │   │
+│  │   │   ⚡ Current step · border orange                   │   │   │
+│  │   └─────────────────────────────────────────────────────┘   │   │
+│  │   ┌─────────────────────────────────────────────────────┐   │   │
+│  │   │ 2 Add Delegation Logic                      [☐]     │   │   │
+│  │   │   Handle unavailable approvers with delegates       │   │   │
+│  │   └─────────────────────────────────────────────────────┘   │   │
+│  │   [+ Add Step]                                              │   │
 │  └─────────────────────────────────────────────────────────────┘   │
 │                                                                     │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ 🟢 Page Logic                                      [✎] [🗑] │   │
+│  │     (1 step)                                                │   │
+│  │   ┌─────────────────────────────────────────────────────┐   │   │
+│  │   │ 1 Create Approval UI Pages                  [☐]     │   │   │
+│  │   │   Request form, approval list, detail view          │   │   │
+│  │   └─────────────────────────────────────────────────────┘   │   │
+│  │   [+ Add Step]                                              │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ 🔴 Security Check                                  [✎] [🗑] │   │
+│  │     (0 steps) · Empty state                                 │   │
+│  │   No steps yet. Add steps to define security requirements.  │   │
+│  │   [+ Add Step]                                              │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+│  [+ Add Section]                                                    │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-**Test Script Features:**
+**Section Types:**
 
-| Feature | Description |
-|---------|-------------|
-| **Syntax highlighting** | TypeScript/JavaScript highlighting |
-| **Line numbers** | For reference and debugging |
-| **Copy to clipboard** | One-click copy entire script |
-| **Download** | Download as .spec.ts file |
-| **Edit** | Inline edit mode for adjustments |
-| **Regenerate** | AI regenerates from dev plan |
+| Section | Icon | Color | Purpose |
+|---------|------|-------|---------|
+| **Domain Model** | Grid | Purple (`#8B5CF6`) | Entities, enumerations, associations |
+| **Microflow Logic** | Lightning | Amber (`#F59E0B`) | Business logic, workflows |
+| **Page Logic** | Columns | Green (`#10B981`) | UI pages, widgets |
+| **Security Check** | Shield | Red (`#EF4444`) | Access rules, permissions |
+
+**Step States:**
+
+| State | Visual | Description |
+|-------|--------|-------------|
+| **Complete** | ✓ Green check, filled checkbox | Step done |
+| **Current** | Orange border, number badge | Active step |
+| **Pending** | Blue circle, empty checkbox | Not started |
 
 ---
 
-### Tab 5: Activity
+### Tab 4: Quality Assurance
 
-**Purpose:** Comments, review feedback, and change history
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 💬 Comments  │ 📜 History                                   │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  COMMENTS (3)                                                       │
-│  ─────────────────────────────────────────────────────────────────  │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ [David avatar] David                         Feb 28, 3:45 PM│   │
-│  │ ─────────────────────────────────────────────────────────── │   │
-│  │ @Aisha looks good overall. One question: what happens if    │   │
-│  │ someone changes the amount after partial approval? E.g.,    │   │
-│  │ manager approves $3K, then requester updates to $10K?       │   │
-│  │                                                             │   │
-│  │ [👍 2] [Reply]                                              │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ [Aisha avatar] Aisha                         Feb 28, 4:12 PM│   │
-│  │ ─────────────────────────────────────────────────────────── │   │
-│  │ @David good catch! I'll add a criterion for amount change   │   │
-│  │ scenarios. Should reset the approval chain when amount      │   │
-│  │ increases beyond current approver's threshold.              │   │
-│  │                                                             │   │
-│  │ [👍 1] [Reply]                                              │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ [Marcus avatar] Marcus                       Feb 28, 4:30 PM│   │
-│  │ ─────────────────────────────────────────────────────────── │   │
-│  │ Yes that's what the client mentioned too. Good thinking!    │   │
-│  │                                                             │   │
-│  │ [👍] [Reply]                                                │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ─────────────────────────────────────────────────────────────────  │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 💬 Add a comment...                                         │   │
-│  │                                                             │   │
-│  │ [@ mention] [Attach]                        [Post Comment]  │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-**Activity Sub-tabs:**
-
-| Tab | Content |
-|-----|---------|
-| **Comments** | Discussion thread with @mentions, replies, reactions |
-| **History** | Chronological log of changes (status, edits, AI generations) |
-
-**History Entry Example:**
-```
-┌─────────────────────────────────────────────────────────────┐
-│ 📜 HISTORY                                                  │
-│ ─────────────────────────────────────────────────────────── │
-│                                                             │
-│ Feb 28, 4:15 PM • Aisha added AC5: Amount change handling  │
-│ Feb 28, 2:34 PM • AI generated Acceptance Criteria (4)     │
-│ Feb 28, 2:30 PM • AI generated Dev Plan (6 steps)          │
-│ Feb 28, 2:15 PM • Marcus created story                     │
-│ Feb 28, 2:15 PM • Marcus attached 2 files                  │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-### Gap Warning Panel (Sidebar)
-
-**Purpose:** Persistent visibility of story quality issues
-
-**Location:** Fixed right sidebar on Story Detail page
-
-```
-┌─────────────────────┐
-│ ⚠️ GAPS (2)         │
-│ ─────────────────── │
-│                     │
-│ ⚠️ Missing:         │
-│ Approver            │
-│ unavailable         │
-│ scenario            │
-│                     │
-│ [Dismiss] [Address] │
-│                     │
-│ ⚠️ Missing:         │
-│ Delegation rules    │
-│ for vacation/leave  │
-│                     │
-│ [Dismiss] [Address] │
-│                     │
-│ ─────────────────── │
-│ [Dismiss All]       │
-│                     │
-└─────────────────────┘
-```
-
-**Gap Panel Behavior:**
-
-| State | Visual | Behavior |
-|-------|--------|----------|
-| **No gaps** | Green checkmark, "No gaps detected" | Collapsed |
-| **Has gaps** | Warning icon + count | Expanded by default |
-| **Dismissed gap** | Removed from list | Story completeness unaffected |
-| **Addressed gap** | Marked as resolved | Increases completeness |
-
-**Gap Severity Levels:**
-
-| Severity | Icon | Color | Behavior |
-|----------|------|-------|----------|
-| **Critical** | 🚫 | Red | Blocks "Ready" status |
-| **Warning** | ⚠️ | Amber | Shown but doesn't block |
-| **Suggestion** | 💡 | Blue | Optional improvement |
-
----
-
-### AI Generation Flows
-
-#### Flow 1: Acceptance Criteria Generation
+**Purpose:** UAT test steps + Automated test scripts
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ✨ [Paste notes or describe what you need...] [Generate]    │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│          │                                                          │
-│          ▼ User clicks Generate                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │   │
-│  │ ░░░░░░░░░░░░░░░░░ Generating acceptance criteria... ░░░░░░░ │   │
-│  │ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│          │                                                          │
-│          ▼ AI returns result (2-5 seconds)                          │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ☐ AC1: Manager approval for amounts ≤ $5,000         ✨ AI   │   │
-│  │   Given a request with amount ≤ $5,000...                   │   │
-│  │                                                             │   │
-│  │ ☐ AC2: Director approval for amounts $5,001-$25,000  ✨ AI   │   │
-│  │   Given a request with amount between...                    │   │
-│  │                                                             │   │
-│  │ ☐ AC3: VP approval for amounts > $25,000             ✨ AI   │   │
-│  │   ...                                                       │   │
-│  │                                                             │   │
-│  │ ☐ AC4: Delegation when approver unavailable          ✨ AI   │   │
-│  │   ...                                                       │   │
-│  │                                                             │   │
-│  │ [Accept All] [Edit] [Regenerate]                            │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│          │                                                          │
-│          ▼ If gaps detected                                         │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ⚠️ 2 potential gaps detected:                               │   │
-│  │                                                             │   │
-│  │ • Missing: Approver unavailable scenario details            │   │
-│  │   [Dismiss] [Add to criteria]                               │   │
-│  │                                                             │   │
-│  │ • Missing: Delegation rules for extended leave              │   │
-│  │   [Dismiss] [Add to criteria]                               │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-#### Flow 2: Dev Plan Generation
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  ACCEPTANCE CRITERIA TAB (completed)                                │
+│  UAT Test Steps                                                     │
 │  ─────────────────────────────────────────────────────────────────  │
-│  ✅ 4 acceptance criteria defined                                   │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ 1 Login as Manager user                             [☐]    │   │
+│  │   Use credentials: manager@test.com / Test123!              │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ 2 Create new approval request with amount $3,000   [☐]    │   │
+│  │   Navigate to Requests → New Request → Fill form            │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ 3 Submit and verify status changes to "Pending"    [☐]    │   │
+│  │   Check request details page for status                     │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│  [+ Add Test Step]                                                  │
 │                                                                     │
 │  ─────────────────────────────────────────────────────────────────  │
-│  ✅ Ready to generate Dev Plan?                                     │
-│  [Generate Dev Plan →]                                              │
-└─────────────────────────────────────────────────────────────────────┘
-          │
-          ▼ User clicks, navigates to Dev Plan tab
-┌─────────────────────────────────────────────────────────────────────┐
-│  DEV PLAN TAB                                                       │
-│  ─────────────────────────────────────────────────────────────────  │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │   │
-│  │ ░░░░░░░░░░░░░░░░░ Analyzing acceptance criteria... ░░░░░░░░ │   │
-│  │ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│          │                                                          │
-│          ▼ Result appears                                           │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ▼ Step 1: Create ApprovalLevel Enumeration                  │   │
-│  │   Create enumeration with values: Manager, Director, VP     │   │
-│  │   💡 Mendix hint: Domain Model > Add > Enumeration          │   │
-│  │                                                             │   │
-│  │ ▶ Step 2: Extend User Entity...                             │   │
-│  │ ▶ Step 3: Create ApprovalRequest Entity...                  │   │
-│  │ ▶ Step 4: Implement Approval Microflow...                   │   │
-│  │ ▶ Step 5: Add Delegation Logic...                           │   │
-│  │ ▶ Step 6: Create Approval UI Pages...                       │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-#### Flow 3: Test Script Generation
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  DEV PLAN TAB (completed)                                           │
-│  ─────────────────────────────────────────────────────────────────  │
-│  ✅ 6 implementation steps defined                                  │
 │                                                                     │
+│  Automated Tests                               2 passing            │
 │  ─────────────────────────────────────────────────────────────────  │
-│  ✅ Dev Plan complete? Generate test scripts for validation.        │
-│  [Generate Test Scripts →]                                          │
-└─────────────────────────────────────────────────────────────────────┘
-          │
-          ▼ User clicks, navigates to Test Scripts tab
-┌─────────────────────────────────────────────────────────────────────┐
-│  TEST SCRIPTS TAB                                                   │
-│  ─────────────────────────────────────────────────────────────────  │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │   │
-│  │ ░░░░░░░░░░░░░░░░░ Generating Playwright tests... ░░░░░░░░░░ │   │
-│  │ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│          │                                                          │
-│          ▼ Result appears with syntax highlighting                  │
+│  approval-workflow.spec.ts                                          │
 │  ┌─────────────────────────────────────────────────────────────┐   │
 │  │  1 │ import { test, expect } from '@playwright/test';       │   │
 │  │  2 │ test.describe('Approval Workflow', () => {              │   │
 │  │  3 │   test('Manager approval...', async ({ page }) => {     │   │
-│  │  ...                                                        │   │
+│  │ ...                                                         │   │
 │  └─────────────────────────────────────────────────────────────┘   │
-│  [📋 Copy] [⬇️ Download] [Edit] [Regenerate]                       │
+│  [📋 Copy] [⬇️ Download .spec.ts] [Edit]                           │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### Review Mode (For Seniors)
+### Tab 5: Deployment
 
-**Purpose:** Streamlined view for David to review and approve stories
-
-**Entry:** Stories in "Review" status show "Review Mode" banner
+**Purpose:** Release information, tasks, and environment tracking
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  🔍 REVIEW MODE                              [Exit Review Mode]     │
-│  ═══════════════════════════════════════════════════════════════   │
-│  Reviewing story #47 submitted by Aisha                             │
+│  Release Information                                                │
+│  ─────────────────────────────────────────────────────────────────  │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ Target Release Date    │  Version                           │   │
+│  │ [Mar 20, 2026    ]     │  [1.2.0        ]                   │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+│  Release Tasks                                                      │
+│  ─────────────────────────────────────────────────────────────────  │
+│  ☑ Create backup of production database                            │
+│  ☑ Run regression tests on test environment                        │
+│  ☐ Update release notes documentation                              │
+│  ☐ Notify stakeholders of deployment                               │
+│  ☐ Monitor post-deployment metrics                                 │
+│  [+ Add Task]                                                       │
+│                                                                     │
+│  Environment Deployment                                             │
+│  ─────────────────────────────────────────────────────────────────  │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ 🧪 Test Environment                              [☑]        │   │
+│  │    Last deployed: Mar 10, 2026 at 2:30 PM                   │   │
+│  │    Status: ✓ Deployed                                       │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ 🛡️ Production Environment                        [☐]        │   │
+│  │    Not yet deployed                                         │   │
+│  │    Status: ○ Pending                                        │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│  [+ Add Environment]                                                │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-**Review Mode Layout:**
+---
+
+### Tab 6: Activity
+
+**Purpose:** Comments and change history
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  🔍 REVIEW MODE                              [Exit Review Mode]     │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│  #47 Approval Workflow by Role                              🔴 HIGH │
-│  Submitted by: Aisha • Feb 28, 4:45 PM • In Review                 │
-│                                                                     │
+│  [💬 Comments (3)]  [📜 History]                                    │
 │  ─────────────────────────────────────────────────────────────────  │
-│                                                                     │
-│  QUICK SUMMARY (AI-generated)                                       │
-│  ─────────────────────────────────────────────────────────────────  │
-│  This story implements multi-level approval based on amount:       │
-│  • Manager: up to $5K                                              │
-│  • Director: $5K-$25K                                              │
-│  • VP: above $25K                                                  │
-│  Includes delegation for unavailable approvers.                     │
-│                                                                     │
-│  COMPLETENESS: 85% ████████░░                                       │
-│  ⚠️ 2 gaps flagged (see sidebar)                                   │
-│                                                                     │
-│  ─────────────────────────────────────────────────────────────────  │
-│                                                                     │
-│  ACCEPTANCE CRITERIA (4)                                    [Expand]│
-│  ☐ AC1: Manager approval for amounts ≤ $5,000                      │
-│  ☐ AC2: Director approval for amounts $5,001-$25,000               │
-│  ☐ AC3: VP approval for amounts > $25,000                          │
-│  ☐ AC4: Delegation when approver unavailable                       │
-│                                                                     │
-│  ─────────────────────────────────────────────────────────────────  │
-│                                                                     │
-│  DEV PLAN (6 steps) ───────────────────────────────── 3/6 complete  │
-│  ☑ Step 1: Create ApprovalLevel Enumeration                       │
-│  ☑ Step 2: Extend User Entity with Role/Delegation                │
-│  ☑ Step 3: Create ApprovalRequest Entity                          │
-│  ☐ Step 4: Implement Approval Microflow                           │
-│  ☐ Step 5: Add Delegation Logic                                   │
-│  ☐ Step 6: Create Approval UI Pages                               │
-│                                                                     │
-│  ─────────────────────────────────────────────────────────────────  │
-│                                                                     │
-│  💬 ADD FEEDBACK                                                    │
 │  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ [Type feedback or @mention team members...]                 │   │
-│  │                                                             │   │
-│  │ [Attach]                                    [Post Feedback] │   │
+│  │ [D] David                                 Feb 28, 3:45 PM   │   │
+│  │ @Aisha looks good overall. One question: what happens if    │   │
+│  │ someone changes the amount after partial approval?          │   │
+│  │ [👍 2] [Reply]                                              │   │
 │  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ─────────────────────────────────────────────────────────────────  │
-│                                                                     │
 │  ┌─────────────────────────────────────────────────────────────┐   │
-│  │                                                             │   │
-│  │  [Request Changes]              [✓ Approve Story]           │   │
-│  │                                                             │   │
+│  │     [A] Aisha                             Feb 28, 4:12 PM   │   │
+│  │     @David good catch! I'll add a criterion for amount...   │   │
+│  │     [👍 1] [Reply]                                          │   │
 │  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ 💬 Add a comment... Use @ to mention team members           │   │
+│  │ [@ mention] [Attach]                          [Post Comment]│   │
+│  └─────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-**Review Mode Features:**
-
-| Feature | Description |
-|---------|-------------|
-| **AI Summary** | Auto-generated 2-3 sentence summary |
-| **Completeness Score** | Visual indicator of story readiness |
-| **Gap Highlight** | Prominent display of quality issues |
-| **Collapsed Tabs** | Acceptance Criteria and Dev Plan in condensed view |
-| **Quick Feedback** | Comment input always visible |
-| **Decision Actions** | Clear Approve / Request Changes buttons |
-
-**Review Actions:**
-
-| Action | Result |
-|--------|--------|
-| **Approve Story** | Status → Done, notification to assignee |
-| **Request Changes** | Status → In Progress, comment required, notification to assignee |
-| **Post Feedback** | Adds comment without changing status |
-
 ---
 
-### Story Status Workflow
+### AI Chat Sidebar
 
-```
-┌──────────┐    Story created     ┌──────────┐    Criteria done    ┌──────────┐
-│ Backlog  │ ──────────────────▶ │ In       │ ──────────────────▶ │ Review   │
-│          │                      │ Progress │                      │          │
-└──────────┘                      └──────────┘                      └──────────┘
-                                       ▲                                  │
-                                       │                                  │
-                                       │ Changes requested                │ Approved
-                                       │                                  │
-                                       │                                  ▼
-                                                                  ┌──────────┐
-                                                                  │   Done   │
-                                                                  │          │
-                                                                  └──────────┘
-```
+**Purpose:** Tab-aware AI assistance for the current story
 
-**Status Definitions:**
+**Layout:** Fixed right sidebar, 320px wide (expands to 480px)
 
-| Status | Meaning | Requirements |
-|--------|---------|--------------|
-| **Backlog** | Created, not started | Story exists |
-| **In Progress** | Being worked on | Assigned to someone |
-| **Review** | Ready for senior review | Acceptance criteria complete, no critical gaps |
-| **Done** | Approved and complete | Senior approved |
+**Tab-Aware Content:**
 
----
+| Tab | AI Shows |
+|-----|----------|
+| **Context** | Story summary, context search |
+| **Requirements** | Gap detection, "+ Add criterion" for gaps |
+| **Implementation** | Progress summary, Mendix guidance, "Regenerate" action |
+| **QA** | Test coverage summary, missing test scenarios |
+| **Deployment** | Deployment readiness, pre-deployment checklist |
+| **Activity** | Discussion summary, action items detected |
 
-### Interaction Patterns Summary
+**Chat Message Types:**
 
-**Quick Actions (Available on all tabs):**
+| Type | Style |
+|------|-------|
+| **AI message** | Orange avatar, left-aligned |
+| **User message** | Gray background, right-aligned |
+| **Gap warning** | Amber background, yellow border |
+| **Success** | Green text, checkmark |
+| **Code block** | Dark background, syntax highlighting |
 
-| Action | Shortcut | Location |
-|--------|----------|----------|
-| Save changes | `Ctrl+S` | Auto-save indicator in header |
-| Change status | - | Header dropdown |
-| Reassign | - | Header dropdown |
-| Add comment | `C` | Activity tab or quick feedback |
-| Generate next | - | Tab-specific button |
-| Copy to clipboard | `Ctrl+C` | When content selected |
+**Quick Actions (per tab):**
 
-**Auto-Save Behavior:**
-- All edits auto-save after 2-second debounce
-- Visual indicator: "Saving..." → "Saved" in header
-- Manual save button for immediate save
-
-**Navigation:**
-- Click story card → Opens in same tab
-- `Cmd+Click` story card → Opens in new tab
-- Back button → Returns to previous context
-- Breadcrumbs → Navigate to project or home
+| Tab | Quick Action |
+|-----|--------------|
+| Context | Search Context |
+| Requirements | Analyze for Gaps |
+| Implementation | Regenerate Implementation Plan |
+| QA | Generate More Tests |
+| Deployment | Start Deployment |
+| Activity | Create Task from Action Item |
 
 ## Responsive Design & Accessibility
 

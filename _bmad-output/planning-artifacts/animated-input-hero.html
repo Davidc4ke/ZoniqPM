@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoniq - Animated Input Hero</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #FF6B35;
+            --orange-light: #FFF7F3;
+            --orange-glow: rgba(255, 107, 53, 0.4);
+            --dark: #2D1810;
+            --off-white: #FAFAF9;
+            --warm-gray: #E8E4E0;
+            --medium-gray: #9A948D;
+        }
+        
+        * { font-family: 'Manrope', sans-serif; box-sizing: border-box; }
+        body { 
+            background: linear-gradient(135deg, #E8E4E0 0%, #D9D5D1 100%); 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .input-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .input-hero {
+            position: relative;
+            background: linear-gradient(135deg, #FFF7F3 0%, white 100%);
+            border: 2px solid var(--orange);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 
+                0 4px 24px rgba(255, 107, 53, 0.12),
+                0 0 0 0 rgba(255, 107, 53, 0);
+            transform: scale(0.95) translateY(20px);
+            opacity: 0;
+            animation: heroEntrance 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+        }
+
+        @keyframes heroEntrance {
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .input-hero::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, var(--orange), #FF8F6B, var(--orange));
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .input-hero::after {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            border-radius: 40px;
+            background: radial-gradient(ellipse at center, rgba(255, 107, 53, 0.15) 0%, transparent 70%);
+            z-index: -2;
+            opacity: 0;
+            transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { transform: scale(1); opacity: 0; }
+            50% { transform: scale(1.02); opacity: 0.5; }
+        }
+
+        .input-hero:focus-within::before {
+            opacity: 1;
+            animation: borderRotate 3s linear infinite;
+        }
+
+        .input-hero:focus-within::after {
+            opacity: 1;
+        }
+
+        @keyframes borderRotate {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .input-hero-inner {
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(135deg, #FFF7F3 0%, white 100%);
+            border-radius: 18px;
+        }
+
+        .icon-container {
+            position: relative;
+        }
+
+        .hero-icon {
+            width: 28px;
+            height: 28px;
+            color: var(--orange);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .input-hero:focus-within .hero-icon {
+            transform: rotate(15deg) scale(1.1);
+            animation: iconBounce 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: rotate(15deg) scale(1.1); }
+            50% { transform: rotate(15deg) scale(1.2); }
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            pointer-events: none;
+        }
+
+        .sparkle-dot {
+            width: 100%;
+            height: 100%;
+            background: var(--orange);
+            border-radius: 50%;
+            animation: sparkle 1.5s ease-out infinite;
+        }
+
+        @keyframes sparkle {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        .textarea-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .hero-textarea {
+            width: 100%;
+            outline: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--dark);
+            resize: none;
+            line-height: 1.6;
+            min-height: 28px;
+            max-height: 200px;
+        }
+
+        .hero-textarea::placeholder {
+            color: var(--medium-gray);
+        }
+
+        .hero-textarea:focus {
+            outline: none;
+        }
+
+        .cursor-blink {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: var(--orange);
+            margin-left: 2px;
+            animation: blink 1s step-end infinite;
+            vertical-align: text-bottom;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .input-hero:focus-within .cursor-blink {
+            opacity: 1;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .ask-button {
+            position: relative;
+            background: var(--orange);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9375rem;
+            overflow: hidden;
+            transform: scale(1);
+            opacity: 0;
+            animation: buttonEntrance 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
+            transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes buttonEntrance {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        .ask-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.4);
+        }
+
+        .ask-button:active {
+            transform: scale(0.98);
+        }
+
+        .ask-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .ask-button:hover::before {
+            opacity: 1;
+        }
+
+        .button-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .button-text {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .button-icon {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .ask-button:hover .button-icon {
+            transform: translateX(3px);
+        }
+
+        .footer-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--warm-gray);
+            opacity: 0;
+            transform: translateY(10px);
+            animation: footerEntrance 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards;
+        }
+
+        @keyframes footerEntrance {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .suggestions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .suggestion-chip {
+            font-size: 0.75rem;
+            color: var(--medium-gray);
+            padding: 0.375rem 0.75rem;
+            background: rgba(255, 107, 53, 0.05);
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid transparent;
+        }
+
+        .suggestion-chip:hover {
+            background: rgba(255, 107, 53, 0.1);
+            color: var(--orange);
+            border-color: rgba(255, 107, 53, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .char-counter {
+            font-size: 0.75rem;
+            color: var(--medium-gray);
+            font-variant-numeric: tabular-nums;
+            transition: color 0.2s;
+        }
+
+        .char-counter.active {
+            color: var(--orange);
+        }
+
+        .floating-orb {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--orange), #FF8F6B);
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: -3;
+        }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            right: -100px;
+            animation: floatOrb1 8s ease-in-out infinite;
+        }
+
+        .orb-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -50px;
+            left: -50px;
+            animation: floatOrb2 6s ease-in-out infinite;
+        }
+
+        @keyframes floatOrb1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-20px, 30px) scale(1.1); }
+            66% { transform: translate(20px, -20px) scale(0.9); }
+        }
+
+        @keyframes floatOrb2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--orange);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .success-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .success-overlay.active {
+            opacity: 1;
+            animation: successFlash 0.5s ease-out;
+        }
+
+        @keyframes successFlash {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .success-check {
+            width: 80px;
+            height: 80px;
+            color: #10B981;
+            transform: scale(0);
+        }
+
+        .success-overlay.active .success-check {
+            animation: checkPop 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes checkPop {
+            0% { transform: scale(0) rotate(-45deg); }
+            50% { transform: scale(1.2) rotate(0deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .loading-state {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .loading-state.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .button-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .button-content.hidden {
+            display: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            height: 20px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .typing-indicator.active {
+            opacity: 1;
+        }
+
+        .typing-dot {
+            width: 4px;
+            height: 4px;
+            background: var(--orange);
+            border-radius: 50%;
+            animation: typingBounce 1.4s ease-in-out infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+
+        .magnetic-effect {
+            transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+    </style>
+</head>
+<body>
+    <div class="input-container">
+        <div class="floating-orb orb-1"></div>
+        <div class="floating-orb orb-2"></div>
+        
+        <div class="input-hero" id="inputHero">
+            <div class="input-hero-inner">
+                <div class="flex items-start gap-3">
+                    <div class="icon-container">
+                        <svg class="hero-icon magnetic-effect" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9.813 15.904 9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12v4.5c0 .945-.446 1.788-1.146 2.336"/>
+                            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10c1.657 0 3.24-.402 4.636-1.117"/>
+                            <circle cx="21" cy="5" r="2"/>
+                        </svg>
+                        <div class="sparkle" style="top: -5px; left: -5px;"><div class="sparkle-dot" style="animation-delay: 0s;"></div></div>
+                        <div class="sparkle" style="top: -5px; right: -5px;"><div class="sparkle-dot" style="animation-delay: 0.5s;"></div></div>
+                        <div class="sparkle" style="bottom: -5px; left: 50%;"><div class="sparkle-dot" style="animation-delay: 1s;"></div></div>
+                    </div>
+                    
+                    <div class="textarea-wrapper">
+                        <textarea 
+                            id="heroTextarea"
+                            class="hero-textarea"
+                            rows="1"
+                            placeholder="Paste notes, or try 'What do I need to review?'..."
+                        ></textarea>
+                    </div>
+                    
+                    <button class="ask-button magnetic-effect" id="askButton">
+                        <span class="button-content" id="buttonContent">
+                            <span>Ask</span>
+                            <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </span>
+                        <span class="loading-state" id="loadingState">
+                            <span class="loading-spinner"></span>
+                            <span>Thinking...</span>
+                        </span>
+                    </button>
+                </div>
+                
+                <div class="footer-section">
+                    <div class="suggestions">
+                        <span class="suggestion-chip" data-text="Open story 47">Open story 47</span>
+                        <span class="suggestion-chip" data-text="What's blocked?">What's blocked?</span>
+                        <span class="suggestion-chip" data-text="Assign #52 to Aisha">Assign #52 to Aisha</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="typing-indicator" id="typingIndicator">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                        <span class="char-counter" id="charCounter">0 chars</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="success-overlay" id="successOverlay">
+                <svg class="success-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 6L9 17l-5-5"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const textarea = document.getElementById('heroTextarea');
+        const charCounter = document.getElementById('charCounter');
+        const askButton = document.getElementById('askButton');
+        const buttonContent = document.getElementById('buttonContent');
+        const loadingState = document.getElementById('loadingState');
+        const successOverlay = document.getElementById('successOverlay');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const inputHero = document.getElementById('inputHero');
+        const suggestions = document.querySelectorAll('.suggestion-chip');
+
+        let typingTimeout;
+        let particleInterval;
+
+        function autoResize() {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+        }
+
+        function updateCharCounter() {
+            const count = textarea.value.length;
+            charCounter.textContent = `${count} chars`;
+            charCounter.classList.toggle('active', count > 0);
+        }
+
+        function showTypingIndicator() {
+            typingIndicator.classList.add('active');
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                typingIndicator.classList.remove('active');
+            }, 1000);
+        }
+
+        textarea.addEventListener('input', () => {
+            autoResize();
+            updateCharCounter();
+            showTypingIndicator();
+        });
+
+        suggestions.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const text = chip.dataset.text;
+                textarea.value = text;
+                autoResize();
+                updateCharCounter();
+                textarea.focus();
+            });
+        });
+
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const ripple = document.createElement('span');
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = event.clientX - rect.left - size / 2 + 'px';
+            ripple.style.top = event.clientY - rect.top - size / 2 + 'px';
+            ripple.className = 'button-ripple';
+            
+            button.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+        }
+
+        function createParticle(x, y) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = 50 + Math.random() * 50;
+            const vx = Math.cos(angle) * velocity;
+            const vy = Math.sin(angle) * velocity;
+            
+            inputHero.appendChild(particle);
+            
+            let opacity = 1;
+            let posX = 0;
+            let posY = 0;
+            
+            function animate() {
+                posX += vx * 0.016;
+                posY += vy * 0.016;
+                opacity -= 0.02;
+                
+                particle.style.transform = `translate(${posX}px, ${posY}px)`;
+                particle.style.opacity = opacity;
+                
+                if (opacity > 0) {
+                    requestAnimationFrame(animate);
+                } else {
+                    particle.remove();
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+
+        function emitParticles() {
+            const rect = inputHero.getBoundingClientRect();
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            for (let i = 0; i < 12; i++) {
+                setTimeout(() => {
+                    createParticle(
+                        centerX + (Math.random() - 0.5) * 100,
+                        centerY + (Math.random() - 0.5) * 50
+                    );
+                }, i * 30);
+            }
+        }
+
+        askButton.addEventListener('click', async (e) => {
+            createRipple(e);
+            
+            if (textarea.value.trim()) {
+                buttonContent.classList.add('hidden');
+                loadingState.classList.add('active');
+                askButton.disabled = true;
+                
+                emitParticles();
+                
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                loadingState.classList.remove('active');
+                buttonContent.classList.remove('hidden');
+                askButton.disabled = false;
+                
+                successOverlay.classList.add('active');
+                
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        const rect = inputHero.getBoundingClientRect();
+                        createParticle(
+                            Math.random() * rect.width,
+                            Math.random() * rect.height
+                        );
+                    }, i * 50);
+                }
+                
+                setTimeout(() => {
+                    successOverlay.classList.remove('active');
+                    textarea.value = '';
+                    updateCharCounter();
+                    autoResize();
+                }, 1200);
+            }
+        });
+
+        const icon = document.querySelector('.hero-icon');
+        const button = document.querySelector('.ask-button');
+
+        document.addEventListener('mousemove', (e) => {
+            const iconRect = icon.getBoundingClientRect();
+            const iconCenterX = iconRect.left + iconRect.width / 2;
+            const iconCenterY = iconRect.top + iconRect.height / 2;
+            
+            const deltaX = e.clientX - iconCenterX;
+            const deltaY = e.clientY - iconCenterY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            if (distance < 150) {
+                const pull = (150 - distance) / 150;
+                const moveX = deltaX * pull * 0.15;
+                const moveY = deltaY * pull * 0.15;
+                icon.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            }
+
+            const btnRect = button.getBoundingClientRect();
+            const btnCenterX = btnRect.left + btnRect.width / 2;
+            const btnCenterY = btnRect.top + btnRect.height / 2;
+            
+            const btnDeltaX = e.clientX - btnCenterX;
+            const btnDeltaY = e.clientY - btnCenterY;
+            const btnDistance = Math.sqrt(btnDeltaX * btnDeltaX + btnDeltaY * btnDeltaY);
+            
+            if (btnDistance < 100) {
+                const pull = (100 - btnDistance) / 100;
+                const moveX = btnDeltaX * pull * 0.2;
+                const moveY = btnDeltaY * pull * 0.2;
+                button.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.05)`;
+            }
+        });
+
+        textarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                askButton.click();
+            }
+        });
+
+        textarea.focus();
+    </script>
+</body>
+</html>

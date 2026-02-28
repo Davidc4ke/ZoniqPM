@@ -5,261 +5,342 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zoniq - Story Details Page (All Tabs)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://api.fontshare.com/v2/css?f[]=clash-grotesk@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="shared-styles.css">
     <style>
-        :root {
-            --orange: #FF6B35;
-            --orange-light: #FFF7F3;
-            --dark: #2D1810;
-            --off-white: #FAFAF9;
-            --warm-gray: #E8E4E0;
-            --medium-gray: #9A948D;
-            --success: #10B981;
-            --warning: #F59E0B;
-            --error: #EF4444;
+        .chat-sidebar {
+            width: 320px;
+            transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        
-        * { font-family: 'General Sans', sans-serif; }
-        h1, h2, h3, h4, h5, h6, .font-heading { font-family: 'Clash Grotesk', sans-serif; }
-        body { background: #E8E4E0; color: var(--dark); }
-        
-        .app-container {
-            background: var(--off-white);
-            max-width: 1440px;
-            margin: 0 auto;
-            min-height: 100vh;
+        .chat-sidebar.expanded {
+            width: 480px;
         }
-        
-        .card {
-            background: white;
-            border-radius: 12px;
-            border: 1px solid var(--warm-gray);
-        }
-        
-        .btn-primary {
-            background: var(--orange);
-            color: white;
-            font-weight: 600;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-        .btn-primary:hover { background: #E55A2B; }
-        
-        .btn-secondary {
-            background: transparent;
-            color: var(--dark);
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            border: 1px solid var(--warm-gray);
-            transition: all 0.2s ease;
-        }
-        .btn-secondary:hover { border-color: var(--orange); color: var(--orange); }
-        
-        .btn-ghost {
-            padding: 0.375rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: var(--medium-gray);
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        .btn-ghost:hover { background: var(--warm-gray); color: var(--dark); }
-        
-        .tab-active {
-            border-bottom: 2px solid var(--orange);
-            color: var(--orange);
-        }
-        
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .status-high { background: #FEE2E2; color: #DC2626; }
-        .status-medium { background: #FEF3C7; color: #D97706; }
-        .status-low { background: #E5E7EB; color: #6B7280; }
-        .status-progress { background: #FEF3C7; color: #D97706; }
-        .status-review { background: #DBEAFE; color: #2563EB; }
-        
-        .progress-bar {
-            height: 8px;
-            background: var(--warm-gray);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-        }
-        .progress-red { background: #EF4444; }
-        .progress-amber { background: #F59E0B; }
-        .progress-green { background: #10B981; }
-        
-        .ai-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            padding: 0.125rem 0.5rem;
-            background: #F3E8FF;
-            color: #7C3AED;
-            border-radius: 4px;
-            font-size: 0.6875rem;
-            font-weight: 600;
-        }
-        
-        .criterion-item, .step-item {
-            background: var(--off-white);
-            border-radius: 10px;
-            border: 1px solid var(--warm-gray);
-            transition: all 0.2s ease;
-        }
-        .criterion-item:hover, .step-item:hover { border-color: var(--orange); }
-        
-        .code-block {
-            background: #1F2937;
-            color: #E5E7EB;
-            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-            font-size: 0.8125rem;
-            line-height: 1.6;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .code-line-number {
-            color: #6B7280;
-            user-select: none;
-            text-align: right;
-            padding-right: 1rem;
-            min-width: 40px;
-        }
-        
-        .gap-panel {
-            background: #FFFBEB;
-            border: 1px solid #FCD34D;
-            border-radius: 10px;
-        }
-        
-        .gap-item {
-            padding: 1rem;
-            border-bottom: 1px solid #FDE68A;
-        }
-        .gap-item:last-child { border-bottom: none; }
-        
-        .comment-item {
-            background: var(--off-white);
-            border-radius: 10px;
-            border: 1px solid var(--warm-gray);
-        }
-        
-        .avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        
-        .avatar-sm {
-            width: 24px;
-            height: 24px;
-            font-size: 0.625rem;
-        }
-        
-        .review-banner {
-            background: linear-gradient(135deg, #DBEAFE 0%, #EFF6FF 100%);
-            border-bottom: 2px solid #3B82F6;
-        }
-        
-        .mendix-hint {
-            background: #EFF6FF;
-            border: 1px solid #BFDBFE;
-            border-radius: 8px;
-        }
-        
-        .tab-section {
-            display: none;
-        }
-        .tab-section.active {
-            display: block;
+        .chat-textarea {
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
+    <div class="app-container h-screen flex flex-col">
         
-        <!-- PAGE HEADER WITH BREADCRUMBS -->
-        <header class="bg-white border-b border-[#E8E4E0] px-8 py-3">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <button class="btn-ghost flex items-center gap-1.5 text-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        <!-- UNIFIED TOPBAR -->
+        <header class="topbar flex-shrink-0">
+            <div class="flex items-center justify-between px-6 py-3 max-w-[1280px] mx-auto">
+                <!-- Left: Logo + Navigation -->
+                <div class="flex items-center gap-6">
+                    <!-- Logo -->
+                    <div class="font-bold text-lg flex items-center gap-2.5 flex-shrink-0">
+                        <svg class="logo-icon" viewBox="0 0 707.49 707.49" xmlns="http://www.w3.org/2000/svg">
+                            <rect fill="#FF6B35" width="707.49" height="707.49" rx="80"/>
+                            <path fill="#2D1810" d="M271.9,459.21c0,5.79-4.7,10.49-10.49,10.49h-33.59c-5.79,0-10.49-4.7-10.49-10.49v-33.59c0-5.79,4.7-10.49,10.49-10.49h33.6c5.78,0,10.47-4.68,10.48-10.46,0,0,0-.02,0-.03v-19.95c0-5.79,4.7-10.49,10.49-10.49h19.95c5.79,0,10.49-4.7,10.49-10.49v-19.95c0-5.79,4.7-10.49,10.49-10.49h60.87c5.79,0,10.49-4.7,10.49-10.49v-19.95c0-5.79-4.7-10.49-10.49-10.49h-142.72c-5.79,0-10.49-4.7-10.49-10.49v-33.59c0-5.79,4.7-10.49,10.49-10.49h142.72c5.79,0,10.49,4.7,10.49,10.49v33.59c0,5.79,4.7,10.49,10.49,10.49h19.95c5.79,0,10.49,4.7,10.49,10.49v19.95c0,5.79-4.7,10.49-10.49,10.49h-19.95c-5.79,0-10.48,4.69-10.48,10.48v19.95c0,5.79-4.7,10.49-10.49,10.49h-60.87c-5.79,0-10.49,4.7-10.49,10.49v19.95c0,5.79,4.7,10.49,10.49,10.49h142.72c5.79,0,10.49,4.7,10.49,10.49v33.59c0,5.79-4.7,10.49-10.49,10.49h-142.72c-5.79,0-10.49-4.7-10.49-10.49v-33.59c0-5.79-4.7-10.49-10.49-10.49h-19.94c-4.34,0-8.07,2.64-9.66,6.41-.02.04-.02.09-.04.13-.5,1.22-.78,2.55-.78,3.95v33.59Z"/>
+                            <circle fill="#2D1810" cx="462.88" cy="265.07" r="27.28"/>
                         </svg>
-                        Back
-                    </button>
-                    <div class="flex items-center gap-2 text-sm text-[#9A948D]">
-                        <span class="hover:text-[#FF6B35] cursor-pointer">Claims Portal</span>
-                        <span>›</span>
-                        <span class="text-[#2D1810] font-medium">#47</span>
+                        <span>ZONIQ</span>
                     </div>
+                    
+                    <!-- Navigation (role-aware) -->
+                    <nav class="flex items-center gap-1">
+                        <button class="nav-item">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"/>
+                                <rect x="14" y="3" width="7" height="7"/>
+                                <rect x="14" y="14" width="7" height="7"/>
+                                <rect x="3" y="14" width="7" height="7"/>
+                            </svg>
+                            Dashboard
+                        </button>
+                        <button class="nav-item">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="4" y="4" width="16" height="16" rx="2"/>
+                                <path d="M4 10h16"/>
+                                <path d="M10 4v16"/>
+                            </svg>
+                            Kanban
+                        </button>
+                        <button class="nav-item active">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                            </svg>
+                            Projects
+                        </button>
+                        <!-- Role-specific nav items (visible for admins/managers) -->
+                        <button class="nav-item">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                            </svg>
+                            Masterdata
+                        </button>
+                        <button class="nav-item">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                            Accounts
+                        </button>
+                    </nav>
                 </div>
+                
+                <!-- Right: Actions + Profile -->
                 <div class="flex items-center gap-3">
-                    <kbd class="px-2 py-1.5 rounded bg-[#E8E4E0] text-xs font-mono text-[#9A948D]">⌘K</kbd>
-                    <div class="avatar bg-[#FF6B35]">D</div>
+                    <!-- Create Button with Dropdown -->
+                    <div class="dropdown" id="createDropdown">
+                        <button class="btn-secondary" onclick="toggleDropdown('createDropdown')">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 5v14M5 12h14"/>
+                            </svg>
+                            Create
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m6 9 6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" onclick="closeDropdown('createDropdown')">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 8v8M8 12h8"/>
+                                </svg>
+                                New Ticket
+                            </div>
+                            <div class="dropdown-item" onclick="closeDropdown('createDropdown')">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                New Project
+                            </div>
+                            <div class="dropdown-item" onclick="closeDropdown('createDropdown')">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                                </svg>
+                                New Story
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item" onclick="closeDropdown('createDropdown')">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                                New Document
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Chat Button -->
+                    <button class="btn-secondary" title="Open AI Chat">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            <path d="M8 10h.01M12 10h.01M16 10h.01"/>
+                        </svg>
+                    </button>
+                    
+                    
+                    <!-- Profile Dropdown -->
+                    <div class="dropdown" id="profileDropdown">
+                        <img src="Profile Picture.png" alt="Profile" class="avatar" onclick="toggleDropdown('profileDropdown')">
+                        <div class="dropdown-menu">
+                            <div class="px-3 py-2 border-b border-[#E8E4E0]">
+                                <div class="font-semibold text-sm">David</div>
+                                <div class="text-xs text-[#9A948D]">david@zoniq.dev</div>
+                            </div>
+                            <div class="dropdown-item" onclick="closeDropdown('profileDropdown')">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                View Profile
+                            </div>
+                            <div class="dropdown-item" onclick="closeDropdown('profileDropdown')">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v2.16c0 .28-.22.5-.5.5H7.5a2 2 0 0 0-2 2v.66a2 2 0 0 0 1.89 1.89l.66.66a2 2 0 0 0 2.83 0l.66-.66a2 2 0 0 0 1.89-1.89V17.5a2 2 0 0 0-2-2h-1.78a.5.5 0 0 0-.5.5v2.16a2 2 0 0 1-2 2h6.84a2 2 0 0 1-2-2v-2.16a.5.5 0 0 0-.5-.5H17.5a2 2 0 0 0 2-2v-.66a2 2 0 0 0-1.89-1.89l-.66-.66a2 2 0 0 0 0-2.83l.66-.66a2 2 0 0 0 1.89-1.89V6.5a2 2 0 0 0-2-2h-.78a.5.5 0 0 0-.5-.5V4a2 2 0 0 0-2-2z"/>
+                                </svg>
+                                Settings
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item text-red-500 hover:text-red-600" onclick="closeDropdown('profileDropdown')">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                    <polyline points="16 17 21 12 16 7"/>
+                                    <line x1="21" y1="12" x2="9" y2="12"/>
+                                </svg>
+                                Sign Out
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
         
         <!-- STORY HEADER -->
-        <div class="bg-white border-b border-[#E8E4E0] px-8 py-5">
-            <div class="max-w-6xl">
+        <div class="bg-[#F5F2EF] border-b border-[#E8E4E0] px-8 py-5 flex-shrink-0">
+            <div class="">
                 <div class="flex items-start justify-between mb-4">
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-2">
                             <span class="text-[#9A948D] text-sm">#47</span>
-                            <h1 class="font-heading text-xl font-bold">Approval Workflow by Role</h1>
-                            <span class="status-badge status-high">🔴 HIGH</span>
+                            <input type="text" value="Approval Workflow by Role" class="inline-editable font-heading text-xl font-bold flex-1">
                         </div>
-                        <p class="text-[#9A948D]">Implement multi-level approval based on user role and request amount</p>
+                        <input type="text" value="Implement multi-level approval based on user role and request amount" class="inline-editable text-[#9A948D] w-full">
+                    </div>
+                    <!-- Story Actions Dropdown -->
+                    <div class="dropdown" id="storyActionsDropdown">
+                        <button class="btn-ghost-icon" onclick="toggleDropdown('storyActionsDropdown')" title="Story Actions">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item text-red-500 hover:text-red-600" onclick="closeDropdown('storyActionsDropdown')">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"/>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                </svg>
+                                Delete
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Metadata Grid -->
-                <div class="grid grid-cols-6 gap-6 text-sm mb-4">
-                    <div>
+                <div class="grid grid-cols-7 gap-5 text-sm">
+                    <div class="dropdown" id="statusDropdown">
                         <span class="text-[#9A948D] text-xs block mb-1">Status</span>
-                        <span class="font-medium text-[#F59E0B] flex items-center gap-1.5">
+                        <button class="font-medium text-[#F59E0B] flex items-center gap-1.5 hover:opacity-80" onclick="toggleDropdown('statusDropdown')">
                             <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
                             In Progress
-                        </span>
-                    </div>
-                    <div>
-                        <span class="text-[#9A948D] text-xs block mb-1">Assignee</span>
-                        <div class="flex items-center gap-2">
-                            <div class="avatar-sm avatar bg-[#10B981]">A</div>
-                            <span class="font-medium">Aisha</span>
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" onclick="closeDropdown('statusDropdown')">
+                                <span class="w-2 h-2 rounded-full bg-[#9A948D]"></span>
+                                Backlog
+                            </div>
+                            <div class="dropdown-item" onclick="closeDropdown('statusDropdown')">
+                                <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                                Ready
+                            </div>
+                            <div class="dropdown-item" onclick="closeDropdown('statusDropdown')">
+                                <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
+                                In Progress
+                            </div>
+                            <div class="dropdown-item" onclick="closeDropdown('statusDropdown')">
+                                <span class="w-2 h-2 rounded-full bg-[#9333EA]"></span>
+                                Testing
+                            </div>
+                            <div class="dropdown-item" onclick="closeDropdown('statusDropdown')">
+                                <span class="w-2 h-2 rounded-full bg-[#2563EB]"></span>
+                                Review
+                            </div>
+                            <div class="dropdown-item" onclick="closeDropdown('statusDropdown')">
+                                <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                                Done
+                            </div>
                         </div>
                     </div>
-                    <div>
+                    <div class="dropdown" id="priorityDropdown">
+                        <span class="text-[#9A948D] text-xs block mb-1">Priority</span>
+                        <button class="font-medium text-[#EF4444] flex items-center gap-1.5 hover:opacity-80" onclick="toggleDropdown('priorityDropdown')">
+                            <span class="w-2 h-2 rounded-full bg-[#EF4444]"></span>
+                            High
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" onclick="closeDropdown('priorityDropdown')">
+                                <span class="w-2 h-2 rounded-full bg-[#EF4444]"></span>
+                                High
+                            </div>
+                            <div class="dropdown-item" onclick="closeDropdown('priorityDropdown')">
+                                <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
+                                Medium
+                            </div>
+                            <div class="dropdown-item" onclick="closeDropdown('priorityDropdown')">
+                                <span class="w-2 h-2 rounded-full bg-[#9A948D]"></span>
+                                Low
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown" id="assigneeDropdown">
+                        <span class="text-[#9A948D] text-xs block mb-1">Assignee</span>
+                        <button class="flex items-center gap-2 hover:opacity-80" onclick="toggleDropdown('assigneeDropdown')">
+                            <div class="avatar-initials bg-[#10B981]">A</div>
+                            <span class="font-medium">Aisha</span>
+                            <svg class="w-3 h-3 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" onclick="closeDropdown('assigneeDropdown')">
+                                <div class="avatar-initials bg-[#10B981]">A</div>
+                                Aisha
+                            </div>
+                            <div class="dropdown-item" onclick="closeDropdown('assigneeDropdown')">
+                                <div class="avatar-initials bg-[#F59E0B]">M</div>
+                                Marcus
+                            </div>
+                            <div class="dropdown-item" onclick="closeDropdown('assigneeDropdown')">
+                                <div class="avatar-initials bg-[#8B5CF6]">T</div>
+                                Tom
+                            </div>
+                            <div class="dropdown-item" onclick="closeDropdown('assigneeDropdown')">
+                                <div class="avatar-initials bg-[#FF6B35]">D</div>
+                                David
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item text-[#9A948D]" onclick="closeDropdown('assigneeDropdown')">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="8.5" cy="7" r="4"/>
+                                    <line x1="20" y1="8" x2="20" y2="14"/>
+                                    <line x1="23" y1="11" x2="17" y2="11"/>
+                                </svg>
+                                Unassigned
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown" id="projectDropdown">
                         <span class="text-[#9A948D] text-xs block mb-1">Project</span>
-                        <span class="font-medium text-[#FF6B35] cursor-pointer hover:underline">Claims Portal</span>
+                        <button class="font-medium text-[#FF6B35] flex items-center gap-1 hover:underline" onclick="toggleDropdown('projectDropdown')">
+                            Claims Portal
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" onclick="closeDropdown('projectDropdown')">
+                                Claims Portal
+                            </div>
+                            <div class="dropdown-item" onclick="closeDropdown('projectDropdown')">
+                                Policy Management
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown" id="moduleDropdown">
+                        <span class="text-[#9A948D] text-xs block mb-1">Module</span>
+                        <button class="font-medium flex items-center gap-1 hover:opacity-80" onclick="toggleDropdown('moduleDropdown')">
+                            Approvals
+                            <svg class="w-3 h-3 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" onclick="closeDropdown('moduleDropdown')">Approvals</div>
+                            <div class="dropdown-item" onclick="closeDropdown('moduleDropdown')">User Management</div>
+                            <div class="dropdown-item" onclick="closeDropdown('moduleDropdown')">Reporting</div>
+                            <div class="dropdown-item" onclick="closeDropdown('moduleDropdown')">Dashboard</div>
+                        </div>
                     </div>
                     <div>
                         <span class="text-[#9A948D] text-xs block mb-1">Due Date</span>
                         <span class="font-medium">Mar 15, 2026</span>
                     </div>
                     <div>
-                        <span class="text-[#9A948D] text-xs block mb-1">Completeness</span>
+                        <span class="text-[#9A948D] text-xs block mb-1">Quality</span>
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-[#F59E0B]">65%</span>
                             <div class="progress-bar flex-1">
@@ -267,45 +348,31 @@
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <span class="text-[#9A948D] text-xs block mb-1">Created</span>
-                        <span class="font-medium">Feb 28 by Marcus</span>
-                    </div>
-                </div>
-                
-                <!-- Action Buttons -->
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <button class="btn-secondary text-sm">Edit</button>
-                        <button class="btn-secondary text-sm flex items-center gap-1.5">
-                            Change Status
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-                        <button class="btn-ghost text-red-500 text-sm">Delete</button>
-                    </div>
-                    <button class="btn-primary text-sm">Save Changes</button>
                 </div>
             </div>
         </div>
         
         <!-- TAB NAVIGATION -->
-        <div class="bg-white border-b border-[#E8E4E0] px-8">
+        <div class="bg-white border-b border-[#E8E4E0] px-8 flex-shrink-0">
             <div class="max-w-6xl flex items-center gap-1">
-                <button class="tab-btn px-4 py-3.5 text-sm font-medium text-[#9A948D] hover:text-[#2D1810] tab-active" data-tab="overview">
-                    Overview
+                <button class="tab-btn px-4 py-3.5 text-sm font-medium text-[#9A948D] hover:text-[#2D1810] tab-active" data-tab="context">
+                    Context
+                    <span class="bg-[#E8E4E0] text-[#9A948D] px-2 py-0.5 rounded text-xs ml-2">2</span>
                 </button>
-                <button class="tab-btn px-4 py-3.5 text-sm font-medium text-[#9A948D] hover:text-[#2D1810] flex items-center gap-2" data-tab="criteria">
-                    Acceptance Criteria
-                    <span class="bg-[#E8E4E0] text-[#9A948D] px-2 py-0.5 rounded text-xs">4</span>
+                <button class="tab-btn px-4 py-3.5 text-sm font-medium text-[#9A948D] hover:text-[#2D1810]" data-tab="criteria">
+                    Requirements
+                    <span class="bg-[#E8E4E0] text-[#9A948D] px-2 py-0.5 rounded text-xs ml-2">2</span>
                 </button>
                 <button class="tab-btn px-4 py-3.5 text-sm font-medium text-[#9A948D] hover:text-[#2D1810] flex items-center gap-2" data-tab="devplan">
-                    Dev Plan
-                    <span class="bg-[#FF6B35] text-white px-2 py-0.5 rounded text-xs">6</span>
+                    Implementation
+                    <span class="bg-[#E8E4E0] text-[#9A948D] px-2 py-0.5 rounded text-xs">6</span>
                 </button>
                 <button class="tab-btn px-4 py-3.5 text-sm font-medium text-[#9A948D] hover:text-[#2D1810]" data-tab="tests">
-                    Test Scripts
+                    Quality Assurance
+                    <span class="bg-[#E8E4E0] text-[#9A948D] px-2 py-0.5 rounded text-xs ml-2">5</span>
+                </button>
+                <button class="tab-btn px-4 py-3.5 text-sm font-medium text-[#9A948D] hover:text-[#2D1810]" data-tab="deployment">
+                    Deployment
                 </button>
                 <button class="tab-btn px-4 py-3.5 text-sm font-medium text-[#9A948D] hover:text-[#2D1810] flex items-center gap-2" data-tab="activity">
                     Activity
@@ -314,157 +381,312 @@
             </div>
         </div>
         
-        <!-- MAIN CONTENT WITH GAP SIDEBAR -->
-        <div class="flex">
+        <!-- MAIN CONTENT WITH CHAT SIDEBAR -->
+        <div class="flex flex-1 overflow-hidden">
             <!-- TAB CONTENT -->
-            <div class="flex-1 p-8">
+            <div class="flex-1 overflow-y-auto p-8">
                 <div class="max-w-4xl">
                     
-                    <!-- TAB 1: OVERVIEW -->
-                    <div id="overview" class="tab-section active">
-                        <div class="card p-6 mb-6">
-                            <h3 class="font-heading font-bold text-base mb-3">Description</h3>
-                            <p class="text-sm leading-relaxed text-[#2D1810]">
-                                Implement multi-level approval workflow based on user role and request amount. Managers approve up to $5K, Directors up to $25K, VP approval required for amounts above $25K. The system should handle delegation when approvers are unavailable and send email notifications for pending approvals.
-                            </p>
-                        </div>
-                        
-                        <div class="card p-6 mb-6">
-                            <h3 class="font-heading font-bold text-base mb-3">Original Notes</h3>
-                            <div class="bg-[#FAFAF9] rounded-lg p-4 border border-[#E8E4E0]">
-                                <p class="text-sm text-[#9A948D] leading-relaxed italic">
-                                    "Client wants approval workflow. Different levels based on $ amounts. Managers can do small stuff, directors medium, VPs for big amounts. Need to handle when someone is on leave. Also what happens if approver quits or is unavailable? Should send emails when there's something to approve."
-                                </p>
-                                <p class="text-xs text-[#9A948D] mt-3">— Marcus, Feb 28, 2026</p>
-                            </div>
-                        </div>
-                        
-                        <div class="card p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-heading font-bold text-base">Attachments</h3>
-                                <button class="btn-secondary text-xs flex items-center gap-1">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    <!-- TAB 1: CONTEXT -->
+                    <div id="context" class="tab-section active">
+                        <!-- Open Questions Section -->
+                        <div class="mb-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="text-sm font-semibold text-[#2D1810] flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-[#F59E0B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    Add File
-                                </button>
+                                    Questions
+                                    <span class="bg-[#FEF3C7] text-[#D97706] px-2 py-0.5 rounded text-xs font-normal">2 unanswered</span>
+                                </h4>
                             </div>
                             <div class="space-y-2">
-                                <div class="flex items-center justify-between p-3 bg-[#FAFAF9] rounded-lg">
-                                    <div class="flex items-center gap-3">
-                                        <span class="text-xl">📄</span>
-                                        <div>
-                                            <p class="text-sm font-medium">approval-flow-diagram.png</p>
-                                            <p class="text-xs text-[#9A948D]">245 KB · Added Feb 28</p>
+                                <div class="card p-3">
+                                    <div class="flex items-start gap-3">
+                                        <input type="checkbox" class="w-4 h-4 mt-0.5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        <div class="flex-1">
+                                            <p class="text-sm text-[#2D1810]">What happens if the amount changes after partial approval?</p>
+                                            <p class="text-xs text-[#9A948D] mt-1">Asked by David · Feb 28</p>
+                                            <textarea 
+                                                rows="2" 
+                                                placeholder="Type your answer..."
+                                                class="w-full mt-2 text-sm bg-[#FAFAF9] border border-[#E8E4E0] rounded-lg px-3 py-2 outline-none focus:border-[#FF6B35] focus:ring-1 focus:ring-[#FF6B35]/20 resize-none placeholder:text-[#9A948D]"
+                                            ></textarea>
                                         </div>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <button class="btn-ghost text-xs">View</button>
-                                        <button class="btn-ghost text-xs text-red-500">Remove</button>
+                                        <span class="text-xs text-[#F59E0B] font-medium">Unanswered</span>
                                     </div>
                                 </div>
-                                <div class="flex items-center justify-between p-3 bg-[#FAFAF9] rounded-lg">
-                                    <div class="flex items-center gap-3">
-                                        <span class="text-xl">📄</span>
-                                        <div>
-                                            <p class="text-sm font-medium">client-email-approval-requirements.pdf</p>
-                                            <p class="text-xs text-[#9A948D]">128 KB · Added Feb 28</p>
+                                <div class="card p-3">
+                                    <div class="flex items-start gap-3">
+                                        <input type="checkbox" class="w-4 h-4 mt-0.5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        <div class="flex-1">
+                                            <p class="text-sm text-[#2D1810]">Should there be a time limit for approval responses?</p>
+                                            <p class="text-xs text-[#9A948D] mt-1">Asked by Marcus · Feb 28</p>
+                                            <textarea 
+                                                rows="2" 
+                                                placeholder="Type your answer..."
+                                                class="w-full mt-2 text-sm bg-[#FAFAF9] border border-[#E8E4E0] rounded-lg px-3 py-2 outline-none focus:border-[#FF6B35] focus:ring-1 focus:ring-[#FF6B35]/20 resize-none placeholder:text-[#9A948D]"
+                                            ></textarea>
+                                        </div>
+                                        <span class="text-xs text-[#F59E0B] font-medium">Unanswered</span>
+                                    </div>
+                                </div>
+                                <div class="card p-3 opacity-60">
+                                    <div class="flex items-start gap-3">
+                                        <input type="checkbox" checked class="w-4 h-4 mt-0.5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        <div class="flex-1">
+                                            <p class="text-sm text-[#2D1810] line-through">How should delegation be configured?</p>
+                                            <p class="text-xs text-[#9A948D] mt-1">Answered by Aisha · Via delegation rules in user settings</p>
+                                        </div>
+                                        <span class="text-xs text-[#10B981] font-medium">Answered</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-ghost text-xs mt-3 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add Question
+                            </button>
+                        </div>
+                        
+                        <!-- Context Sources Section -->
+                        <div>
+                            <p class="text-sm font-semibold text-[#2D1810] mb-3">Context Sources</p>
+                            <div class="space-y-3">
+                                <!-- Note Context -->
+                                <div class="card p-4">
+                                    <div class="flex items-start gap-3">
+                                        <div class="w-10 h-10 rounded-lg bg-[#FFF7F3] flex items-center justify-center flex-shrink-0">
+                                            <svg class="w-5 h-5 text-[#FF6B35]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between">
+                                                <h4 class="font-semibold text-sm">Client Meeting Notes</h4>
+                                                <button class="text-[#9A948D] hover:text-red-500">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <p class="text-xs text-[#9A948D] mt-1">Note · Added Feb 28 by Marcus</p>
+                                            <p class="text-sm text-[#2D1810] mt-2">Client wants approval workflow with different levels based on dollar amounts. Managers up to $5K, directors up to $25K, VPs for anything higher. Need delegation handling when people are on leave.</p>
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        <button class="btn-ghost text-xs">View</button>
-                                        <button class="btn-ghost text-xs text-red-500">Remove</button>
+                                </div>
+                                
+                                <!-- Document Context -->
+                                <div class="card p-4">
+                                    <div class="flex items-start gap-3">
+                                        <div class="w-10 h-10 rounded-lg bg-[#EFF6FF] flex items-center justify-center flex-shrink-0">
+                                            <svg class="w-5 h-5 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between">
+                                                <h4 class="font-semibold text-sm">approval-flow-diagram.png</h4>
+                                                <button class="text-[#9A948D] hover:text-red-500">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <p class="text-xs text-[#9A948D] mt-1">Document · 245 KB · Added Feb 28</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- URL Context -->
+                                <div class="card p-4">
+                                    <div class="flex items-start gap-3">
+                                        <div class="w-10 h-10 rounded-lg bg-[#F0FDF4] flex items-center justify-center flex-shrink-0">
+                                            <svg class="w-5 h-5 text-[#10B981]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between">
+                                                <h4 class="font-semibold text-sm text-[#2563EB] hover:underline cursor-pointer">Mendix Workflow Documentation</h4>
+                                                <button class="text-[#9A948D] hover:text-red-500">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <p class="text-xs text-[#9A948D] mt-1">URL · docs.mendix.com · Added Feb 28</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Project File Context -->
+                                <div class="card p-4">
+                                    <div class="flex items-start gap-3">
+                                        <div class="w-10 h-10 rounded-lg bg-[#FEF3C7] flex items-center justify-center flex-shrink-0">
+                                            <svg class="w-5 h-5 text-[#D97706]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between">
+                                                <h4 class="font-semibold text-sm">/modules/Approvals/UserRole.entity</h4>
+                                                <button class="text-[#9A948D] hover:text-red-500">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <p class="text-xs text-[#9A948D] mt-1">Project File · Entity definition · Added Feb 28</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="dropdown mt-4" id="addContextDropdown">
+                                <button class="btn-secondary text-sm w-full flex items-center justify-center gap-1.5" onclick="toggleDropdown('addContextDropdown')">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    Add Context Source
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                <div class="dropdown-menu w-full">
+                                    <div class="dropdown-item" onclick="closeDropdown('addContextDropdown')">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
+                                        Add Note
+                                    </div>
+                                    <div class="dropdown-item" onclick="closeDropdown('addContextDropdown')">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                            <polyline points="14 2 14 8 20 8"/>
+                                            <line x1="12" y1="18" x2="12" y2="12"/>
+                                            <line x1="9" y1="15" x2="15" y2="15"/>
+                                        </svg>
+                                        Upload Document
+                                    </div>
+                                    <div class="dropdown-item" onclick="closeDropdown('addContextDropdown')">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+                                            <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+                                        </svg>
+                                        Add URL
+                                    </div>
+                                    <div class="dropdown-item" onclick="closeDropdown('addContextDropdown')">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                                        </svg>
+                                        Link Project File
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- TAB 2: ACCEPTANCE CRITERIA -->
+                    <!-- TAB 2: REQUIREMENTS -->
                     <div id="criteria" class="tab-section">
-                        <!-- Generate Bar -->
-                        <div class="card p-4 mb-4">
-                            <div class="flex items-center gap-3">
-                                <span class="text-lg">✨</span>
-                                <input type="text" placeholder="Paste notes to regenerate criteria, or add manually..." class="flex-1 text-sm bg-transparent outline-none placeholder:text-[#9A948D]">
-                                <button class="btn-primary text-sm">Generate</button>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="font-heading font-bold text-base">Acceptance Criteria (4)</h3>
-                            <span class="text-xs text-[#9A948D]">Last generated: Feb 28, 2:34 PM</span>
-                        </div>
-                        
                         <div class="space-y-3">
-                            <div class="criterion-item p-4">
+                            <div class="card p-4">
                                 <div class="flex items-start gap-3">
-                                    <input type="checkbox" class="w-5 h-5 mt-0.5 rounded border-[#E8E4E0] accent-[#10B981]">
-                                    <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <span class="font-semibold text-sm">AC1: Manager approval for amounts ≤ $5,000</span>
-                                            <span class="ai-badge">✨ AI</span>
-                                        </div>
-                                        <p class="text-sm text-[#9A948D] leading-relaxed">
-                                            <strong>Given</strong> a request with amount ≤ $5,000<br>
-                                            <strong>When</strong> a Manager submits approval<br>
-                                            <strong>Then</strong> the request is approved
-                                        </p>
+                                    <div class="w-10 h-10 rounded-lg bg-[#EFF6FF] flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-5 h-5 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
                                     </div>
-                                </div>
-                                <div class="flex items-center gap-2 mt-3 ml-8">
-                                    <button class="btn-ghost text-xs">Edit</button>
-                                    <button class="btn-ghost text-xs text-red-500">Delete</button>
-                                </div>
-                            </div>
-                            
-                            <div class="criterion-item p-4">
-                                <div class="flex items-start gap-3">
-                                    <input type="checkbox" class="w-5 h-5 mt-0.5 rounded border-[#E8E4E0] accent-[#10B981]">
                                     <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <span class="font-semibold text-sm">AC2: Director approval for amounts $5,001-$25,000</span>
-                                            <span class="ai-badge">✨ AI</span>
+                                        <div class="flex items-center justify-between">
+                                            <input type="text" value="Manager approval for amounts ≤ $5,000" class="inline-editable font-semibold text-sm flex-1">
+                                            <button class="text-[#9A948D] hover:text-red-500">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            </button>
                                         </div>
-                                        <p class="text-sm text-[#9A948D] leading-relaxed">
-                                            <strong>Given</strong> a request with amount between $5,001-$25,000<br>
-                                            <strong>When</strong> a Director submits approval<br>
-                                            <strong>Then</strong> the request is approved
-                                        </p>
+                                        <div class="text-sm text-[#9A948D] leading-relaxed mt-2 space-y-1">
+                                            <div class="flex gap-2"><strong>Given</strong> <input type="text" value="a request with amount ≤ $5,000" class="inline-editable flex-1"></div>
+                                            <div class="flex gap-2"><strong>When</strong> <input type="text" value="a Manager submits approval" class="inline-editable flex-1"></div>
+                                            <div class="flex gap-2"><strong>Then</strong> <input type="text" value="the request is approved" class="inline-editable flex-1"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="criterion-item p-4">
+                            <div class="card p-4">
                                 <div class="flex items-start gap-3">
-                                    <input type="checkbox" class="w-5 h-5 mt-0.5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                    <div class="w-10 h-10 rounded-lg bg-[#EFF6FF] flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-5 h-5 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    </div>
                                     <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <span class="font-semibold text-sm">AC3: VP approval for amounts > $25,000</span>
-                                            <span class="ai-badge">✨ AI</span>
+                                        <div class="flex items-center justify-between">
+                                            <input type="text" value="Director approval for amounts $5,001-$25,000" class="inline-editable font-semibold text-sm flex-1">
+                                            <button class="text-[#9A948D] hover:text-red-500">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            </button>
                                         </div>
-                                        <p class="text-sm text-[#9A948D] leading-relaxed">
-                                            <strong>Given</strong> a request with amount > $25,000<br>
-                                            <strong>When</strong> a VP submits approval<br>
-                                            <strong>Then</strong> the request is approved
-                                        </p>
+                                        <div class="text-sm text-[#9A948D] leading-relaxed mt-2 space-y-1">
+                                            <div class="flex gap-2"><strong>Given</strong> <input type="text" value="a request with amount between $5,001-$25,000" class="inline-editable flex-1"></div>
+                                            <div class="flex gap-2"><strong>When</strong> <input type="text" value="a Director submits approval" class="inline-editable flex-1"></div>
+                                            <div class="flex gap-2"><strong>Then</strong> <input type="text" value="the request is approved" class="inline-editable flex-1"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="criterion-item p-4">
+                            <div class="card p-4">
                                 <div class="flex items-start gap-3">
-                                    <input type="checkbox" class="w-5 h-5 mt-0.5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                    <div class="w-10 h-10 rounded-lg bg-[#EFF6FF] flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-5 h-5 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    </div>
                                     <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <span class="font-semibold text-sm">AC4: Delegation when approver is unavailable</span>
-                                            <span class="ai-badge">✨ AI</span>
+                                        <div class="flex items-center justify-between">
+                                            <input type="text" value="VP approval for amounts > $25,000" class="inline-editable font-semibold text-sm flex-1">
+                                            <button class="text-[#9A948D] hover:text-red-500">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            </button>
                                         </div>
-                                        <p class="text-sm text-[#9A948D] leading-relaxed">
-                                            <strong>Given</strong> an approver is marked as unavailable<br>
-                                            <strong>When</strong> a request requires their approval<br>
-                                            <strong>Then</strong> the request is routed to their delegate
-                                        </p>
+                                        <div class="text-sm text-[#9A948D] leading-relaxed mt-2 space-y-1">
+                                            <div class="flex gap-2"><strong>Given</strong> <input type="text" value="a request with amount > $25,000" class="inline-editable flex-1"></div>
+                                            <div class="flex gap-2"><strong>When</strong> <input type="text" value="a VP submits approval" class="inline-editable flex-1"></div>
+                                            <div class="flex gap-2"><strong>Then</strong> <input type="text" value="the request is approved" class="inline-editable flex-1"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card p-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-[#EFF6FF] flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-5 h-5 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <input type="text" value="Delegation when approver is unavailable" class="inline-editable font-semibold text-sm flex-1">
+                                            <button class="text-[#9A948D] hover:text-red-500">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="text-sm text-[#9A948D] leading-relaxed mt-2 space-y-1">
+                                            <div class="flex gap-2"><strong>Given</strong> <input type="text" value="an approver is marked as unavailable" class="inline-editable flex-1"></div>
+                                            <div class="flex gap-2"><strong>When</strong> <input type="text" value="a request requires their approval" class="inline-editable flex-1"></div>
+                                            <div class="flex gap-2"><strong>Then</strong> <input type="text" value="the request is routed to their delegate" class="inline-editable flex-1"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -474,192 +696,308 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>
-                            Add Criterion
+                            Add Requirement
                         </button>
-                        
-                        <!-- Next Action -->
-                        <div class="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-green-600">✅</span>
-                                    <span class="text-sm text-green-700">Ready to generate Dev Plan?</span>
-                                </div>
-                                <button class="btn-primary text-sm">Generate Dev Plan →</button>
-                            </div>
-                        </div>
                     </div>
                     
-                    <!-- TAB 3: DEV PLAN -->
+                    <!-- TAB 3: IMPLEMENTATION -->
                     <div id="devplan" class="tab-section">
-                        <!-- Regenerate Bar -->
-                        <div class="flex items-center justify-between mb-4">
-                            <button class="btn-secondary text-sm flex items-center gap-1.5">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                </svg>
-                                Regenerate Dev Plan
-                            </button>
-                            <span class="text-xs text-[#9A948D]">Last generated: Feb 28, 2:30 PM</span>
-                        </div>
-                        
-                        <h3 class="font-heading font-bold text-base mb-4">Implementation Steps (6)</h3>
-                        
-                        <div class="space-y-3">
-                            <!-- Step 1 - Expanded -->
-                            <div class="step-item p-4">
+                        <div class="space-y-6">
+                            <!-- Section: Domain Model -->
+                            <div class="impl-section">
                                 <div class="flex items-center justify-between mb-3">
                                     <div class="flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                        <svg class="w-4 h-4 text-[#8B5CF6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7c-2 0-3 1-3 3z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6M12 9v6"/>
                                         </svg>
-                                        <span class="font-semibold">Step 1: Create ApprovalLevel Enumeration</span>
-                                        <span class="ai-badge">✨ AI</span>
+                                        <input type="text" value="Domain Model" class="font-semibold text-sm bg-transparent border-none outline-none focus:underline">
+                                        <span class="text-xs text-[#9A948D]">(3 steps)</span>
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        <input type="checkbox" checked class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
-                                        <span class="text-xs text-[#10B981] font-medium">Done</span>
+                                    <div class="flex items-center gap-1">
+                                        <button class="btn-ghost-icon text-[#9A948D]" title="Edit Section">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                        </button>
+                                        <button class="btn-ghost-icon text-red-400 hover:text-red-500" title="Delete Section">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
                                     </div>
                                 </div>
-                                <div class="pl-7 text-sm text-[#9A948D] mb-3">
-                                    Create an enumeration in Mendix with values: Manager ($0-$5,000), Director ($5,001-$25,000), VP (>$25,000)
+                                <div class="space-y-2">
+                                    <div class="card p-3">
+                                        <div class="flex items-start gap-3">
+                                            <span class="w-6 h-6 rounded-full bg-[#D1FAE5] text-[#10B981] flex items-center justify-center text-xs font-semibold flex-shrink-0">✓</span>
+                                            <div class="flex-1">
+                                                <p class="text-sm font-medium text-[#2D1810]">Create ApprovalLevel Enumeration</p>
+                                                <p class="text-xs text-[#9A948D] mt-1">Manager ($0-$5,000), Director ($5,001-$25,000), VP (>$25,000)</p>
+                                            </div>
+                                            <input type="checkbox" checked class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        </div>
+                                    </div>
+                                    <div class="card p-3">
+                                        <div class="flex items-start gap-3">
+                                            <span class="w-6 h-6 rounded-full bg-[#D1FAE5] text-[#10B981] flex items-center justify-center text-xs font-semibold flex-shrink-0">✓</span>
+                                            <div class="flex-1">
+                                                <p class="text-sm font-medium text-[#2D1810]">Extend User Entity with Role/Delegation</p>
+                                                <p class="text-xs text-[#9A948D] mt-1">Add approval level and delegate association</p>
+                                            </div>
+                                            <input type="checkbox" checked class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        </div>
+                                    </div>
+                                    <div class="card p-3">
+                                        <div class="flex items-start gap-3">
+                                            <span class="w-6 h-6 rounded-full bg-[#D1FAE5] text-[#10B981] flex items-center justify-center text-xs font-semibold flex-shrink-0">✓</span>
+                                            <div class="flex-1">
+                                                <p class="text-sm font-medium text-[#2D1810]">Create ApprovalRequest Entity</p>
+                                                <p class="text-xs text-[#9A948D] mt-1">Fields: amount, status, requester, approver</p>
+                                            </div>
+                                            <input type="checkbox" checked class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="pl-7 mendix-hint p-3 flex items-center gap-2">
-                                    <span class="text-base">💡</span>
-                                    <span class="text-sm text-blue-700">Mendix hint: Domain Model > Add > Enumeration</span>
-                                </div>
-                                <div class="pl-7 flex items-center gap-2 mt-3">
-                                    <button class="btn-ghost text-xs">Edit</button>
-                                    <button class="btn-ghost text-xs text-red-500">Delete</button>
-                                </div>
+                                <button class="btn-ghost text-xs mt-2 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    Add Step
+                                </button>
                             </div>
                             
-                            <!-- Step 2 - Collapsed -->
-                            <div class="step-item p-4">
-                                <div class="flex items-center justify-between">
+                            <!-- Section: Microflow Logic -->
+                            <div class="impl-section">
+                                <div class="flex items-center justify-between mb-3">
                                     <div class="flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        <svg class="w-4 h-4 text-[#F59E0B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                         </svg>
-                                        <span class="font-semibold">Step 2: Extend User Entity with Role/Delegation</span>
-                                        <span class="ai-badge">✨ AI</span>
+                                        <input type="text" value="Microflow Logic" class="font-semibold text-sm bg-transparent border-none outline-none focus:underline">
+                                        <span class="text-xs text-[#9A948D]">(2 steps)</span>
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        <input type="checkbox" checked class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
-                                        <span class="text-xs text-[#10B981] font-medium">Done</span>
+                                    <div class="flex items-center gap-1">
+                                        <button class="btn-ghost-icon text-[#9A948D]" title="Edit Section">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                        </button>
+                                        <button class="btn-ghost-icon text-red-400 hover:text-red-500" title="Delete Section">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
                                     </div>
                                 </div>
+                                <div class="space-y-2">
+                                    <div class="card p-3 border-[#FF6B35] bg-[#FFF7F3]">
+                                        <div class="flex items-start gap-3">
+                                            <span class="w-6 h-6 rounded-full bg-[#FFF7F3] text-[#FF6B35] flex items-center justify-center text-xs font-semibold flex-shrink-0 border-2 border-[#FF6B35]">1</span>
+                                            <div class="flex-1">
+                                                <p class="text-sm font-medium text-[#2D1810]">Implement Approval Microflow</p>
+                                                <p class="text-xs text-[#9A948D] mt-1">Route requests based on amount thresholds</p>
+                                            </div>
+                                            <input type="checkbox" class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        </div>
+                                    </div>
+                                    <div class="card p-3">
+                                        <div class="flex items-start gap-3">
+                                            <span class="w-6 h-6 rounded-full bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center text-xs font-semibold flex-shrink-0">2</span>
+                                            <div class="flex-1">
+                                                <p class="text-sm font-medium text-[#2D1810]">Add Delegation Logic</p>
+                                                <p class="text-xs text-[#9A948D] mt-1">Handle unavailable approvers with delegates</p>
+                                            </div>
+                                            <input type="checkbox" class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn-ghost text-xs mt-2 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    Add Step
+                                </button>
                             </div>
                             
-                            <!-- Step 3 - Collapsed -->
-                            <div class="step-item p-4">
-                                <div class="flex items-center justify-between">
+                            <!-- Section: Page Logic -->
+                            <div class="impl-section">
+                                <div class="flex items-center justify-between mb-3">
                                     <div class="flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        <svg class="w-4 h-4 text-[#10B981]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/>
                                         </svg>
-                                        <span class="font-semibold">Step 3: Create ApprovalRequest Entity</span>
-                                        <span class="ai-badge">✨ AI</span>
+                                        <input type="text" value="Page Logic" class="font-semibold text-sm bg-transparent border-none outline-none focus:underline">
+                                        <span class="text-xs text-[#9A948D]">(1 step)</span>
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        <input type="checkbox" checked class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
-                                        <span class="text-xs text-[#10B981] font-medium">Done</span>
+                                    <div class="flex items-center gap-1">
+                                        <button class="btn-ghost-icon text-[#9A948D]" title="Edit Section">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                        </button>
+                                        <button class="btn-ghost-icon text-red-400 hover:text-red-500" title="Delete Section">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
                                     </div>
                                 </div>
+                                <div class="space-y-2">
+                                    <div class="card p-3">
+                                        <div class="flex items-start gap-3">
+                                            <span class="w-6 h-6 rounded-full bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center text-xs font-semibold flex-shrink-0">1</span>
+                                            <div class="flex-1">
+                                                <p class="text-sm font-medium text-[#2D1810]">Create Approval UI Pages</p>
+                                                <p class="text-xs text-[#9A948D] mt-1">Request form, approval list, detail view</p>
+                                            </div>
+                                            <input type="checkbox" class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn-ghost text-xs mt-2 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    Add Step
+                                </button>
                             </div>
                             
-                            <!-- Step 4 - In Progress -->
-                            <div class="step-item p-4 border-[#FF6B35] bg-[#FFF7F3]">
-                                <div class="flex items-center justify-between">
+                            <!-- Section: Security Check -->
+                            <div class="impl-section">
+                                <div class="flex items-center justify-between mb-3">
                                     <div class="flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        <svg class="w-4 h-4 text-[#EF4444]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                                         </svg>
-                                        <span class="font-semibold">Step 4: Implement Approval Microflow</span>
-                                        <span class="ai-badge">✨ AI</span>
+                                        <input type="text" value="Security Check" class="font-semibold text-sm bg-transparent border-none outline-none focus:underline">
+                                        <span class="text-xs text-[#9A948D]">(0 steps)</span>
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        <input type="checkbox" class="w-5 h-5 rounded border-[#E8E4E0]">
-                                        <span class="text-xs text-[#9A948D] font-medium">Pending</span>
+                                    <div class="flex items-center gap-1">
+                                        <button class="btn-ghost-icon text-[#9A948D]" title="Edit Section">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                        </button>
+                                        <button class="btn-ghost-icon text-red-400 hover:text-red-500" title="Delete Section">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <!-- Step 5 -->
-                            <div class="step-item p-4">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                        </svg>
-                                        <span class="font-semibold">Step 5: Add Delegation Logic</span>
-                                        <span class="ai-badge">✨ AI</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <input type="checkbox" class="w-5 h-5 rounded border-[#E8E4E0]">
-                                        <span class="text-xs text-[#9A948D] font-medium">Pending</span>
-                                    </div>
+                                <div class="space-y-2">
+                                    <p class="text-xs text-[#9A948D] italic">No steps yet. Add steps to define security requirements.</p>
                                 </div>
-                            </div>
-                            
-                            <!-- Step 6 -->
-                            <div class="step-item p-4">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                        </svg>
-                                        <span class="font-semibold">Step 6: Create Approval UI Pages</span>
-                                        <span class="ai-badge">✨ AI</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <input type="checkbox" class="w-5 h-5 rounded border-[#E8E4E0]">
-                                        <span class="text-xs text-[#9A948D] font-medium">Pending</span>
-                                    </div>
-                                </div>
+                                <button class="btn-ghost text-xs mt-2 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    Add Step
+                                </button>
                             </div>
                         </div>
                         
-                        <button class="btn-secondary text-sm mt-4 flex items-center gap-1.5">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                            </svg>
-                            Add Step
-                        </button>
-                        
-                        <!-- Next Action -->
-                        <div class="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-green-600">✅</span>
-                                    <span class="text-sm text-green-700">Dev Plan complete? Generate test scripts for validation.</span>
-                                </div>
-                                <button class="btn-primary text-sm">Generate Test Scripts →</button>
-                            </div>
+                        <div class="flex items-center gap-2 mt-4">
+                            <button class="btn-ghost text-xs flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                                </svg>
+                                Add Section
+                            </button>
                         </div>
                     </div>
                     
-                    <!-- TAB 4: TEST SCRIPTS -->
+                    <!-- TAB 4: QUALITY ASSURANCE -->
                     <div id="tests" class="tab-section">
-                        <div class="flex items-center justify-between mb-4">
-                            <button class="btn-secondary text-sm flex items-center gap-1.5">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        <!-- UAT Test Steps Section -->
+                        <div class="mb-6">
+                            <h4 class="text-sm font-semibold text-[#2D1810] mb-3 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                                 </svg>
-                                Regenerate Tests
-                            </button>
-                            <span class="text-xs text-[#9A948D]">Last generated: Feb 28, 2:45 PM</span>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <span class="text-sm font-medium">approval-workflow.spec.ts</span>
-                        </div>
-                        
-                        <div class="code-block">
-                            <div class="flex">
-                                <div class="code-line-number py-4 pl-4">
-                                    1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26
+                                UAT Test Steps
+                            </h4>
+                            <div class="space-y-2">
+                                <div class="card p-3">
+                                    <div class="flex items-start gap-3">
+                                        <span class="w-6 h-6 rounded-full bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center text-xs font-semibold flex-shrink-0">1</span>
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-[#2D1810]">Login as Manager user</p>
+                                            <p class="text-xs text-[#9A948D] mt-1">Use credentials: manager@test.com / Test123!</p>
+                                        </div>
+                                        <input type="checkbox" class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                    </div>
                                 </div>
-                                <pre class="py-4 pr-4 flex-1 overflow-x-auto"><code><span class="text-purple-400">import</span> { test, expect } <span class="text-purple-400">from</span> <span class="text-green-400">'@playwright/test'</span>;
+                                <div class="card p-3">
+                                    <div class="flex items-start gap-3">
+                                        <span class="w-6 h-6 rounded-full bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center text-xs font-semibold flex-shrink-0">2</span>
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-[#2D1810]">Create new approval request with amount $3,000</p>
+                                            <p class="text-xs text-[#9A948D] mt-1">Navigate to Requests → New Request → Fill form</p>
+                                        </div>
+                                        <input type="checkbox" class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                    </div>
+                                </div>
+                                <div class="card p-3">
+                                    <div class="flex items-start gap-3">
+                                        <span class="w-6 h-6 rounded-full bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center text-xs font-semibold flex-shrink-0">3</span>
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-[#2D1810]">Submit request and verify status changes to "Pending Approval"</p>
+                                            <p class="text-xs text-[#9A948D] mt-1">Check request details page for status</p>
+                                        </div>
+                                        <input type="checkbox" class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                    </div>
+                                </div>
+                                <div class="card p-3">
+                                    <div class="flex items-start gap-3">
+                                        <span class="w-6 h-6 rounded-full bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center text-xs font-semibold flex-shrink-0">4</span>
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-[#2D1810]">Approve request as Manager</p>
+                                            <p class="text-xs text-[#9A948D] mt-1">Click "Approve" button, verify status changes to "Approved"</p>
+                                        </div>
+                                        <input type="checkbox" class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                    </div>
+                                </div>
+                                <div class="card p-3">
+                                    <div class="flex items-start gap-3">
+                                        <span class="w-6 h-6 rounded-full bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center text-xs font-semibold flex-shrink-0">5</span>
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-[#2D1810]">Create request with amount $10,000 (Director level)</p>
+                                            <p class="text-xs text-[#9A948D] mt-1">Verify routing to Director for approval</p>
+                                        </div>
+                                        <input type="checkbox" class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-ghost text-xs mt-3 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add Test Step
+                            </button>
+                        </div>
+                        
+                        <!-- Automated Tests Section -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-[#2D1810] mb-3 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-[#10B981]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                                </svg>
+                                Automated Tests
+                                <span class="bg-[#D1FAE5] text-[#059669] px-2 py-0.5 rounded text-xs font-normal">2 passing</span>
+                            </h4>
+                            
+                            <div class="mb-3">
+                                <span class="text-sm font-medium">approval-workflow.spec.ts</span>
+                            </div>
+                            
+                            <div class="code-block">
+                                <div class="flex">
+                                    <div class="code-line-number py-4 pl-4">
+                                        1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26
+                                    </div>
+                                    <pre class="py-4 pr-4 flex-1 overflow-x-auto"><code><span class="text-purple-400">import</span> { test, expect } <span class="text-purple-400">from</span> <span class="text-green-400">'@playwright/test'</span>;
 
 test.<span class="text-yellow-400">describe</span>(<span class="text-green-400">'Approval Workflow'</span>, () => {
   test(<span class="text-green-400">'Manager approval for amounts ≤ $5,000'</span>, <span class="text-purple-400">async</span> ({ page }) => {
@@ -682,27 +1020,157 @@ test.<span class="text-yellow-400">describe</span>(<span class="text-green-400">
     <span class="text-gray-500">// ... test implementation</span>
   });
 });</code></pre>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="flex items-center gap-2 mt-4">
-                            <button class="btn-secondary text-sm flex items-center gap-1.5">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                                </svg>
-                                Copy to Clipboard
-                            </button>
-                            <button class="btn-secondary text-sm flex items-center gap-1.5">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                                </svg>
-                                Download .spec.ts
-                            </button>
-                            <button class="btn-ghost text-sm">Edit</button>
+                            
+                            <div class="flex items-center gap-2 mt-4">
+                                <button class="btn-secondary text-sm flex items-center gap-1.5">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                    Copy to Clipboard
+                                </button>
+                                <button class="btn-secondary text-sm flex items-center gap-1.5">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                    </svg>
+                                    Download .spec.ts
+                                </button>
+                                <button class="btn-ghost text-sm">Edit</button>
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- TAB 5: ACTIVITY -->
+                    <!-- TAB 5: DEPLOYMENT -->
+                    <div id="deployment" class="tab-section">
+                        <!-- Release Information -->
+                        <div class="mb-6">
+                            <h4 class="text-sm font-semibold text-[#2D1810] mb-3 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-[#8B5CF6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                Release Information
+                            </h4>
+                            <div class="card p-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="text-xs text-[#9A948D] block mb-1">Target Release Date</label>
+                                        <input type="date" value="2026-03-20" class="w-full text-sm bg-[#FAFAF9] border border-[#E8E4E0] rounded-lg px-3 py-2 outline-none focus:border-[#FF6B35]">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs text-[#9A948D] block mb-1">Version</label>
+                                        <input type="text" value="1.2.0" class="w-full text-sm bg-[#FAFAF9] border border-[#E8E4E0] rounded-lg px-3 py-2 outline-none focus:border-[#FF6B35]">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Release Tasks -->
+                        <div class="mb-6">
+                            <h4 class="text-sm font-semibold text-[#2D1810] mb-3 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-[#F59E0B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                                </svg>
+                                Release Tasks
+                            </h4>
+                            <div class="space-y-2">
+                                <div class="card p-3">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" checked class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        <span class="text-sm text-[#2D1810]">Create backup of production database</span>
+                                    </div>
+                                </div>
+                                <div class="card p-3">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" checked class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        <span class="text-sm text-[#2D1810]">Run regression tests on test environment</span>
+                                    </div>
+                                </div>
+                                <div class="card p-3">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        <span class="text-sm text-[#2D1810]">Update release notes documentation</span>
+                                    </div>
+                                </div>
+                                <div class="card p-3">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        <span class="text-sm text-[#2D1810]">Notify stakeholders of deployment</span>
+                                    </div>
+                                </div>
+                                <div class="card p-3">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        <span class="text-sm text-[#2D1810]">Monitor post-deployment metrics</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-ghost text-xs mt-3 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add Task
+                            </button>
+                        </div>
+                        
+                        <!-- Environment Deployment Status -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-[#2D1810] mb-3 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-[#10B981]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
+                                </svg>
+                                Environment Deployment
+                            </h4>
+                            <div class="space-y-3">
+                                <div class="card p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-lg bg-[#EFF6FF] flex items-center justify-center flex-shrink-0">
+                                                <svg class="w-5 h-5 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-sm text-[#2D1810]">Test Environment</p>
+                                                <p class="text-xs text-[#9A948D]">Last deployed: Mar 10, 2026 at 2:30 PM</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-xs text-[#10B981] font-medium bg-[#D1FAE5] px-2 py-1 rounded">Deployed</span>
+                                            <input type="checkbox" checked class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-lg bg-[#FEF3C7] flex items-center justify-center flex-shrink-0">
+                                                <svg class="w-5 h-5 text-[#D97706]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-sm text-[#2D1810]">Production Environment</p>
+                                                <p class="text-xs text-[#9A948D]">Not yet deployed</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-xs text-[#9A948D] font-medium bg-[#F5F2EF] px-2 py-1 rounded">Pending</span>
+                                            <input type="checkbox" class="w-5 h-5 rounded border-[#E8E4E0] accent-[#10B981]">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary text-sm mt-4 flex items-center gap-1.5">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add Environment
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- TAB 6: ACTIVITY -->
                     <div id="activity" class="tab-section">
                         <div class="flex items-center gap-4 mb-4 border-b border-[#E8E4E0] pb-3">
                             <button class="text-sm font-medium text-[#FF6B35] border-b-2 border-[#FF6B35] pb-2">💬 Comments (3)</button>
@@ -712,7 +1180,7 @@ test.<span class="text-yellow-400">describe</span>(<span class="text-green-400">
                         <div class="space-y-3">
                             <div class="comment-item p-4">
                                 <div class="flex items-start gap-3">
-                                    <div class="avatar bg-[#FF6B35]">D</div>
+                                    <div class="avatar-initials bg-[#FF6B35]">D</div>
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2 mb-1">
                                             <span class="font-semibold text-sm">David</span>
@@ -731,7 +1199,7 @@ test.<span class="text-yellow-400">describe</span>(<span class="text-green-400">
                             
                             <div class="comment-item p-4 ml-8">
                                 <div class="flex items-start gap-3">
-                                    <div class="avatar-sm avatar bg-[#10B981]">A</div>
+                                    <div class="avatar-initials bg-[#10B981]">A</div>
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2 mb-1">
                                             <span class="font-semibold text-sm">Aisha</span>
@@ -750,7 +1218,7 @@ test.<span class="text-yellow-400">describe</span>(<span class="text-green-400">
                             
                             <div class="comment-item p-4">
                                 <div class="flex items-start gap-3">
-                                    <div class="avatar bg-[#F59E0B]">M</div>
+                                    <div class="avatar-initials bg-[#F59E0B]">M</div>
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2 mb-1">
                                             <span class="font-semibold text-sm">Marcus</span>
@@ -787,126 +1255,520 @@ test.<span class="text-yellow-400">describe</span>(<span class="text-green-400">
                 </div>
             </div>
             
-            <!-- GAP SIDEBAR -->
-            <div class="w-72 border-l border-[#E8E4E0] bg-white p-5 sticky top-0 h-screen">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-heading font-bold text-sm flex items-center gap-2">
-                        <span class="text-[#F59E0B]">⚠️</span>
-                        GAPS (2)
+            <!-- AI CHAT SIDEBAR -->
+            <div id="chatSidebar" class="chat-sidebar w-80 border-l border-[#E8E4E0] bg-white flex flex-col flex-shrink-0">
+                <div class="p-4 border-b border-[#E8E4E0]">
+                    <h3 class="font-heading text-sm flex items-center gap-2">
+                        <svg class="w-5 h-5 text-[#FF6B35]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9.813 15.904 9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12v4.5c0 .945-.446 1.788-1.146 2.336"/>
+                            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10c1.657 0 3.24-.402 4.636-1.117"/>
+                            <circle cx="21" cy="5" r="2"/>
+                        </svg>
+                        AI Assistant
                     </h3>
+                    <p class="text-xs text-[#9A948D] mt-1">Drop notes or ask questions about this story</p>
                 </div>
                 
-                <div class="gap-panel">
-                    <div class="gap-item">
-                        <div class="flex items-start gap-2">
-                            <span class="text-[#F59E0B]">⚠️</span>
-                            <div class="flex-1">
-                                <p class="text-xs font-medium text-[#92400E] mb-1">Missing:</p>
-                                <p class="text-xs text-[#92400E] leading-relaxed">Approver unavailable scenario — what happens when the designated approver is on extended leave or leaves the company?</p>
+                <!-- Chat Messages - Context Tab -->
+                <div class="flex-1 overflow-y-auto p-4 space-y-4 chat-messages" id="chat-context">
+                    <!-- AI Message - Story Summary -->
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 rounded-full bg-[#FF6B35] flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="21" cy="5" r="2"/>
+                                <path d="M9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-[#2D1810] leading-relaxed mb-2">📋 This story is about <strong>implementing a multi-level approval workflow</strong> based on user roles and request amounts:</p>
+                            <div class="space-y-1.5 text-xs text-[#2D1810] bg-[#F5F2EF] rounded-lg p-3">
+                                <p>• <strong>Managers</strong> approve requests ≤ $5,000</p>
+                                <p>• <strong>Directors</strong> approve $5,001 - $25,000</p>
+                                <p>• <strong>VPs</strong> approve anything > $25,000</p>
+                                <p class="pt-1.5 border-t border-[#E8E4E0] mt-1.5">• Includes <strong>delegation handling</strong> for unavailable approvers</p>
                             </div>
-                        </div>
-                        <div class="flex items-center gap-2 mt-3">
-                            <button class="text-xs text-[#9A948D] hover:text-[#2D1810]">Dismiss</button>
-                            <span class="text-[#D1D5DB]">·</span>
-                            <button class="text-xs text-[#FF6B35] font-medium">Address</button>
+                            <span class="text-[10px] text-[#9A948D] block mt-2">2:30 PM</span>
                         </div>
                     </div>
-                    <div class="gap-item">
-                        <div class="flex items-start gap-2">
-                            <span class="text-[#F59E0B]">⚠️</span>
-                            <div class="flex-1">
-                                <p class="text-xs font-medium text-[#92400E] mb-1">Missing:</p>
-                                <p class="text-xs text-[#92400E] leading-relaxed">Delegation rules for vacation/leave — need explicit escalation path</p>
+                    
+                    <!-- User Question -->
+                    <div class="flex gap-3 justify-end">
+                        <div class="bg-[#F5F2EF] rounded-lg p-3 max-w-[85%]">
+                            <p class="text-sm text-[#2D1810] leading-relaxed">Where did these thresholds come from?</p>
+                            <span class="text-[10px] text-[#9A948D]">2:32 PM</span>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Response -->
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 rounded-full bg-[#FF6B35] flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="21" cy="5" r="2"/>
+                                <path d="M9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-[#2D1810] leading-relaxed">Based on your <span class="text-[#FF6B35] font-medium">Client Meeting Notes</span> context source. The client specified these exact thresholds during the Feb 25 meeting.</p>
+                            <span class="text-[10px] text-[#9A948D] block mt-1">2:33 PM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Messages - Requirements Tab -->
+                <div class="flex-1 overflow-y-auto p-4 space-y-4 chat-messages hidden" id="chat-criteria">
+                    <!-- AI Message - Gaps Found -->
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 rounded-full bg-[#FF6B35] flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="21" cy="5" r="2"/>
+                                <path d="M9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-[#2D1810] leading-relaxed mb-2">⚠️ I found <strong>2 gaps</strong> in your acceptance criteria:</p>
+                            <div class="space-y-2">
+                                <div class="p-2 bg-[#FFFBEB] rounded border border-[#FCD34D]">
+                                    <p class="text-xs text-[#92400E]"><strong>Missing:</strong> Amount change after partial approval — what if manager approves $3K, then requester updates to $10K?</p>
+                                    <button class="mt-1.5 text-xs text-[#FF6B35] font-medium hover:underline">+ Add criterion</button>
+                                </div>
+                                <div class="p-2 bg-[#FFFBEB] rounded border border-[#FCD34D]">
+                                    <p class="text-xs text-[#92400E]"><strong>Missing:</strong> Time limit for approval responses — should requests auto-escalate?</p>
+                                    <button class="mt-1.5 text-xs text-[#FF6B35] font-medium hover:underline">+ Add criterion</button>
+                                </div>
                             </div>
+                            <span class="text-[10px] text-[#9A948D] block mt-2">2:34 PM</span>
                         </div>
-                        <div class="flex items-center gap-2 mt-3">
-                            <button class="text-xs text-[#9A948D] hover:text-[#2D1810]">Dismiss</button>
-                            <span class="text-[#D1D5DB]">·</span>
-                            <button class="text-xs text-[#FF6B35] font-medium">Address</button>
+                    </div>
+                    
+                    <!-- User Message -->
+                    <div class="flex gap-3 justify-end">
+                        <div class="bg-[#F5F2EF] rounded-lg p-3 max-w-[85%]">
+                            <p class="text-sm text-[#2D1810] leading-relaxed">Good catches! Add the amount change one.</p>
+                            <span class="text-[10px] text-[#9A948D]">2:36 PM</span>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Response -->
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 rounded-full bg-[#FF6B35] flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="21" cy="5" r="2"/>
+                                <path d="M9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-[#10B981] leading-relaxed">✅ Added! New criterion: <em>"Amount changes reset approval chain if new amount exceeds current approver threshold"</em></p>
+                            <span class="text-[10px] text-[#9A948D] block mt-1">2:37 PM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Messages - Implementation Tab -->
+                <div class="flex-1 overflow-y-auto p-4 space-y-4 chat-messages hidden" id="chat-devplan">
+                    <!-- AI Message - Implementation Status -->
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 rounded-full bg-[#FF6B35] flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="21" cy="5" r="2"/>
+                                <path d="M9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-[#2D1810] leading-relaxed mb-2">🛠️ <strong>Implementation Progress:</strong></p>
+                            <div class="space-y-1.5">
+                                <div class="flex items-center gap-2 text-xs">
+                                    <span class="text-[#10B981]">✓</span>
+                                    <span class="text-[#2D1810]">Domain Model (3/3 complete)</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs">
+                                    <span class="text-[#FF6B35]">◐</span>
+                                    <span class="text-[#2D1810]">Microflow Logic (0/2 complete)</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs">
+                                    <span class="text-[#9A948D]">○</span>
+                                    <span class="text-[#9A948D]">Page Logic (0/1 complete)</span>
+                                </div>
+                            </div>
+                            <span class="text-[10px] text-[#9A948D] block mt-2">2:40 PM</span>
+                        </div>
+                    </div>
+                    
+                    <!-- User Message -->
+                    <div class="flex gap-3 justify-end">
+                        <div class="bg-[#F5F2EF] rounded-lg p-3 max-w-[85%]">
+                            <p class="text-sm text-[#2D1810] leading-relaxed">What's the best approach for the approval routing microflow?</p>
+                            <span class="text-[10px] text-[#9A948D]">2:42 PM</span>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Response -->
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 rounded-full bg-[#FF6B35] flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="21" cy="5" r="2"/>
+                                <path d="M9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-[#2D1810] leading-relaxed mb-2">For Mendix, I recommend:</p>
+                            <div class="text-xs text-[#2D1810] bg-[#EFF6FF] rounded-lg p-3 space-y-1">
+                                <p><strong>1.</strong> Create a decision microflow that checks amount thresholds</p>
+                                <p><strong>2.</strong> Use a <span class="text-[#2563EB]">Workflow</span> module for approval states</p>
+                                <p><strong>3.</strong> Store approver delegate in User entity association</p>
+                            </div>
+                            <span class="text-[10px] text-[#9A948D] block mt-1">2:43 PM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Messages - QA Tab -->
+                <div class="flex-1 overflow-y-auto p-4 space-y-4 chat-messages hidden" id="chat-tests">
+                    <!-- AI Message - Test Coverage -->
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 rounded-full bg-[#FF6B35] flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="21" cy="5" r="2"/>
+                                <path d="M9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-[#2D1810] leading-relaxed mb-2">🧪 <strong>Test Coverage Summary:</strong></p>
+                            <div class="bg-[#F5F2EF] rounded-lg p-3 space-y-2">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-[#2D1810]">UAT Test Steps</span>
+                                    <span class="text-[#9A948D]">5 steps</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-[#2D1810]">Automated Tests</span>
+                                    <span class="text-[#10B981]">2 passing</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-[#2D1810]">Coverage</span>
+                                    <span class="text-[#F59E0B]">65%</span>
+                                </div>
+                            </div>
+                            <span class="text-[10px] text-[#9A948D] block mt-2">2:45 PM</span>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Suggestion -->
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 rounded-full bg-[#FF6B35] flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="21" cy="5" r="2"/>
+                                <path d="M9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-[#2D1810] leading-relaxed">💡 Missing test scenarios:</p>
+                            <div class="mt-2 space-y-1">
+                                <div class="p-2 bg-[#FFFBEB] rounded text-xs text-[#92400E]">• Delegation workflow test</div>
+                                <div class="p-2 bg-[#FFFBEB] rounded text-xs text-[#92400E]">• VP approval edge case ($100K+)</div>
+                            </div>
+                            <button class="mt-2 text-xs text-[#FF6B35] font-medium hover:underline">+ Generate missing tests</button>
+                            <span class="text-[10px] text-[#9A948D] block mt-1">2:46 PM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Messages - Deployment Tab -->
+                <div class="flex-1 overflow-y-auto p-4 space-y-4 chat-messages hidden" id="chat-deployment">
+                    <!-- AI Message - Deployment Status -->
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 rounded-full bg-[#FF6B35] flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="21" cy="5" r="2"/>
+                                <path d="M9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-[#2D1810] leading-relaxed mb-2">🚀 <strong>Deployment Readiness:</strong></p>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2 text-xs p-2 bg-[#D1FAE5] rounded">
+                                    <span class="text-[#10B981]">✓</span>
+                                    <span class="text-[#059669]">Test environment deployed</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs p-2 bg-[#F5F2EF] rounded">
+                                    <span class="text-[#9A948D]">○</span>
+                                    <span class="text-[#9A948D]">Production pending</span>
+                                </div>
+                            </div>
+                            <span class="text-[10px] text-[#9A948D] block mt-2">2:48 PM</span>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Checklist -->
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 rounded-full bg-[#FF6B35] flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="21" cy="5" r="2"/>
+                                <path d="M9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-[#2D1810] leading-relaxed mb-2">📋 <strong>Pre-deployment checklist:</strong></p>
+                            <div class="text-xs space-y-1">
+                                <p class="text-[#10B981]">✓ Database backup</p>
+                                <p class="text-[#10B981]">✓ Regression tests passed</p>
+                                <p class="text-[#F59E0B]">◐ Release notes pending</p>
+                                <p class="text-[#9A948D]">○ Stakeholder notification</p>
+                            </div>
+                            <span class="text-[10px] text-[#9A948D] block mt-2">2:49 PM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Messages - Activity Tab -->
+                <div class="flex-1 overflow-y-auto p-4 space-y-4 chat-messages hidden" id="chat-activity">
+                    <!-- AI Message - Activity Summary -->
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 rounded-full bg-[#FF6B35] flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="21" cy="5" r="2"/>
+                                <path d="M9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-[#2D1810] leading-relaxed mb-2">💬 <strong>Discussion Summary:</strong></p>
+                            <div class="bg-[#F5F2EF] rounded-lg p-3 text-xs text-[#2D1810] space-y-2">
+                                <p><strong>David</strong> raised a concern about amount changes after partial approval.</p>
+                                <p><strong>Aisha</strong> acknowledged and proposed resetting the approval chain.</p>
+                                <p><strong>Marcus</strong> confirmed this aligns with client requirements.</p>
+                            </div>
+                            <span class="text-[10px] text-[#9A948D] block mt-2">2:50 PM</span>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Action Item -->
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 rounded-full bg-[#FF6B35] flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="21" cy="5" r="2"/>
+                                <path d="M9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-[#2D1810] leading-relaxed">📌 <strong>Action item detected:</strong></p>
+                            <div class="mt-2 p-2 bg-[#FFF7F3] rounded border border-[#FF6B35] text-xs text-[#2D1810]">
+                                Aisha to add criterion for amount change scenario
+                            </div>
+                            <button class="mt-2 text-xs text-[#FF6B35] font-medium hover:underline">+ Create task from this</button>
+                            <span class="text-[10px] text-[#9A948D] block mt-1">2:51 PM</span>
                         </div>
                     </div>
                 </div>
                 
-                <button class="btn-ghost text-xs w-full mt-3">Dismiss All</button>
+                <!-- Quick Actions - Context Tab -->
+                <div class="p-3 border-t border-[#E8E4E0] bg-[#FAFAF9] quick-actions" id="actions-context">
+                    <button class="w-full text-left text-xs text-[#FF6B35] font-medium hover:bg-white p-2 rounded flex items-center gap-2 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        Search Context
+                    </button>
+                </div>
+
+                <!-- Quick Actions - Requirements Tab -->
+                <div class="p-3 border-t border-[#E8E4E0] bg-[#FAFAF9] quick-actions hidden" id="actions-criteria">
+                    <button class="w-full text-left text-xs text-[#FF6B35] font-medium hover:bg-white p-2 rounded flex items-center gap-2 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                        Analyze for Gaps
+                    </button>
+                </div>
+
+                <!-- Quick Actions - Implementation Tab -->
+                <div class="p-3 border-t border-[#E8E4E0] bg-[#FAFAF9] quick-actions hidden" id="actions-devplan">
+                    <button class="w-full text-left text-xs text-[#FF6B35] font-medium hover:bg-white p-2 rounded flex items-center gap-2 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Regenerate Implementation Plan
+                    </button>
+                </div>
+
+                <!-- Quick Actions - QA Tab -->
+                <div class="p-3 border-t border-[#E8E4E0] bg-[#FAFAF9] quick-actions hidden" id="actions-tests">
+                    <button class="w-full text-left text-xs text-[#FF6B35] font-medium hover:bg-white p-2 rounded flex items-center gap-2 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Generate More Tests
+                    </button>
+                </div>
+
+                <!-- Quick Actions - Deployment Tab -->
+                <div class="p-3 border-t border-[#E8E4E0] bg-[#FAFAF9] quick-actions hidden" id="actions-deployment">
+                    <button class="w-full text-left text-xs text-[#FF6B35] font-medium hover:bg-white p-2 rounded flex items-center gap-2 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Check Deployment Readiness
+                    </button>
+                </div>
+
+                <!-- Quick Actions - Activity Tab -->
+                <div class="p-3 border-t border-[#E8E4E0] bg-[#FAFAF9] quick-actions hidden" id="actions-activity">
+                    <button class="w-full text-left text-xs text-[#FF6B35] font-medium hover:bg-white p-2 rounded flex items-center gap-2 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Summarize Discussion
+                    </button>
+                </div>
                 
-                <!-- Severity Legend -->
-                <div class="mt-6 pt-4 border-t border-[#E8E4E0]">
-                    <p class="text-xs text-[#9A948D] uppercase font-medium mb-3">Gap Severity</p>
-                    <div class="space-y-2">
-                        <div class="flex items-center gap-2 text-xs">
-                            <span class="text-red-500">🚫</span>
-                            <span class="text-[#9A948D]">Critical — Blocks "Ready" status</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-xs">
-                            <span class="text-amber-500">⚠️</span>
-                            <span class="text-[#9A948D]">Warning — Shown but doesn't block</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-xs">
-                            <span class="text-blue-500">💡</span>
-                            <span class="text-[#9A948D]">Suggestion — Optional improvement</span>
-                        </div>
+                <!-- Chat Input -->
+                <div class="p-4 border-t border-[#E8E4E0]">
+                    <div class="flex gap-2 items-end">
+                        <textarea 
+                            id="chatInput"
+                            rows="1"
+                            placeholder="Drop notes or ask a question..." 
+                            class="chat-textarea flex-1 text-sm bg-[#FAFAF9] border border-[#E8E4E0] rounded-lg px-3 py-2 outline-none focus:border-[#FF6B35] focus:ring-2 focus:ring-[#FF6B35]/20 focus:bg-white transition-all placeholder:text-[#9A948D] resize-none overflow-hidden min-h-[38px] max-h-[120px]"
+                        ></textarea>
+                        <button class="btn-primary px-3 py-2 flex-shrink-0">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="22" y1="2" x2="11" y2="13"/>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                            </svg>
+                        </button>
                     </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- FOOTER INFO -->
-        <div class="px-8 py-6 bg-white border-t border-[#E8E4E0]">
-            <h2 class="font-heading font-bold text-lg mb-4 text-[#FF6B35]">📄 Story Details Page — All Tabs</h2>
-            <div class="grid grid-cols-5 gap-6">
-                <div>
-                    <h3 class="font-semibold text-sm mb-2">📝 Overview Tab</h3>
-                    <ul class="text-sm text-[#9A948D] space-y-1">
-                        <li>• Story description</li>
-                        <li>• Original notes</li>
-                        <li>• Attachments</li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-sm mb-2">✅ Acceptance Criteria</h3>
-                    <ul class="text-sm text-[#9A948D] space-y-1">
-                        <li>• AI-generated criteria</li>
-                        <li>• Given/When/Then format</li>
-                        <li>• Add/Edit/Delete</li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-sm mb-2">🔧 Dev Plan</h3>
-                    <ul class="text-sm text-[#9A948D] space-y-1">
-                        <li>• Step-by-step guide</li>
-                        <li>• Mendix hints</li>
-                        <li>• Progress tracking</li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-sm mb-2">🧪 Test Scripts</h3>
-                    <ul class="text-sm text-[#9A948D] space-y-1">
-                        <li>• Playwright tests</li>
-                        <li>• Syntax highlighting</li>
-                        <li>• Copy/Download</li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-sm mb-2">💬 Activity</h3>
-                    <ul class="text-sm text-[#9A948D] space-y-1">
-                        <li>• Comments thread</li>
-                        <li>• @ mentions</li>
-                        <li>• Change history</li>
-                    </ul>
                 </div>
             </div>
         </div>
     </div>
     
     <script>
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            const isOpen = dropdown.classList.contains('open');
+            closeAllDropdowns();
+            if (!isOpen) {
+                dropdown.classList.add('open');
+            }
+        }
+        
+        function closeDropdown(id) {
+            document.getElementById(id).classList.remove('open');
+        }
+        
+        function closeAllDropdowns() {
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+        }
+        
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.dropdown')) {
+                closeAllDropdowns();
+            }
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeAllDropdowns();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                alert('Command palette would open here!');
+            }
+        });
+        
+        function switchChatSidebar(tabId) {
+            document.querySelectorAll('.chat-messages').forEach(m => m.classList.add('hidden'));
+            document.querySelectorAll('.quick-actions').forEach(a => a.classList.add('hidden'));
+            
+            const chatMap = {
+                'context': 'chat-context',
+                'criteria': 'chat-criteria',
+                'devplan': 'chat-devplan',
+                'tests': 'chat-tests',
+                'deployment': 'chat-deployment',
+                'activity': 'chat-activity'
+            };
+            
+            const actionsMap = {
+                'context': 'actions-context',
+                'criteria': 'actions-criteria',
+                'devplan': 'actions-devplan',
+                'tests': 'actions-tests',
+                'deployment': 'actions-deployment',
+                'activity': 'actions-activity'
+            };
+            
+            if (chatMap[tabId]) {
+                document.getElementById(chatMap[tabId]).classList.remove('hidden');
+            }
+            if (actionsMap[tabId]) {
+                document.getElementById(actionsMap[tabId]).classList.remove('hidden');
+            }
+        }
+        
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
                 document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
                 btn.classList.add('tab-active');
                 document.getElementById(btn.dataset.tab).classList.add('active');
+                switchChatSidebar(btn.dataset.tab);
             });
         });
+
+        const chatInput = document.getElementById('chatInput');
+        const chatSidebar = document.getElementById('chatSidebar');
+        const LINE_HEIGHT = 22;
+        const MIN_HEIGHT = 38;
+        const MAX_HEIGHT = 120;
+        let isSidebarExpanded = false;
+        let isTransitioning = false;
+
+        function calculateLineCountAtWidth(text, width) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.font = '14px Manrope, sans-serif';
+            const padding = 24;
+            const availableWidth = width - padding;
+            const words = text.split(' ');
+            let lines = 1;
+            let currentLine = '';
+            
+            for (const word of words) {
+                const testLine = currentLine ? currentLine + ' ' + word : word;
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > availableWidth && currentLine) {
+                    lines++;
+                    currentLine = word;
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            return lines;
+        }
+
+        function autoExpandTextarea() {
+            if (isTransitioning) return;
+            
+            chatInput.style.height = 'auto';
+            const newHeight = Math.min(Math.max(chatInput.scrollHeight, MIN_HEIGHT), MAX_HEIGHT);
+            chatInput.style.height = newHeight + 'px';
+            
+            const collapsedWidth = 320 - 32;
+            const lineCountCollapsed = calculateLineCountAtWidth(chatInput.value, collapsedWidth);
+            
+            if (!isSidebarExpanded && lineCountCollapsed > 2) {
+                isTransitioning = true;
+                chatSidebar.classList.add('expanded');
+                isSidebarExpanded = true;
+                setTimeout(() => { isTransitioning = false; }, 300);
+            } else if (isSidebarExpanded && lineCountCollapsed < 2) {
+                isTransitioning = true;
+                chatSidebar.classList.remove('expanded');
+                isSidebarExpanded = false;
+                setTimeout(() => { isTransitioning = false; }, 300);
+            }
+        }
+
+        chatInput.addEventListener('input', autoExpandTextarea);
+        chatInput.addEventListener('focus', autoExpandTextarea);
     </script>
 </body>
 </html>

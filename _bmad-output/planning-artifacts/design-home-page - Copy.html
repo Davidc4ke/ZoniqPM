@@ -162,8 +162,8 @@
         </header>
         
         <!-- HERO UNIVERSAL INPUT -->
-        <div class="px-8 pt-6 pb-2 hero-input-container" id="heroInputContainer">
-            <div class="universal-input-hero p-4" id="heroInput">
+        <div class="px-8 pt-6 pb-2">
+            <div class="universal-input-hero p-4">
                 <div class="flex items-start gap-3">
                     <svg class="w-6 h-6 mt-0.5 text-[#FF6B35]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9.813 15.904 9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12v4.5c0 .945-.446 1.788-1.146 2.336"/>
@@ -177,7 +177,7 @@
                             class="w-full outline-none bg-transparent text-base font-medium placeholder:text-[#9A948D] resize-none leading-relaxed"
                         ></textarea>
                     </div>
-                    <button class="btn-primary text-sm px-4 py-2" id="askButton" onclick="handleAskClick()">Ask</button>
+                    <button class="btn-primary text-sm px-4 py-2">Ask</button>
                 </div>
                 <div class="flex items-center justify-between mt-3 pt-2 border-t border-[#E8E4E0]">
                     <span class="text-xs text-[#9A948D]">Try: "Open story 47" · "What's blocked?" · "Assign #52 to Aisha"</span>
@@ -187,7 +187,7 @@
         </div>
         
         <!-- DASHBOARD GRID -->
-        <div class="px-8 py-6 dashboard-content" id="dashboardContent">
+        <div class="px-8 py-6">
             <div class="grid grid-cols-3 gap-5">
                 
                 <!-- Assigned Stories -->
@@ -518,53 +518,6 @@
         </div>
     </div>
     
-    <!-- CHAT OVERLAY -->
-    <div class="chat-overlay" id="chatOverlay">
-        <header class="topbar">
-            <div class="flex items-center justify-between px-6 py-3 max-w-[1280px] mx-auto">
-                <div class="flex items-center gap-4">
-                    <button class="back-button" onclick="closeChatOverlay()">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m15 18-6-6 6-6"/>
-                        </svg>
-                        Back to Dashboard
-                    </button>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="avatar-initials bg-[#FF6B35]">AI</div>
-                    <span class="text-sm font-medium">Zoniq Assistant</span>
-                </div>
-            </div>
-        </header>
-        
-        <div class="chat-messages" id="chatMessages">
-            <div class="chat-messages-inner"></div>
-        </div>
-        
-        <div class="chat-input-container">
-            <div class="chat-input-inner">
-                <div class="flex items-end gap-3">
-                    <div class="flex-1 bg-[#FAFAF9] border border-[#E8E4E0] rounded-xl p-3 transition-all focus-within:border-[#FF6B35]">
-                        <textarea 
-                            id="chatInput"
-                            rows="1" 
-                            placeholder="Continue conversation... or try 'Open #47' · 'What\'s blocked?'"
-                            class="w-full outline-none bg-transparent text-sm resize-none leading-relaxed"
-                            onkeydown="handleChatInput(event)"
-                        ></textarea>
-                    </div>
-                    <button class="btn-primary px-5 py-2.5" onclick="handleChatInput({key: 'Enter', shiftKey: false, preventDefault: () => {}})">Send</button>
-                </div>
-                <div class="flex items-center justify-between mt-2 px-1">
-                    <span class="text-xs text-[#9A948D]">
-                        Try: "Open #44" · "Assign #47 to Aisha" · "What\'s blocked?"
-                    </span>
-                    <button class="text-xs text-[#9A948D] hover:text-[#2D1810]" onclick="document.querySelector('.chat-messages-inner').innerHTML = ''">Clear</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <script>
         function toggleDropdown(id) {
             const dropdown = document.getElementById(id);
@@ -592,268 +545,12 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeAllDropdowns();
-                closeChatOverlay();
             }
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
                 alert('Command palette would open here!');
             }
         });
-        
-        const chatOverlay = document.getElementById('chatOverlay');
-        const heroInputContainer = document.getElementById('heroInputContainer');
-        const dashboardContent = document.getElementById('dashboardContent');
-        const heroTextarea = document.querySelector('#heroInput textarea');
-        const chatMessages = document.querySelector('.chat-messages-inner');
-        const chatInput = document.getElementById('chatInput');
-        
-        let isChatOpen = false;
-        
-        function handleAskClick() {
-            const query = heroTextarea.value.trim() || 'What do I need to review?';
-            openChatOverlay(query);
-        }
-        
-        function openChatOverlay(query) {
-            if (isChatOpen) return;
-            isChatOpen = true;
-            
-            heroInputContainer.classList.add('fading');
-            dashboardContent.classList.add('fading');
-            
-            setTimeout(() => {
-                chatOverlay.classList.add('active');
-                heroInputContainer.style.display = 'none';
-                dashboardContent.style.display = 'none';
-                
-                addUserMessage(query);
-                
-                setTimeout(() => {
-                    showTypingIndicator();
-                    
-                    setTimeout(() => {
-                        removeTypingIndicator();
-                        addAIResponse(query);
-                    }, 1500);
-                }, 400);
-            }, 250);
-        }
-        
-        function closeChatOverlay() {
-            if (!isChatOpen) return;
-            isChatOpen = false;
-            
-            chatOverlay.classList.remove('active');
-            chatMessages.innerHTML = '';
-            heroInputContainer.style.display = '';
-            dashboardContent.style.display = '';
-            heroInputContainer.classList.remove('fading');
-            dashboardContent.classList.remove('fading');
-            heroTextarea.value = '';
-        }
-        
-        function addUserMessage(text) {
-            const msg = document.createElement('div');
-            msg.className = 'chat-message user';
-            msg.innerHTML = `
-                <div class="message-content">
-                    <p class="text-sm leading-relaxed">${text}</p>
-                    <p class="text-xs text-[#9A948D] mt-2">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                </div>
-                <div class="message-avatar user">D</div>
-            `;
-            chatMessages.appendChild(msg);
-            setTimeout(() => msg.classList.add('visible'), 50);
-            scrollToBottom();
-        }
-        
-        function showTypingIndicator() {
-            const indicator = document.createElement('div');
-            indicator.className = 'chat-message ai';
-            indicator.id = 'typingIndicator';
-            indicator.innerHTML = `
-                <div class="message-avatar ai">AI</div>
-                <div class="message-content">
-                    <div class="typing-indicator">
-                        <span></span><span></span><span></span>
-                    </div>
-                </div>
-            `;
-            chatMessages.appendChild(indicator);
-            setTimeout(() => indicator.classList.add('visible'), 50);
-            scrollToBottom();
-        }
-        
-        function removeTypingIndicator() {
-            const indicator = document.getElementById('typingIndicator');
-            if (indicator) indicator.remove();
-        }
-        
-        function addAIResponse(query) {
-            const msg = document.createElement('div');
-            msg.className = 'chat-message ai';
-            
-            const response = getAIResponse(query);
-            
-            msg.innerHTML = `
-                <div class="message-avatar ai">AI</div>
-                <div class="message-content">
-                    ${response}
-                </div>
-            `;
-            chatMessages.appendChild(msg);
-            setTimeout(() => msg.classList.add('visible'), 50);
-            scrollToBottom();
-        }
-        
-        function getAIResponse(query) {
-            const lowerQuery = query.toLowerCase();
-            
-            if (lowerQuery.includes('review') || lowerQuery.includes('need to')) {
-                return `
-                    <p class="text-sm font-semibold mb-3">📋 You have <strong>5 stories</strong> ready for review:</p>
-                    
-                    <div class="story-suggestion-card">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="priority-dot high"></span>
-                                <div>
-                                    <span class="font-semibold text-sm">#44 Login Flow</span>
-                                    <p class="text-xs text-[#9A948D]">Claims Portal · User authentication</p>
-                                </div>
-                            </div>
-                            <span class="story-card-status ready">Ready</span>
-                        </div>
-                    </div>
-                    
-                    <div class="story-suggestion-card">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="priority-dot medium"></span>
-                                <div>
-                                    <span class="font-semibold text-sm">#45 Dashboard Widget</span>
-                                    <p class="text-xs text-[#9A948D]">Claims Portal · Charts & metrics</p>
-                                </div>
-                            </div>
-                            <span class="story-card-status ready">Ready</span>
-                        </div>
-                    </div>
-                    
-                    <div class="story-suggestion-card">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="priority-dot medium"></span>
-                                <div>
-                                    <span class="font-semibold text-sm">#46 API Integration</span>
-                                    <p class="text-xs text-[#9A948D]">Policy Mgmt · External APIs</p>
-                                </div>
-                            </div>
-                            <span class="story-card-status ready">Ready</span>
-                        </div>
-                    </div>
-                    
-                    <div class="story-suggestion-card">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="priority-dot low"></span>
-                                <div>
-                                    <span class="font-semibold text-sm">#49 Search Feature</span>
-                                    <p class="text-xs text-[#9A948D]">Claims Portal · Global search</p>
-                                </div>
-                            </div>
-                            <span class="story-card-status review">In Review</span>
-                        </div>
-                    </div>
-                    
-                    <div class="story-suggestion-card">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="priority-dot low"></span>
-                                <div>
-                                    <span class="font-semibold text-sm">#51 Notifications</span>
-                                    <p class="text-xs text-[#9A948D]">Claims Portal · Email & in-app</p>
-                                </div>
-                            </div>
-                            <span class="story-card-status ready">Ready</span>
-                        </div>
-                    </div>
-                    
-                    <div class="action-buttons">
-                        <button class="btn-primary text-sm" onclick="closeChatOverlay()">Review Next</button>
-                        <button class="btn-secondary text-sm" onclick="closeChatOverlay()">View All in Kanban</button>
-                    </div>
-                    
-                    <p class="text-xs text-[#9A948D] mt-3">Say "open #44" to view a story, or "review all" for the full queue.</p>
-                `;
-            } else if (lowerQuery.includes('blocked') || lowerQuery.includes('stuck')) {
-                return `
-                    <p class="text-sm font-semibold mb-3">⚠️ You have <strong>2 blocked stories</strong>:</p>
-                    
-                    <div class="story-suggestion-card" style="border-left: 3px solid #EF4444;">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <span class="font-semibold text-sm">#47 Approval Workflow</span>
-                                <p class="text-xs text-[#9A948D]">Blocked by: Waiting for security review</p>
-                            </div>
-                            <span class="text-xs text-[#EF4444] font-medium">2 days blocked</span>
-                        </div>
-                    </div>
-                    
-                    <div class="story-suggestion-card" style="border-left: 3px solid #EF4444;">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <span class="font-semibold text-sm">#52 Export Feature</span>
-                                <p class="text-xs text-[#9A948D]">Blocked by: API documentation needed</p>
-                            </div>
-                            <span class="text-xs text-[#EF4444] font-medium">1 day blocked</span>
-                        </div>
-                    </div>
-                    
-                    <div class="action-buttons">
-                        <button class="btn-primary text-sm" onclick="closeChatOverlay()">Notify Team</button>
-                        <button class="btn-secondary text-sm" onclick="closeChatOverlay()">View Details</button>
-                    </div>
-                `;
-            } else {
-                return `
-                    <p class="text-sm leading-relaxed mb-3">I found some relevant items for "${query}":</p>
-                    
-                    <div class="bg-white rounded-lg p-3 border border-[#E8E4E0] mb-3">
-                        <div class="text-xs text-[#9A948D] mb-1">Suggested Action</div>
-                        <p class="text-sm font-medium">Would you like me to create a story for this?</p>
-                    </div>
-                    
-                    <div class="action-buttons">
-                        <button class="btn-primary text-sm">Create Story</button>
-                        <button class="btn-secondary text-sm">Search Instead</button>
-                    </div>
-                `;
-            }
-        }
-        
-        function scrollToBottom() {
-            const messagesContainer = document.getElementById('chatMessages');
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-        
-        function handleChatInput(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                const query = chatInput.value.trim();
-                if (query) {
-                    addUserMessage(query);
-                    chatInput.value = '';
-                    
-                    setTimeout(() => {
-                        showTypingIndicator();
-                        setTimeout(() => {
-                            removeTypingIndicator();
-                            addAIResponse(query);
-                        }, 1200);
-                    }, 300);
-                }
-            }
-        }
     </script>
 </body>
 </html>
