@@ -21,18 +21,56 @@
     --kanban-testing: #9333EA;
     --kanban-review: #2563EB;
     --kanban-done: #10B981;
+    /* Object Colors */
+    --object-project: #9333EA;
+    --object-project-bg: #F3E8FF;
+    --object-app: #2563EB;
+    --object-app-bg: #EFF6FF;
+    --object-app-card: #DBEAFE;
+    --object-customer: #10B981;
+    --object-customer-bg: #D1FAE5;
 }
 
 * { font-family: 'Manrope', sans-serif; }
 body { background: #E8E4E0; color: var(--dark); }
+
+/* Custom scrollbar with fixed width that doesn't change on zoom */
+::-webkit-scrollbar {
+    width: 8px;
+    min-width: 8px;
+    max-width: 8px;
+    height: 8px;
+    min-height: 8px;
+    max-height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--off-white);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--warm-gray);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--medium-gray);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: var(--orange);
+}
 h1 { font-weight: 800; }
 h2, h3, h4, h5, h6, .font-heading { font-weight: 200; }
 
 .app-container {
     background: var(--off-white);
-    max-width: 1280px;
-    margin: 0 auto;
     min-height: 100vh;
+}
+
+.page-content {
+    max-width: 1440px;
+    margin: 0 auto;
 }
 
 .universal-input-hero {
@@ -306,6 +344,9 @@ h2, h3, h4, h5, h6, .font-heading { font-weight: 200; }
 .story-card-status.ready { background: var(--status-ready-bg); color: var(--status-ready-text); }
 .story-card-status.progress { background: var(--status-progress-bg); color: var(--status-progress-text); }
 .story-card-status.review { background: var(--status-review-bg); color: var(--status-review-text); }
+.story-card-status.backlog { background: #F3F4F6; color: #6B7280; }
+.story-card-status.testing { background: #F3E8FF; color: #9333EA; }
+.story-card-status.done { background: #D1FAE5; color: #059669; }
 
 .priority-dot {
     width: 8px;
@@ -345,7 +386,7 @@ h2, h3, h4, h5, h6, .font-heading { font-weight: 200; }
     visibility: hidden;
     transform: translateY(-4px);
     transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
-    z-index: 100;
+    z-index: 9999;
 }
 
 .dropdown.open .dropdown-menu {
@@ -635,7 +676,7 @@ h2, h3, h4, h5, h6, .font-heading { font-weight: 200; }
 .chat-overlay {
     position: fixed;
     inset: 0;
-    background: var(--off-white);
+    background: #E8E4E0;
     z-index: 100;
     display: none;
     flex-direction: column;
@@ -644,6 +685,19 @@ h2, h3, h4, h5, h6, .font-heading { font-weight: 200; }
 .chat-overlay.active {
     display: flex;
     animation: fadeIn 0.3s ease-out;
+}
+
+.chat-overlay-content {
+    width: 100%;
+    background: var(--off-white);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-overlay .topbar {
+    background: white;
+    border-bottom: 1px solid var(--warm-gray);
 }
 
 .chat-overlay .chat-messages {
@@ -817,4 +871,151 @@ h2, h3, h4, h5, h6, .font-heading { font-weight: 200; }
 .hero-input-container.fading {
     opacity: 0;
     transform: translateY(-10px);
+}
+
+.animate-in {
+    opacity: 0;
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-in.delay-1 { animation-delay: 0.05s; }
+.animate-in.delay-2 { animation-delay: 0.1s; }
+.animate-in.delay-3 { animation-delay: 0.15s; }
+.animate-in.delay-4 { animation-delay: 0.2s; }
+.animate-in.delay-5 { animation-delay: 0.25s; }
+.animate-in.delay-6 { animation-delay: 0.3s; }
+.animate-in.delay-7 { animation-delay: 0.35s; }
+.animate-in.delay-8 { animation-delay: 0.4s; }
+
+.hero-animate {
+    opacity: 0;
+    animation: heroSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.1s;
+}
+
+@keyframes heroSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.story-card-animate {
+    opacity: 0;
+    animation: cardSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.activity-item-animate {
+    opacity: 0;
+    animation: activitySlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes activitySlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.progress-bar-animate {
+    transform-origin: left;
+    width: 0;
+    animation: progressGrow 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.5s;
+}
+
+@keyframes progressGrow {
+    from { width: 0; }
+    to { width: var(--progress-width, 72%); }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.4); }
+    50% { box-shadow: 0 0 20px 5px rgba(255, 107, 53, 0.2); }
+}
+
+.hero-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+    animation-delay: 1s;
+}
+
+.chat-message-animate {
+    opacity: 0;
+    animation: chatSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes chatSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.nav-link.active {
+    background: rgba(255, 255, 255, 0.5);
+    color: var(--dark);
+}
+
+.btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--dark);
+    transition: background 0.2s cubic-bezier(0.25, 1, 0.5, 1), color 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.btn-icon:hover {
+    background: var(--warm-gray);
+}
+
+.btn-icon:focus-visible {
+    outline: 2px solid var(--orange);
+    outline-offset: 2px;
 }

@@ -633,6 +633,43 @@ All cards throughout the dashboard use a consistent warm gray background (`#F5F2
 }
 ```
 
+**Object Type Colors:**
+
+Each major object type in Zoniq has a distinct color identity for cards, headers, and accents:
+
+```css
+:root {
+    /* Ticket/Story - Orange (action-oriented, primary brand) */
+    --object-ticket: #FF6B35;
+    --object-ticket-bg: #FFF7F3;
+    --object-ticket-card: #F5F2EF;
+    
+    /* App - Blue (technical/system objects) */
+    --object-app: #2563EB;
+    --object-app-bg: #EFF6FF;
+    --object-app-card: #F0F7FF;
+    
+    /* Project - Purple (organizational/creative) */
+    --object-project: #9333EA;
+    --object-project-bg: #FAF5FF;
+    --object-project-card: #F9F5FC;
+    
+    /* Customer - Green (people/external relationships) */
+    --object-customer: #10B981;
+    --object-customer-bg: #ECFDF5;
+    --object-customer-card: #F0FDF9;
+}
+```
+
+**Object Color Usage:**
+
+| Object | Primary Color | Card Background | Header Background | Use Case |
+|--------|--------------|-----------------|-------------------|----------|
+| **Ticket/Story** | `#FF6B35` | `#F5F2EF` | `#F5F2EF` | Story cards, ticket details, AI suggestions |
+| **App** | `#2563EB` | `#F0F7FF` | `#EFF6FF` | App cards, app management pages, environment indicators |
+| **Project** | `#9333EA` | `#F9F5FC` | `#FAF5FF` | Project cards, project overviews, module groupings |
+| **Customer** | `#10B981` | `#F0FDF9` | `#ECFDF5` | Customer cards, client pages, external entity indicators |
+
 **Key Component Classes:**
 
 | Class | Purpose |
@@ -1868,6 +1905,222 @@ The Story Detail page is the primary workspace for working with individual stori
 | QA | Generate More Tests |
 | Deployment | Start Deployment |
 | Activity | Create Task from Action Item |
+
+## App Management Page
+
+### Page Overview
+
+The App Management page provides a comprehensive dashboard for monitoring and managing a Zoniq application. It serves as a central hub for developers and managers to view app health, track projects, monitor logs, and manage deployments.
+
+| Persona | Primary Use | Focus |
+|---------|-------------|-------|
+| **David (Senior)** | Monitor app health, manage deployments | Environment status, error logs, deployment actions |
+| **Aisha (Developer)** | View logs, check module status, debug issues | Live logs, test coverage, module health |
+| **Marcus (PM)** | Track project progress, view team activity | Project cards, activity timeline, team widgets |
+
+### Object Type Color
+
+App objects use the **Blue** color identity:
+
+| Element | Color | Usage |
+|---------|-------|-------|
+| Header background | `#EFF6FF` | App header section |
+| Card background | `#F0F7FF` | App-specific cards |
+| Primary accent | `#2563EB` | Icons, buttons, links |
+| Text (dark) | `#1E3A8A` | Headings, titles |
+| Border | `#BFDBFE` | Header borders |
+
+### Full Page Layout
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│  [LOGO] ZONIQ   [Dashboard] [Kanban] [Projects] [Apps] [Masterdata] [Accounts]   │
+│                                                        [Create▾] [💬] [👤]      │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│  APP HEADER (Blue theme - #EFF6FF)                                              │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │ [📦] Claims Management System    v2.4.1  ● Online                        │   │
+│  │      Mendix application for processing insurance claims                  │   │
+│  │                                                           [🔮] [⚙️] [🚀] [📋]│   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                 │
+│  ┌──────────┐  ┌─────────────────────────────────────────────────────────────┐ │
+│  │ NAV      │  │ CONTENT AREA                                                 │ │
+│  │ ──────── │  │ ─────────────────────────────────────────────────────────── │ │
+│  │ Projects │  │ PROJECTS OVERVIEW                                            │ │
+│  │ Modules  │  │ ┌─────────────────────────┐ ┌─────────────────────────────┐  │ │
+│  │ Logs     │  │ │ Claims Portal     72%   │ │ Policy Management    45%    │  │ │
+│  │ Changes  │  │ │ ████████░░             │ │ █████░░░░░░                 │  │ │
+│  │ Environs │  │ │ [3][8][4][5][16]       │ │ [5][6][2][3][9]            │  │ │
+│  │ Widgets  │  │ │  B  A  T  R  D         │ │  B  A  T  R  D              │  │ │
+│  │          │  │ └─────────────────────────┘ └─────────────────────────────┘  │ │
+│  │          │  │                                                             │ │
+│  │          │  │ MODULES & TEST COVERAGE                                     │ │
+│  │          │  │ ┌─────────────────────────────────────────────────────────┐  │ │
+│  │          │  │ │ Module        │ Tickets  │ Coverage │ Health           │  │ │
+│  │          │  │ │ Approvals     │ 3/2/1    │ 85% ████ │ ✅ Healthy       │  │ │
+│  │          │  │ │ User Mgmt     │ 1/4/0    │ 72% ███░ │ ⚠️ Needs tests   │  │ │
+│  │          │  │ │ Reporting     │ 2/1/3    │ 45% ██░░ │ ❌ Critical      │  │ │
+│  │          │  │ └─────────────────────────────────────────────────────────┘  │ │
+│  │          │  │                                                             │ │
+│  │          │  │ LIVE LOGS                        [All] [Errors] [Warnings]  │ │
+│  │          │  │ ┌─────────────────────────────────────────────────────────┐  │ │
+│  │          │  │ │ 14:32:15  INFO   Request processed successfully         │  │ │
+│  │          │  │ │ 14:32:22  ERROR  Database connection timeout             │  │ │
+│  │          │  │ │ ┌─ AI Suggestion ─────────────────────────────────────┐ │  │ │
+│  │          │  │ │ │ 🔮 This matches #47. Ticket #89 auto-created        │ │  │ │
+│  │          │  │ │ └─────────────────────────────────────────────────────┘ │  │ │
+│  │          │  │ └─────────────────────────────────────────────────────────┘  │ │
+│  │          │  │                                                             │ │
+│  │          │  │ ENVIRONMENTS                                                │ │
+│  │          │  │ [Development] [Test] [Acceptance] [Production]              │ │
+│  │          │  │   ● Online     ● Online    ● Online     ● Online           │ │
+│  │          │  │   v2.4.2-dev   v2.4.1      v2.4.0       v2.3.5             │ │
+│  └──────────┘  └─────────────────────────────────────────────────────────────┘ │
+│                                                                                 │
+│                                                    ┌─ AI SIDEBAR ─────────────┐│
+│                                                    │ 🔮 AI Assistant          ││
+│                                                    │ [Quick Actions]          ││
+│                                                    │ [Chat messages...]       ││
+│                                                    └─────────────────────────┘│
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Page Sections
+
+#### 1. App Header (Sticky)
+
+| Element | Type | Description |
+|---------|------|-------------|
+| App Icon | Icon box | Blue background with app icon |
+| App Name | Text (editable) | Large title, dark blue |
+| Version | Badge | Light blue background |
+| Status | Indicator | Online (green) / Offline (red) / Deploying (amber) |
+| Description | Text | Gray, below title |
+| Quick Actions | Buttons | AI toggle, Settings, Deploy, View Logs |
+
+**Behavior:** Sticky at top when scrolling, z-index: 20
+
+#### 2. Projects Overview
+
+| Element | Description |
+|---------|-------------|
+| Project cards | 2-column grid with mini kanban |
+| Progress bar | Animated fill on scroll into view |
+| Mini kanban | 5 columns (B/A/T/R/D) with counts and labels |
+
+**Mini Kanban Colors:**
+| Column | Color | Hex |
+|--------|-------|-----|
+| Backlog | Gray | `#9A948D` |
+| Active | Amber | `#F59E0B` |
+| Testing | Purple | `#9333EA` |
+| Review | Blue | `#2563EB` |
+| Done | Green | `#10B981` |
+
+#### 3. Modules & Test Coverage
+
+| Column | Description |
+|--------|-------------|
+| Module | Module name |
+| Tickets | Format: `Active / In Review / Blocked` |
+| Coverage | Percentage with animated progress bar |
+| Health | Icon + status text |
+
+**Health Indicators:**
+| Status | Icon | Color | Criteria |
+|--------|------|-------|----------|
+| Healthy | ✅ | Green | Coverage ≥ 80%, no blocked |
+| Warning | ⚠️ | Amber | Coverage 50-79% or blocked |
+| Critical | ❌ | Red | Coverage < 50% or multiple blocked |
+
+#### 4. Live Logging Panel
+
+| Feature | Description |
+|---------|-------------|
+| Log entries | Timestamped with color-coded levels |
+| Filter buttons | All, Errors, Warnings |
+| AI Suggestion | Inline card after error logs |
+| Auto-ticket badge | Shows auto-created ticket reference |
+
+**Log Level Colors:**
+| Level | Text Color | Background |
+|-------|------------|------------|
+| ERROR | `#EF4444` | `#FEE2E2` |
+| WARN | `#F59E0B` | `#FEF3C7` |
+| INFO | `#9A948D` | transparent |
+
+#### 5. Recent Changes Timeline
+
+| Element | Description |
+|---------|-------------|
+| Avatar | Initials with colored background |
+| Action text | User + action + target |
+| Timestamp | Relative time (e.g., "10 min ago") |
+
+#### 6. Environments & Deployments
+
+| Element | Description |
+|---------|-------------|
+| Environment cards | 4-column grid |
+| Status indicator | Pulsing dot for offline/deploying |
+| Version | Currently deployed version |
+| Last ping | Time since last heartbeat |
+| Action buttons | Deploy, Logs |
+
+**Status Indicators:**
+| Status | Color | Animation |
+|--------|-------|-----------|
+| Online | `#10B981` | None |
+| Offline | `#EF4444` | Pulse |
+| Deploying | `#F59E0B` | Pulse |
+
+#### 7. AI Chat Sidebar
+
+| Feature | Description |
+|---------|-------------|
+| Toggle | Ctrl+K keyboard shortcut |
+| Position | Right side, below app header |
+| Width | 320px default |
+| Quick actions | Pre-defined prompts for app context |
+
+**AI Quick Actions:**
+- "Analyze recent errors"
+- "Summarize deployment status"
+- "Check test coverage"
+- "What needs attention?"
+
+### Navigation Sidebar
+
+Left sidebar with section jump links:
+
+| Link | Icon | Target Section |
+|------|------|----------------|
+| Projects | Folder | `#projects` |
+| Modules | Grid | `#modules` |
+| Logs | File | `#logs` |
+| Changes | Clock | `#changes` |
+| Environments | Rocket | `#environments` |
+| Widgets | Layout | `#widgets` |
+
+**Behavior:** Scroll spy highlights active section, smooth scroll on click
+
+### Animations
+
+| Animation | Trigger | Duration |
+|-----------|---------|----------|
+| Section fade-in | Scroll into view | 0.5s ease-out |
+| Card hover | Mouse hover | 0.2s |
+| Progress bar fill | Scroll into view | 1s ease-out |
+| Log entry slide-in | New log added | 0.3s |
+| Environment status | Status change | 0.3s |
+| Sidebar slide | Toggle open/close | 0.3s |
+| AI typing indicator | AI response pending | 1.4s loop |
+
+### Design File Reference
+
+- App Management: `_bmad-output/planning-artifacts/design-app-management.html`
 
 ## Responsive Design & Accessibility
 

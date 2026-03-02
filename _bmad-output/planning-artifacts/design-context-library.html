@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoniq - Context Library Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="shared-styles.css">
+</head>
+<body>
+    <div class="app-container h-screen flex flex-col">
+
+        <!-- UNIFIED TOPBAR -->
+        <header class="topbar flex-shrink-0">
+            <div class="flex items-center justify-between px-6 py-3">
+                <!-- Left: Logo + Navigation -->
+                <div class="flex items-center gap-6">
+                    <!-- Logo -->
+                    <div class="font-bold text-lg flex items-center gap-2.5 flex-shrink-0">
+                        <svg class="logo-icon" viewBox="0 0 707.49 707.49" xmlns="http://www.w3.org/2000/svg">
+                            <rect fill="#FF6B35" width="707.49" height="707.49" rx="80"/>
+                            <path fill="#2D1810" d="M271.9,459.21c0,5.79-4.7,10.49-10.49,10.49h-33.59c-5.79,0-10.49-4.7-10.49-10.49v-33.59c0-5.79,4.7-10.49,10.49-10.49h33.6c5.78,0,10.47-4.68,10.48-10.46,0,0,0-.02,0-.03v-19.95c0-5.79,4.7-10.49,10.49-10.49h19.95c5.79,0,10.49-4.7,10.49-10.49v-19.95c0-5.79-4.7-10.49-10.49-10.49h-60.87c5.79,0,10.49-4.7,10.49-10.49v-19.95c0-5.79-4.7-10.49-10.49-10.49h-142.72c-5.79,0-10.49-4.7-10.49-10.49v-33.59c0-5.79,4.7-10.49,10.49-10.49h142.72c5.79,0,10.49,4.7,10.49,10.49v33.59c0,5.79,4.7,10.49,10.49,10.49h19.95c5.79,0,10.49,4.7,10.49,10.49v19.95c0,5.79-4.7,10.49-10.49,10.49h-19.95c-5.79,0-10.48,4.69-10.48,10.48v19.95c0,5.79-4.7,10.49,10.49,10.49h-60.87c-5.79,0-10.49,4.7-10.49,10.49v19.95c0,5.79,4.7,10.49,10.49,10.49h142.72c5.79,0,10.49,4.7,10.49,10.49v33.59c0,5.79-4.7,10.49,10.49,10.49h-142.72c-5.79,0-10.49-4.7-10.49-10.49v-33.59c0-5.79-4.7,10.49,10.49,10.49h-19.94c-4.34,0-8.07,2.64-9.66,6.41-.02.04-.02.09-.04.13-.5,1.22-.78,2.55-.78,3.95v33.59Z"/>
+                            <circle fill="#2D1810" cx="462.88" cy="265.07" r="27.28"/>
+                        </svg>
+                        <span>ZONIQ</span>
+                    </div>
+
+                    <!-- Navigation (role-aware) -->
+                    <nav class="flex items-center gap-1">
+                        <button class="nav-item">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"/>
+                                <rect x="14" y="3" width="7" height="7"/>
+                                <rect x="14" y="14" width="7" height="7"/>
+                                <rect x="3" y="14" width="7" height="7"/>
+                            </svg>
+                            Dashboard
+                        </button>
+                        <button class="nav-item">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="4" y="4" width="16" height="16" rx="2"/>
+                                <path d="M4 10h16"/>
+                                <path d="M10 4v16"/>
+                            </svg>
+                            Kanban
+                        </button>
+                        <button class="nav-item">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                            </svg>
+                            Projects
+                        </button>
+                        <button class="nav-item active">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                            </svg>
+                            Context Library
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Right: Actions + Profile -->
+                <div class="flex items-center gap-3">
+                    <button class="btn-primary">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Add Context
+                    </button>
+                    <div class="avatar-initials bg-[#FF6B35]">DM</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <div class="flex-1 overflow-y-auto p-8">
+            <!-- Page Header -->
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold mb-2">Context Library</h1>
+                <p class="text-[#9A948D]">Browse and manage project documentation, technical specs, and context sources</p>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="mb-6">
+                <div class="relative">
+                    <svg class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input
+                        type="text"
+                        placeholder="Search context by title, type, or keywords..."
+                        class="w-full pl-12 pr-4 py-3 bg-white border border-[#E8E4E0] rounded-lg outline-none focus:border-[#FF6B35] transition-all"
+                        id="searchInput"
+                    >
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="mb-6">
+                <div class="flex items-center gap-2">
+                    <button class="btn-ghost active text-sm px-3 py-2">All</button>
+                    <button class="btn-ghost text-sm px-3 py-2">Note</button>
+                    <button class="btn-ghost text-sm px-3 py-2">Summary</button>
+                    <button class="btn-ghost text-sm px-3 py-2">Technical</button>
+                </div>
+            </div>
+
+            <!-- Context List Grid -->
+            <div class="grid grid-cols-3 gap-5">
+                <!-- Project Summary Card -->
+                <div class="card p-5 animate-in delay-1 cursor-pointer hover:border-[#9333EA] transition-all">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-[#F3E8FF] flex items-center justify-center">
+                            <svg class="w-5 h-5 text-[#9333EA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                            </svg>
+                        </div>
+                        <span class="text-xs bg-[#D1FAE5] text-[#10B981] px-2 py-1 rounded-full font-semibold">12 stories</span>
+                    </div>
+                    <h3 class="font-semibold text-base mb-2">Claims Portal - Project Summary</h3>
+                    <p class="text-sm text-[#9A948D] mb-4 line-clamp-2">Multi-level approval workflow for expense claims processing with role-based routing and delegation support.</p>
+                    <div class="flex items-center gap-2 text-xs text-[#9A948D]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Updated 2 days ago
+                    </div>
+                </div>
+
+                <!-- Ticket Summary Card -->
+                <div class="card p-5 animate-in delay-2 cursor-pointer hover:border-[#FF6B35] transition-all">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-[#FFF7F3] flex items-center justify-center">
+                            <svg class="w-5 h-5 text-[#FF6B35]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="6" width="20" height="12" rx="2"/>
+                                <path d="M12 12h.01"/>
+                                <path d="M12 6v12"/>
+                            </svg>
+                        </div>
+                        <span class="text-xs bg-[#D1FAE5] text-[#10B981] px-2 py-1 rounded-full font-semibold">5 stories</span>
+                    </div>
+                    <h3 class="font-semibold text-base mb-2">#52 - Export Feature</h3>
+                    <p class="text-sm text-[#9A948D] mb-4 line-clamp-2">Export data to CSV with configurable column selection and formatting options.</p>
+                    <div class="flex items-center gap-2 text-xs text-[#9A948D]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Updated 5 hours ago
+                    </div>
+                </div>
+
+                <!-- Technical Doc Card -->
+                <div class="card p-5 animate-in delay-3 cursor-pointer hover:border-[#6B7280] transition-all">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-[#E5E7EB] flex items-center justify-center">
+                            <svg class="w-5 h-5 text-[#6B7280]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                <path d="M2 8h20"/>
+                                <path d="M6 13h8"/>
+                            </svg>
+                        </div>
+                        <span class="text-xs bg-[#D1FAE5] text-[#10B981] px-2 py-1 rounded-full font-semibold">3 stories</span>
+                    </div>
+                    <h3 class="font-semibold text-base mb-2">API Documentation - Approval Endpoints</h3>
+                    <p class="text-sm text-[#9A948D] mb-4 line-clamp-2">REST API specifications for approval microflow endpoints including request/response schemas.</p>
+                    <div class="flex items-center gap-2 text-xs text-[#9A948D]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Updated 1 week ago
+                    </div>
+                </div>
+
+                <!-- Module Summary Card -->
+                <div class="card p-5 animate-in delay-4 cursor-pointer hover:border-[#2563EB] transition-all">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-[#DBEAFE] flex items-center justify-center">
+                            <svg class="w-5 h-5 text-[#2563EB]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                                <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/>
+                            </svg>
+                        </div>
+                        <span class="text-xs bg-[#D1FAE5] text-[#10B981] px-2 py-1 rounded-full font-semibold">8 stories</span>
+                    </div>
+                    <h3 class="font-semibold text-base mb-2">Approval Module - Overview</h3>
+                    <p class="text-sm text-[#9A948D] mb-4 line-clamp-2">Core module implementing multi-level approval workflows with role-based routing logic.</p>
+                    <div class="flex items-center gap-2 text-xs text-[#9A948D]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Updated 3 days ago
+                    </div>
+                </div>
+
+                <!-- Recent Changes Card -->
+                <div class="card p-5 animate-in delay-5 cursor-pointer hover:border-[#F59E0B] transition-all">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-[#FEF3C7] flex items-center justify-center">
+                            <svg class="w-5 h-5 text-[#F59E0B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                        </div>
+                        <span class="text-xs bg-[#D1FAE5] text-[#10B981] px-2 py-1 rounded-full font-semibold">2 stories</span>
+                    </div>
+                    <h3 class="font-semibold text-base mb-2">Recent Changes - Q4 2025</h3>
+                    <p class="text-sm text-[#9A948D] mb-4 line-clamp-2">Summary of recent changes and deployments in Q4 2025 including bug fixes and new features.</p>
+                    <div class="flex items-center gap-2 text-xs text-[#9A948D]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Updated 2 weeks ago
+                    </div>
+                </div>
+
+                <!-- Mendix Info Card -->
+                <div class="card p-5 animate-in delay-6 cursor-pointer hover:border-[#10B981] transition-all">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-[#D1FAE5] flex items-center justify-center">
+                            <svg class="w-5 h-5 text-[#10B981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14.7 6.3a1 1 0 00-1.4 0L4 15.6a1 1 0 001.4 1.4l5.3-5.3a1 1 0 000-1.4l-2.6-2.6a1 1 0 00-1.4 0L.8 7.4a1 1 0 001.4 1.4l3.3 3.3a1 1 0 000 1.4l2.6 2.6a1 1 0 001.4 0l5.3-5.3a1 1 0 001.4 0z"/>
+                                <path d="M14.7 17.7l-5.3-5.3a1 1 0 000-1.4l-2.6-2.6a1 1 0 00-1.4 0L.8 8.8a1 1 0 001.4 1.4l3.3 3.3a1 1 0 000 1.4l2.6 2.6a1 1 0 001.4 0l5.3-5.3a1 1 0 001.4 0z"/>
+                            </svg>
+                        </div>
+                        <span class="text-xs bg-[#D1FAE5] text-[#10B981] px-2 py-1 rounded-full font-semibold">6 stories</span>
+                    </div>
+                    <h3 class="font-semibold text-base mb-2">Mendix Environment Configuration</h3>
+                    <p class="text-sm text-[#9A948D] mb-4 line-clamp-2">Development, test, acceptance, and production environment configurations and connection settings.</p>
+                    <div class="flex items-center gap-2 text-xs text-[#9A948D]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Updated 4 days ago
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Search filtering functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', function() {
+            // Implement search filtering logic
+            console.log('Searching for:', this.value);
+        });
+
+        // Filter button click handlers
+        const filterButtons = document.querySelectorAll('.filter-bar button');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

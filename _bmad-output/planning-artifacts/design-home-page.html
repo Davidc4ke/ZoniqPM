@@ -6,13 +6,24 @@
     <title>Zoniq - Home Page (Dashboard View)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="shared-styles.css">
+    <style>
+        /* Project cards hover with purple accent */
+        .card:has(.bg-\\[\\#F3E8FF\\]):hover {
+            border-color: #9333EA;
+        }
+
+        /* App cards hover with blue accent */
+        .card:has(.bg-\\[\\#DBEAFE\\]):hover {
+            border-color: #2563EB;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
         
         <!-- UNIFIED TOPBAR -->
         <header class="topbar">
-            <div class="flex items-center justify-between px-6 py-3 max-w-[1280px] mx-auto">
+            <div class="flex items-center justify-between px-6 py-3">
                 <!-- Left: Logo + Navigation -->
                 <div class="flex items-center gap-6">
                     <!-- Logo -->
@@ -49,6 +60,15 @@
                                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
                             </svg>
                             Projects
+                        </button>
+                        <button class="nav-item">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <path d="M9 3v18"/>
+                                <path d="M3 9h6"/>
+                                <path d="M3 15h6"/>
+                            </svg>
+                            Apps
                         </button>
                         <!-- Role-specific nav items (visible for admins/managers) -->
                         <button class="nav-item">
@@ -162,8 +182,9 @@
         </header>
         
         <!-- HERO UNIVERSAL INPUT -->
-        <div class="px-8 pt-6 pb-2 hero-input-container" id="heroInputContainer">
-            <div class="universal-input-hero p-4" id="heroInput">
+        <div class="px-8 pt-6 pb-2 hero-input-container hero-animate" id="heroInputContainer">
+            <div class="max-w-[1000px] mx-auto">
+            <div class="universal-input-hero p-4 hero-glow" id="heroInput">
                 <div class="flex items-start gap-3">
                     <svg class="w-6 h-6 mt-0.5 text-[#FF6B35]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9.813 15.904 9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12v4.5c0 .945-.446 1.788-1.146 2.336"/>
@@ -184,14 +205,15 @@
                     <span class="text-xs text-[#9A948D]">0 chars</span>
                 </div>
             </div>
+            </div>
         </div>
         
         <!-- DASHBOARD GRID -->
         <div class="px-8 py-6 dashboard-content" id="dashboardContent">
-            <div class="grid grid-cols-3 gap-5">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-5">
                 
                 <!-- Assigned Stories -->
-                <div class="card p-5">
+                <div class="card p-5 animate-in delay-1">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-heading text-sm flex items-center gap-2">
                             <svg class="section-icon icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -204,7 +226,7 @@
                         <span class="text-xs bg-[#E8E4E0] text-[#2D1810] px-2 py-1 rounded-full font-semibold">3</span>
                     </div>
                     <div class="space-y-3">
-                        <div class="story-card assigned" tabindex="0">
+                        <div class="story-card assigned story-card-animate" style="animation-delay: 0.2s" tabindex="0">
                             <div class="story-card-header">
                                 <div class="story-card-title">
                                     <span class="priority-dot high"></span>
@@ -225,7 +247,7 @@
                             </div>
                         </div>
                         
-                        <div class="story-card assigned" tabindex="0">
+                        <div class="story-card assigned story-card-animate" style="animation-delay: 0.3s" tabindex="0">
                             <div class="story-card-header">
                                 <div class="story-card-title">
                                     <span class="priority-dot medium"></span>
@@ -245,7 +267,7 @@
                             </div>
                         </div>
                         
-                        <div class="story-card assigned" tabindex="0">
+                        <div class="story-card assigned story-card-animate" style="animation-delay: 0.4s" tabindex="0">
                             <div class="story-card-header">
                                 <div class="story-card-title">
                                     <span class="priority-dot low"></span>
@@ -269,7 +291,7 @@
                 </div>
                 
                 <!-- Review Queue -->
-                <div class="card p-5">
+                <div class="card p-5 animate-in delay-2">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-heading text-sm flex items-center gap-2">
                             <svg class="section-icon icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -281,7 +303,7 @@
                         <span class="text-xs bg-[#E8E4E0] text-[#2D1810] px-2 py-1 rounded-full font-semibold">5</span>
                     </div>
                     <div class="space-y-3">
-                        <div class="story-card review" tabindex="0">
+                        <div class="story-card review story-card-animate" style="animation-delay: 0.25s" tabindex="0">
                             <div class="story-card-header">
                                 <div class="story-card-title">
                                     <span class="priority-dot high"></span>
@@ -302,7 +324,7 @@
                             </div>
                         </div>
                         
-                        <div class="story-card review" tabindex="0">
+                        <div class="story-card review story-card-animate" style="animation-delay: 0.35s" tabindex="0">
                             <div class="story-card-header">
                                 <div class="story-card-title">
                                     <span class="priority-dot medium"></span>
@@ -323,7 +345,7 @@
                             </div>
                         </div>
                         
-                        <div class="story-card review" tabindex="0">
+                        <div class="story-card review story-card-animate" style="animation-delay: 0.45s" tabindex="0">
                             <div class="story-card-header">
                                 <div class="story-card-title">
                                     <span class="priority-dot medium"></span>
@@ -343,7 +365,7 @@
                             </div>
                         </div>
                         
-                        <div class="story-card review" tabindex="0">
+                        <div class="story-card review story-card-animate" style="animation-delay: 0.55s" tabindex="0">
                             <div class="story-card-header">
                                 <div class="story-card-title">
                                     <span class="priority-dot low"></span>
@@ -364,7 +386,7 @@
                             </div>
                         </div>
                         
-                        <div class="story-card review" tabindex="0">
+                        <div class="story-card review story-card-animate" style="animation-delay: 0.65s" tabindex="0">
                             <div class="story-card-header">
                                 <div class="story-card-title">
                                     <span class="priority-dot low"></span>
@@ -388,7 +410,7 @@
                 </div>
                 
                 <!-- Project Status -->
-                <div class="card p-5">
+                <div class="card p-5 animate-in delay-3">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-heading text-sm flex items-center gap-2">
                             <svg class="section-icon icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -402,12 +424,12 @@
                     
                     <div class="space-y-4">
                         <!-- Claims Portal -->
-                        <div class="p-3 bg-[#F5F2EF] rounded-lg">
+                        <div class="p-3 bg-[#F3E8FF] rounded-lg">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="font-semibold text-sm">Claims Portal</span>
                                 <span class="text-[#FF6B35] font-bold text-sm">72%</span>
                             </div>
-                            <div class="progress-bar mb-3"><div class="progress-fill" style="width: 72%"></div></div>
+                            <div class="progress-bar mb-3"><div class="progress-fill progress-bar-animate" style="--progress-width: 72%"></div></div>
                             <div class="kanban-mini">
                                 <div class="kanban-mini-col">
                                     <div class="kanban-mini-dot bg-[#9A948D]"></div>
@@ -438,12 +460,12 @@
                         </div>
                         
                         <!-- Policy Management -->
-                        <div class="p-3 bg-[#F5F2EF] rounded-lg">
+                        <div class="p-3 bg-[#F3E8FF] rounded-lg">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="font-semibold text-sm">Policy Management</span>
                                 <span class="text-[#FF6B35] font-bold text-sm">45%</span>
                             </div>
-                            <div class="progress-bar mb-3"><div class="progress-fill" style="width: 45%"></div></div>
+                            <div class="progress-bar mb-3"><div class="progress-fill progress-bar-animate" style="--progress-width: 45%"></div></div>
                             <div class="kanban-mini">
                                 <div class="kanban-mini-col">
                                     <div class="kanban-mini-dot bg-[#9A948D]"></div>
@@ -474,10 +496,71 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Apps Card -->
+                <div class="card p-5 animate-in delay-3">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-heading text-sm flex items-center gap-2">
+                            <svg class="section-icon icon text-[#2563EB]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                            Apps
+                        </h3>
+                        <span class="text-xs bg-[#DBEAFE] text-[#2563EB] px-2 py-1 rounded-full font-semibold">4</span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <!-- Claims Portal -->
+                        <div class="p-3 bg-[#DBEAFE] rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-semibold text-sm text-[#2D1810]">Claims Portal</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs">
+                                <div class="w-2 h-2 rounded-full bg-[#10B981]"></div>
+                                <span class="text-[#9A948D]">Dev</span>
+                                <div class="w-2 h-2 rounded-full bg-[#10B981]"></div>
+                                <span class="text-[#9A948D]">Test</span>
+                                <div class="w-2 h-2 rounded-full bg-[#10B981]"></div>
+                                <span class="text-[#9A948D]">Acc</span>
+                                <div class="w-2 h-2 rounded-full bg-[#10B981]"></div>
+                                <span class="text-[#9A948D]">Prod</span>
+                            </div>
+                            <div class="flex items-center gap-3 mt-2">
+                                <span class="text-[10px] text-[#9A948D]">0 warnings</span>
+                            </div>
+                        </div>
+
+                        <!-- Invoicing -->
+                        <div class="p-3 bg-[#DBEAFE] rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-semibold text-sm text-[#2D1810]">Invoicing</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs">
+                                <div class="w-2 h-2 rounded-full bg-[#10B981]"></div>
+                                <span class="text-[#9A948D]">Dev</span>
+                                <div class="w-2 h-2 rounded-full bg-[#F59E0B]"></div>
+                                <span class="text-[#9A948D]">Test</span>
+                                <div class="w-2 h-2 rounded-full bg-[#10B981]"></div>
+                                <span class="text-[#9A948D]">Acc</span>
+                                <div class="w-2 h-2 rounded-full bg-[#EF4444]"></div>
+                                <span class="text-[#9A948D]">Prod</span>
+                            </div>
+                            <div class="flex items-center gap-3 mt-2">
+                                <span class="text-[10px] text-[#EF4444] font-medium">2 warnings</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-ghost text-xs mt-3 flex items-center gap-1 w-full justify-center">
+                        View All Apps →
+                    </button>
+                </div>
             </div>
-            
+
             <!-- Team Activity -->
-            <div class="card p-5 mt-5">
+            <div class="card p-5 mt-5 animate-in delay-4">
                 <h3 class="font-heading text-sm mb-4 flex items-center gap-2">
                     <svg class="section-icon icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -488,27 +571,27 @@
                     Team Activity — Today
                 </h3>
                 <div class="flex gap-3 overflow-x-auto pb-2">
-                    <div class="activity-item">
+                    <div class="activity-item activity-item-animate" style="animation-delay: 0.4s">
                         <div class="avatar-initials bg-[#10B981]">A</div>
                         <span class="text-sm">Aisha moved <strong>#47</strong> to Review</span>
                         <span class="text-xs text-[#9A948D]">2m ago</span>
                     </div>
-                    <div class="activity-item">
+                    <div class="activity-item activity-item-animate" style="animation-delay: 0.5s">
                         <div class="avatar-initials bg-[#F59E0B]">M</div>
                         <span class="text-sm">Marcus created <strong>#62</strong></span>
                         <span class="text-xs text-[#9A948D]">15m ago</span>
                     </div>
-                    <div class="activity-item">
+                    <div class="activity-item activity-item-animate" style="animation-delay: 0.6s">
                         <div class="avatar-initials bg-[#8B5CF6]">T</div>
                         <span class="text-sm">Tom completed <strong>#44</strong></span>
                         <span class="text-xs text-[#9A948D]">1h ago</span>
                     </div>
-                    <div class="activity-item">
+                    <div class="activity-item activity-item-animate" style="animation-delay: 0.7s">
                         <div class="avatar-initials bg-[#10B981]">A</div>
                         <span class="text-sm">Aisha generated Dev Plan for <strong>#52</strong></span>
                         <span class="text-xs text-[#9A948D]">2h ago</span>
                     </div>
-                    <div class="activity-item">
+                    <div class="activity-item activity-item-animate" style="animation-delay: 0.8s">
                         <div class="avatar-initials bg-[#FF6B35]">D</div>
                         <span class="text-sm">David approved <strong>#40</strong></span>
                         <span class="text-xs text-[#9A948D]">3h ago</span>
@@ -520,46 +603,48 @@
     
     <!-- CHAT OVERLAY -->
     <div class="chat-overlay" id="chatOverlay">
-        <header class="topbar">
-            <div class="flex items-center justify-between px-6 py-3 max-w-[1280px] mx-auto">
-                <div class="flex items-center gap-4">
-                    <button class="back-button" onclick="closeChatOverlay()">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m15 18-6-6 6-6"/>
-                        </svg>
-                        Back to Dashboard
-                    </button>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="avatar-initials bg-[#FF6B35]">AI</div>
-                    <span class="text-sm font-medium">Zoniq Assistant</span>
-                </div>
-            </div>
-        </header>
-        
-        <div class="chat-messages" id="chatMessages">
-            <div class="chat-messages-inner"></div>
-        </div>
-        
-        <div class="chat-input-container">
-            <div class="chat-input-inner">
-                <div class="flex items-end gap-3">
-                    <div class="flex-1 bg-[#FAFAF9] border border-[#E8E4E0] rounded-xl p-3 transition-all focus-within:border-[#FF6B35]">
-                        <textarea 
-                            id="chatInput"
-                            rows="1" 
-                            placeholder="Continue conversation... or try 'Open #47' · 'What\'s blocked?'"
-                            class="w-full outline-none bg-transparent text-sm resize-none leading-relaxed"
-                            onkeydown="handleChatInput(event)"
-                        ></textarea>
+        <div class="chat-overlay-content">
+            <header class="topbar">
+                <div class="flex items-center justify-between px-6 py-3">
+                    <div class="flex items-center gap-4">
+                        <button class="back-button" onclick="closeChatOverlay()">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m15 18-6-6 6-6"/>
+                            </svg>
+                            Back to Dashboard
+                        </button>
                     </div>
-                    <button class="btn-primary px-5 py-2.5" onclick="handleChatInput({key: 'Enter', shiftKey: false, preventDefault: () => {}})">Send</button>
+                    <div class="flex items-center gap-2">
+                        <div class="avatar-initials bg-[#FF6B35]">AI</div>
+                        <span class="text-sm font-medium">Zoniq Assistant</span>
+                    </div>
                 </div>
-                <div class="flex items-center justify-between mt-2 px-1">
-                    <span class="text-xs text-[#9A948D]">
-                        Try: "Open #44" · "Assign #47 to Aisha" · "What\'s blocked?"
-                    </span>
-                    <button class="text-xs text-[#9A948D] hover:text-[#2D1810]" onclick="document.querySelector('.chat-messages-inner').innerHTML = ''">Clear</button>
+            </header>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-messages-inner"></div>
+            </div>
+            
+            <div class="chat-input-container">
+                <div class="chat-input-inner max-w-4xl mx-auto">
+                    <div class="flex items-end gap-3">
+                        <div class="flex-1 bg-[#FAFAF9] border border-[#E8E4E0] rounded-xl p-3 transition-all focus-within:border-[#FF6B35]">
+                            <textarea 
+                                id="chatInput"
+                                rows="1" 
+                                placeholder="Continue conversation... or try 'Open #47' · 'What\'s blocked?'"
+                                class="w-full outline-none bg-transparent text-sm resize-none leading-relaxed"
+                                onkeydown="handleChatInput(event)"
+                            ></textarea>
+                        </div>
+                        <button class="btn-primary px-5 py-2.5" onclick="handleChatInput({key: 'Enter', shiftKey: false, preventDefault: () => {}})">Send</button>
+                    </div>
+                    <div class="flex items-center justify-between mt-2 px-1">
+                        <span class="text-xs text-[#9A948D]">
+                            Try: "Open #44" · "Assign #47 to Aisha" · "What\'s blocked?"
+                        </span>
+                        <button class="text-xs text-[#9A948D] hover:text-[#2D1810]" onclick="document.querySelector('.chat-messages-inner').innerHTML = ''">Clear</button>
+                    </div>
                 </div>
             </div>
         </div>
