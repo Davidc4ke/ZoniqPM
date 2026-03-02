@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoniq - Project Modules View</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="shared-styles.css">
+    
+    <!-- React Flow Dependencies - using reactflow v11 for better UMD support -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/reactflow@11.11.4/dist/umd/index.js" crossorigin></script>
+    <link href="https://unpkg.com/reactflow@11.11.4/dist/style.css" rel="stylesheet" />
+    <style>
+        html, body { margin: 0; padding: 0; height: 100%; background: #FAFAF9; }
+        
+        .module-accordion { transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+        .module-accordion.collapsed .module-content { max-height: 0; opacity: 0; overflow: hidden; }
+        .module-accordion.expanded .module-content { max-height: 2000px; opacity: 1; }
+        .module-accordion .chevron-icon { transition: transform 0.2s ease; }
+        .module-accordion.expanded .chevron-icon { transform: rotate(180deg); }
+        
+        .feature-card { transition: all 0.2s ease; cursor: pointer; }
+        .feature-card:hover { transform: translateX(4px); border-color: #D8B4FE; }
+        .feature-card.selected { border-color: #9333EA; background: #FAF5FF; }
+        
+        .context-badge { 
+            display: inline-flex; align-items: center; gap: 0.25rem; 
+            padding: 0.125rem 0.5rem; border-radius: 4px; font-size: 0.6875rem; font-weight: 600;
+            cursor: pointer; transition: all 0.15s ease;
+        }
+        .context-badge:hover { transform: scale(1.05); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .context-badge.meeting { background: #FEF3C7; color: #D97706; }
+        .context-badge.note { background: #FFF7F3; color: #FF6B35; }
+        .context-badge.document { background: #EFF6FF; color: #2563EB; }
+        .context-badge.attachment { background: #F0FDF4; color: #16A34A; }
+        
+        .coverage-badge {
+            display: inline-flex; align-items: center; gap: 0.25rem;
+            padding: 0.25rem 0.625rem; border-radius: 9999px; font-size: 0.6875rem; font-weight: 600;
+        }
+        .coverage-badge.covered { background: #D1FAE5; color: #059669; }
+        .coverage-badge.partial { background: #FEF3C7; color: #D97706; }
+        .coverage-badge.gap { background: #FEE2E2; color: #DC2626; }
+        
+        .workflow-card-lg { transition: all 0.2s ease; }
+        .workflow-card-lg:hover { box-shadow: 0 8px 24px rgba(147, 51, 234, 0.12); }
+        
+        /* Flow Diagram Styles */
+        .flow-diagram {
+            position: relative; padding: 1.5rem; background: linear-gradient(135deg, #FAFAF9 0%, #F5F2EF 100%);
+            border-radius: 12px; min-height: 200px;
+        }
+        
+        .flow-node {
+            position: relative; display: flex; flex-direction: column; align-items: center;
+            transition: all 0.2s ease; cursor: pointer;
+        }
+        .flow-node:hover { transform: scale(1.05); }
+        
+        .flow-node-start, .flow-node-end {
+            width: 48px; height: 48px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.625rem; font-weight: 700; text-transform: uppercase;
+        }
+        .flow-node-start { background: #9333EA; color: white; }
+        .flow-node-end { background: #10B981; color: white; }
+        
+        .flow-node-action {
+            background: white; border: 2px solid #E8E4E0; border-radius: 8px;
+            padding: 0.75rem 1rem; min-width: 140px; text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .flow-node-action.completed { border-color: #10B981; background: #F0FDF4; }
+        .flow-node-action.in-progress { border-color: #F59E0B; background: #FFFBEB; }
+        .flow-node-action.relevant { border-color: #9333EA; background: #FAF5FF; }
+        
+        .flow-node-decision {
+            width: 56px; height: 56px; background: white; border: 2px solid #D8B4FE;
+            transform: rotate(45deg); display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .flow-node-decision.completed { border-color: #10B981; background: #F0FDF4; }
+        .flow-node-decision .decision-content { transform: rotate(-45deg); font-size: 0.625rem; font-weight: 700; color: #9333EA; }
+        
+        .flow-connector {
+            position: absolute; background: #D1D5DB;
+        }
+        .flow-connector.vertical { width: 2px; left: 50%; transform: translateX(-50%); }
+        .flow-connector.horizontal { height: 2px; top: 50%; transform: translateY(-50%); }
+        .flow-connector.relevant { background: #9333EA; }
+        .flow-connector.completed { background: #10B981; }
+        
+        .flow-arrow {
+            width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent;
+            border-top: 6px solid #D1D5DB;
+        }
+        .flow-arrow.relevant { border-top-color: #9333EA; }
+        .flow-arrow.completed { border-top-color: #10B981; }
+        
+        .flow-branch-label {
+            font-size: 0.625rem; font-weight: 600; padding: 0.125rem 0.5rem;
+            border-radius: 4px; text-transform: uppercase;
+        }
+        .flow-branch-label.yes { background: #D1FAE5; color: #059669; }
+        .flow-branch-label.no { background: #FEE2E2; color: #DC2626; }
+        
+        .flow-expand-btn {
+            transition: transform 0.2s ease;
+        }
+        .flow-expand-btn.expanded { transform: rotate(180deg); }
+        
+        .workflow-detail-panel {
+            max-height: 0; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .workflow-detail-panel.expanded { max-height: 800px; }
+        
+        .step-status-badge {
+            display: inline-flex; align-items: center; gap: 0.25rem;
+            padding: 0.125rem 0.5rem; border-radius: 4px; font-size: 0.625rem; font-weight: 600;
+        }
+        .step-status-badge.completed { background: #D1FAE5; color: #059669; }
+        .step-status-badge.in-progress { background: #FEF3C7; color: #D97706; }
+        .step-status-badge.pending { background: #F3F4F6; color: #6B7280; }
+        .step-status-badge.blocked { background: #FEE2E2; color: #DC2626; }
+        
+        .ticket-mini {
+            display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.5rem;
+            background: #F9FAFB; border-radius: 6px; font-size: 0.75rem;
+        }
+        .ticket-mini.done { opacity: 0.7; }
+        .ticket-mini.done .ticket-title { text-decoration: line-through; }
+        
+        .gap-warning {
+            background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 8px;
+            padding: 0.75rem; margin-top: 0.75rem;
+        }
+        
+        .progress-module {
+            height: 4px; background: #E8E4E0; border-radius: 2px; overflow: hidden;
+        }
+        .progress-module-fill { height: 100%; background: #9333EA; border-radius: 2px; }
+        
+        .tab-section { display: none !important; }
+        .tab-section.active { display: flex !important; flex-direction: column; }
+        
+        .tab-btn { border-bottom: 2px solid transparent; transition: all 0.2s ease; }
+        .tab-btn.tab-active { border-bottom-color: #9333EA; color: #9333EA; }
+        .tab-btn:hover:not(.tab-active) { background: #F5F2EF; }
+        
+        .add-module-card {
+            border: 2px dashed #D8B4FE; background: linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%);
+            border-radius: 12px; padding: 1.5rem; text-align: center;
+            transition: all 0.2s ease; cursor: pointer;
+        }
+        .add-module-card:hover {
+            border-color: #9333EA; background: linear-gradient(135deg, #F3E8FF 0%, #E9D5FF 100%);
+            transform: translateY(-2px);
+        }
+        
+        .context-panel-overlay {
+            position: fixed; inset: 0; background: rgba(45, 24, 16, 0.3);
+            z-index: 200; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .context-panel-overlay.active { opacity: 1; visibility: visible; }
+        
+        .context-panel {
+            position: fixed; top: 0; right: 0; bottom: 0; width: 480px;
+            background: white; z-index: 201; box-shadow: -8px 0 32px rgba(0,0,0,0.15);
+            transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex; flex-direction: column;
+        }
+        .context-panel.active { transform: translateX(0); }
+        
+        .chat-toggle-fab {
+            position: fixed; right: 20px; bottom: 24px; width: 48px; height: 48px;
+            border-radius: 50%; background: linear-gradient(135deg, #9333EA 0%, #7C3AED 100%);
+            border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 20px rgba(147, 51, 234, 0.4);
+            opacity: 0; transform: scale(0.5) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 100; visibility: hidden;
+        }
+        .chat-toggle-fab.visible { opacity: 1; transform: scale(1) translateY(0); visibility: visible; }
+        .chat-toggle-fab:hover { transform: scale(1.1) translateY(-2px); box-shadow: 0 8px 30px rgba(147, 51, 234, 0.5); }
+        .chat-toggle-fab svg { color: white; width: 22px; height: 22px; }
+        .chat-toggle-fab::before {
+            content: ''; position: absolute; inset: -3px; border-radius: 50%;
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.3) 0%, rgba(124, 58, 237, 0.1) 100%);
+            animation: fabPulse 2s ease-in-out infinite;
+        }
+        @keyframes fabPulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.15); opacity: 0; } }
+        
+        .fab-tooltip {
+            position: absolute; right: 60px; background: #2D1810; color: white;
+            padding: 6px 12px; border-radius: 6px; font-size: 12px; white-space: nowrap;
+            opacity: 0; transform: translateX(10px); transition: all 0.2s ease; pointer-events: none;
+        }
+        .fab-tooltip::after {
+            content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%);
+            border: 6px solid transparent; border-left-color: #2D1810;
+        }
+        .chat-toggle-fab:hover .fab-tooltip { opacity: 1; transform: translateX(0); }
+        
+        /* React Flow Custom Styles */
+        .react-flow__node {
+            font-family: 'Manrope', sans-serif;
+        }
+        .react-flow__edge-path {
+            stroke-width: 2;
+        }
+        .react-flow__handle {
+            width: 8px;
+            height: 8px;
+        }
+        .react-flow__controls {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .react-flow__controls-button {
+            border: none;
+            background: white;
+        }
+        .react-flow__controls-button:hover {
+            background: #F5F2EF;
+        }
+        .react-flow__minimap {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Custom Node Styles */
+        .zoniq-node {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            transition: all 0.2s ease;
+        }
+        .zoniq-node:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            transform: translateY(-1px);
+        }
+        .zoniq-node-start {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #9333EA 0%, #7C3AED 100%);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0;
+        }
+        .zoniq-node-end {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0;
+        }
+        .zoniq-node-action {
+            background: white;
+            border: 2px solid #E8E4E0;
+            min-width: 140px;
+            text-align: center;
+        }
+        .zoniq-node-action.completed {
+            border-color: #10B981;
+            background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+        }
+        .zoniq-node-action.in-progress {
+            border-color: #F59E0B;
+            background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+        }
+        .zoniq-node-action.pending {
+            border-color: #9333EA;
+            background: linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%);
+        }
+        .zoniq-node-decision {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            border: 2px solid #F59E0B;
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            font-size: 10px;
+            font-weight: 700;
+            color: #D97706;
+        }
+        .zoniq-node-decision span {
+            transform: rotate(-45deg);
+        }
+        .zoniq-node-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #2D1810;
+        }
+        .zoniq-node-sublabel {
+            font-size: 9px;
+            color: #9A948D;
+            margin-top: 2px;
+        }
+        .zoniq-node-status {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+        }
+        .zoniq-node-status.completed {
+            background: #10B981;
+        }
+        .zoniq-node-status.in-progress {
+            background: transparent;
+            border: 2px solid #F59E0B;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Edge labels */
+        .edge-label-yes {
+            background: #D1FAE5;
+            color: #059669;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .edge-label-no {
+            background: #FEE2E2;
+            color: #DC2626;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        /* Workflow canvas container */
+        .workflow-canvas {
+            height: 400px;
+            background: linear-gradient(135deg, #FAFAF9 0%, #F5F2EF 100%);
+            border-radius: 12px;
+        }
+        
+        /* Chat Sidebar Styles */
+        .chat-sidebar {
+            width: 0;
+            height: 100%;
+            transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .chat-sidebar.expanded {
+            width: 320px;
+        }
+        .chat-sidebar.collapsed {
+            width: 0 !important;
+            overflow: hidden;
+        }
+        .chat-sidebar.collapsed > div {
+            opacity: 0;
+        }
+        
+        /* FAB Button */
+        .chat-toggle-fab {
+            position: fixed;
+            right: 20px;
+            bottom: 24px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF6B35 0%, #FF8F5A 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+            opacity: 0;
+            transform: scale(0.5) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 100;
+            visibility: hidden;
+        }
+        .chat-toggle-fab.visible {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            visibility: visible;
+        }
+        .chat-toggle-fab:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 107, 53, 0.5);
+        }
+        .chat-toggle-fab svg {
+            color: white;
+            width: 22px;
+            height: 22px;
+        }
+        .chat-toggle-fab::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.3) 0%, rgba(255, 143, 90, 0.1) 100%);
+            animation: fabPulse 2s ease-in-out infinite;
+        }
+        @keyframes fabPulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.15); opacity: 0; }
+        }
+        
+        /* Workflow Nav Item */
+        .workflow-nav-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 1px solid transparent;
+        }
+        .workflow-nav-item:hover {
+            background: #F5F2EF;
+        }
+        .workflow-nav-item.active {
+            background: #F3E8FF;
+            border-color: #D8B4FE;
+        }
+        
+        .zoniq-node {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        .zoniq-node:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
+        }
+        .zoniq-node.selected {
+            box-shadow: 0 0 0 2px #9333EA, 0 4px 16px rgba(147, 51, 234, 0.2);
+        }
+        
+        .zoniq-node-start {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #9333EA 0%, #7C3AED 100%);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0;
+            border: none;
+            box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
+        }
+        
+        .zoniq-node-end {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0;
+            border: none;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .zoniq-node-action {
+            background: white;
+            border: 2px solid #E8E4E0;
+            min-width: 150px;
+            text-align: center;
+        }
+        .zoniq-node-action.completed {
+            border-color: #10B981;
+            background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+        }
+        .zoniq-node-action.in-progress {
+            border-color: #F59E0B;
+            background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+        }
+        .zoniq-node-action.pending {
+            border-color: #9333EA;
+            background: linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%);
+        }
+        
+        .zoniq-node-decision {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            border: 2px solid #F59E0B;
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+        }
+        .zoniq-node-decision.completed {
+            border-color: #10B981;
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+        }
+        .zoniq-node-decision span {
+            transform: rotate(-45deg);
+            font-size: 11px;
+            font-weight: 700;
+            color: #D97706;
+        }
+        .zoniq-node-decision.completed span {
+            color: #059669;
+        }
+        
+        .zoniq-node-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #2D1810;
+        }
+        .zoniq-node-sublabel {
+            font-size: 10px;
+            color: #9A948D;
+            margin-top: 2px;
+        }
+        
+        .zoniq-node-status {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        .zoniq-node-status svg {
+            width: 12px;
+            height: 12px;
+        }
+        .zoniq-node-status.completed {
+            background: #10B981;
+        }
+        .zoniq-node-status.in-progress {
+            background: white;
+            border: 2px solid #F59E0B;
+        }
+        
+        .react-flow__attribution {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="h-screen flex flex-col bg-[#FAFAF9]">
+        
+        <!-- UNIFIED TOPBAR -->
+        <header class="topbar flex-shrink-0">
+            <div class="flex items-center justify-between px-6 py-3">
+                <div class="flex items-center gap-6">
+                    <div class="font-bold text-lg flex items-center gap-2.5 flex-shrink-0">
+                        <svg class="logo-icon" viewBox="0 0 707.49 707.49" xmlns="http://www.w3.org/2000/svg">
+                            <rect fill="#FF6B35" width="707.49" height="707.49" rx="80"/>
+                            <path fill="#2D1810" d="M271.9,459.21c0,5.79-4.7,10.49-10.49,10.49h-33.59c-5.79,0-10.49-4.7-10.49-10.49v-33.59c0-5.79,4.7-10.49,10.49-10.49h33.6c5.78,0,10.47-4.68,10.48-10.46,0,0,0-.02,0-.03v-19.95c0-5.79,4.7-10.49,10.49-10.49h19.95c5.79,0,10.49-4.7,10.49-10.49v-19.95c0-5.79,4.7-10.49,10.49-10.49h60.87c5.79,0,10.49-4.7,10.49-10.49v-19.95c0-5.79-4.7-10.49-10.49-10.49h-142.72c-5.79,0-10.49-4.7-10.49-10.49v-33.59c0-5.79,4.7-10.49,10.49-10.49h142.72c5.79,0,10.49,4.7,10.49,10.49v33.59c0,5.79,4.7,10.49,10.49,10.49h19.95c5.79,0,10.49,4.7,10.49,10.49v19.95c0,5.79-4.7,10.49-10.49,10.49h-19.95c-5.79,0-10.48,4.69-10.48,10.48v19.95c0,5.79-4.7,10.49-10.49,10.49h-60.87c-5.79,0-10.49,4.7-10.49,10.49v19.95c0,5.79,4.7,10.49,10.49,10.49h142.72c5.79,0,10.49,4.7,10.49,10.49v33.59c0,5.79-4.7,10.49-10.49,10.49h-142.72c-5.79,0-10.49-4.7-10.49-10.49v-33.59c0-5.79-4.7-10.49-10.49-10.49h-19.94c-4.34,0-8.07,2.64-9.66,6.41-.02.04-.02.09-.04.13-.5,1.22-.78,2.55-.78,3.95v33.59Z"/>
+                            <circle fill="#2D1810" cx="462.88" cy="265.07" r="27.28"/>
+                        </svg>
+                        <span>ZONIQ</span>
+                    </div>
+                    
+                    <nav class="flex items-center gap-1">
+                        <button class="nav-item"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</button>
+                        <button class="nav-item"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16"/><path d="M10 4v16"/></svg>Kanban</button>
+                        <button class="nav-item active"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Projects</button>
+                        <button class="nav-item"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M3 9h6"/><path d="M3 15h6"/></svg>Apps</button>
+                    </nav>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <button class="btn-secondary"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Create</button>
+                    <img src="Profile Picture.png" alt="Profile" class="avatar">
+                </div>
+            </div>
+        </header>
+        
+        <!-- PROJECT HEADER -->
+        <section class="bg-[#F3E8FF] border-b border-[#D8B4FE] px-6 py-4 flex-shrink-0">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-[#9333EA] flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <h1 class="text-lg font-semibold text-[#5B21B6]">Claims Portal</h1>
+                            <span class="text-xs bg-[#D1FAE5] text-[#059669] px-2 py-0.5 rounded-full font-semibold">Active</span>
+                        </div>
+                        <p class="text-sm text-[#6B7280]">Multi-level approval workflow for expense claims</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="text-right">
+                        <div class="text-xs text-[#6B7280] mb-1">Overall Progress</div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-32 h-2 bg-[#E8E4E0] rounded-full overflow-hidden">
+                                <div class="h-full bg-[#9333EA] rounded-full" style="width: 68%"></div>
+                            </div>
+                            <span class="text-sm font-semibold text-[#5B21B6]">68%</span>
+                        </div>
+                    </div>
+                    <button class="btn-secondary text-sm">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                        Kanban View
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- TAB NAVIGATION -->
+        <div class="bg-white border-b border-[#E8E4E0] px-8 flex-shrink-0">
+            <div class="max-w-6xl flex items-center gap-1">
+                <button class="tab-btn tab-active px-4 py-3.5 text-sm font-medium" data-tab="modules">
+                    <svg class="w-4 h-4 inline mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    Modules & Features
+                    <span class="bg-[#F3E8FF] text-[#9333EA] px-2 py-0.5 rounded text-xs ml-2">3</span>
+                </button>
+                <button class="tab-btn px-4 py-3.5 text-sm font-medium text-[#9A948D]" data-tab="workflows">
+                    <svg class="w-4 h-4 inline mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    Workflows
+                    <span class="bg-[#E8E4E0] text-[#9A948D] px-2 py-0.5 rounded text-xs ml-2">3</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- MAIN CONTENT -->
+        <div class="flex-1 overflow-hidden flex flex-col">
+            
+            <!-- TAB 1: MODULES & FEATURES -->
+            <div id="tab-modules" class="tab-section active p-8 overflow-y-auto">
+                <div class="max-w-5xl mx-auto">
+                    
+                    <!-- MODULE 1: Approvals (Expanded) -->
+                    <div class="module-accordion expanded card mb-4" data-module="approvals">
+                        <div class="p-4 border-b border-[#E8E4E0] cursor-pointer" onclick="toggleModule(this)">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-[#F3E8FF] flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-[#9333EA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-[#2D1810]">Approvals</h3>
+                                        <p class="text-xs text-[#9A948D]">Multi-level approval workflows</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="text-right">
+                                        <div class="progress-module w-28">
+                                            <div class="progress-module-fill" style="width: 75%"></div>
+                                        </div>
+                                        <div class="text-xs text-[#9A948D] mt-1">4 features · 75% complete</div>
+                                    </div>
+                                    <svg class="chevron-icon w-5 h-5 text-[#9A948D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="module-content">
+                            <div class="p-4 space-y-4">
+                                
+                                <!-- Feature 1: Role-based Approval -->
+                                <div class="feature-card bg-[#FAFAF9] border border-[#E8E4E0] rounded-xl p-5" onclick="selectFeature(this)">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <h4 class="font-semibold text-sm text-[#2D1810]">Role-based Approval Levels</h4>
+                                                <span class="coverage-badge covered"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>Covered</span>
+                                            </div>
+                                            <p class="text-xs text-[#6B7280]">Different approval thresholds based on user role (Manager, Director, VP)</p>
+                                        </div>
+                                        <button class="btn-ghost-icon" title="Edit Feature">
+                                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-2 mb-4">
+                                        <span class="text-xs text-[#9A948D] font-medium">Context:</span>
+                                        <span class="context-badge meeting" onclick="event.stopPropagation(); openContextPanel('meeting', 'Kickoff Meeting')">
+                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                                            Kickoff Meeting
+                                        </span>
+                                        <span class="context-badge document" onclick="event.stopPropagation(); openContextPanel('document', 'Requirements v2')">
+                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                            Requirements v2
+                                        </span>
+                                        <span class="context-badge note" onclick="event.stopPropagation(); openContextPanel('note', 'Developer Notes')">
+                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                            2 notes
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="space-y-2">
+                                        <div class="ticket-mini done"><svg class="w-4 h-4 text-[#10B981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span class="ticket-title">#47 Implement approval level enum</span><span class="ml-auto text-[#10B981] text-xs font-medium">Done</span></div>
+                                        <div class="ticket-mini done"><svg class="w-4 h-4 text-[#10B981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span class="ticket-title">#48 Role threshold configuration</span><span class="ml-auto text-[#10B981] text-xs font-medium">Done</span></div>
+                                        <div class="ticket-mini"><svg class="w-4 h-4 text-[#F59E0B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="ticket-title">#49 Approval routing microflow</span><span class="ml-auto text-[#F59E0B] text-xs font-medium">In Progress</span></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Feature 2: Delegation -->
+                                <div class="feature-card bg-[#FAFAF9] border border-[#E8E4E0] rounded-xl p-5" onclick="selectFeature(this)">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <h4 class="font-semibold text-sm text-[#2D1810]">Delegation Support</h4>
+                                                <span class="coverage-badge partial"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>Partial</span>
+                                            </div>
+                                            <p class="text-xs text-[#6B7280]">Allow users to delegate approval authority when unavailable</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <span class="text-xs text-[#9A948D] font-medium">Context:</span>
+                                        <span class="context-badge meeting" onclick="event.stopPropagation(); openContextPanel('meeting', 'Sprint Planning')">
+                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                                            Sprint Planning
+                                        </span>
+                                        <span class="context-badge document" onclick="event.stopPropagation(); openContextPanel('document', 'Delegation Spec')">
+                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                            Delegation Spec
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="gap-warning">
+                                        <div class="flex items-start gap-2">
+                                            <svg class="w-4 h-4 text-[#D97706] mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                            <div>
+                                                <p class="text-xs font-medium text-[#D97706]">Coverage Gap Detected</p>
+                                                <p class="text-xs text-[#9A948D] mt-0.5">"Delegation Spec" mentions cascade delegation (3+ levels) but no ticket covers this.</p>
+                                            </div>
+                                        </div>
+                                        <button class="mt-2 text-xs font-medium text-[#9333EA] hover:underline">+ Create missing ticket</button>
+                                    </div>
+                                    
+                                    <div class="space-y-2 mt-3">
+                                        <div class="ticket-mini"><svg class="w-4 h-4 text-[#2563EB]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span class="ticket-title">#52 Basic delegation setup</span><span class="ml-auto text-[#2563EB] text-xs font-medium">Ready</span></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Feature 3: Notifications -->
+                                <div class="feature-card bg-[#FAFAF9] border border-[#E8E4E0] rounded-xl p-5" onclick="selectFeature(this)">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <h4 class="font-semibold text-sm text-[#2D1810]">Approval Notifications</h4>
+                                                <span class="coverage-badge covered"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>Covered</span>
+                                            </div>
+                                            <p class="text-xs text-[#6B7280]">Email and in-app notifications for pending approvals</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-2 mb-4">
+                                        <span class="text-xs text-[#9A948D] font-medium">Context:</span>
+                                        <span class="context-badge note" onclick="event.stopPropagation(); openContextPanel('note', 'Client Feedback')">
+                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                            Client Feedback
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="space-y-2">
+                                        <div class="ticket-mini done"><svg class="w-4 h-4 text-[#10B981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span class="ticket-title">#55 Email notification template</span><span class="ml-auto text-[#10B981] text-xs font-medium">Done</span></div>
+                                        <div class="ticket-mini done"><svg class="w-4 h-4 text-[#10B981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span class="ticket-title">#56 In-app notification widget</span><span class="ml-auto text-[#10B981] text-xs font-medium">Done</span></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Add Feature Button -->
+                                <button class="w-full py-3 border-2 border-dashed border-[#E8E4E0] rounded-xl text-sm text-[#9A948D] hover:border-[#9333EA] hover:text-[#9333EA] hover:bg-[#FAF5FF] transition-all flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                                    Add Feature to Approvals
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- MODULE 2: Claims Management (Collapsed) -->
+                    <div class="module-accordion collapsed card mb-4" data-module="claims">
+                        <div class="p-4 cursor-pointer" onclick="toggleModule(this)">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-[#EFF6FF] flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-[#2563EB]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-[#2D1810]">Claims Management</h3>
+                                        <p class="text-xs text-[#9A948D]">Submit, edit, track claims</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="text-right">
+                                        <div class="progress-module w-28">
+                                            <div class="progress-module-fill" style="width: 60%"></div>
+                                        </div>
+                                        <div class="text-xs text-[#9A948D] mt-1">3 features · 60% complete</div>
+                                    </div>
+                                    <svg class="chevron-icon w-5 h-5 text-[#9A948D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-content">
+                            <div class="p-4 border-t border-[#E8E4E0] text-sm text-[#9A948D]"><p>Features: Claim Submission Form, Claim History, Claim Search</p></div>
+                        </div>
+                    </div>
+                    
+                    <!-- MODULE 3: Reporting (Collapsed) -->
+                    <div class="module-accordion collapsed card mb-4" data-module="reporting">
+                        <div class="p-4 cursor-pointer" onclick="toggleModule(this)">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-[#F0FDF4] flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-[#16A34A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-[#2D1810]">Reporting</h3>
+                                        <p class="text-xs text-[#9A948D]">Dashboard and exports</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="text-right">
+                                        <div class="progress-module w-28">
+                                            <div class="progress-module-fill" style="width: 33%"></div>
+                                        </div>
+                                        <div class="text-xs text-[#9A948D] mt-1">2 features · 33% complete</div>
+                                    </div>
+                                    <svg class="chevron-icon w-5 h-5 text-[#9A948D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-content">
+                            <div class="p-4 border-t border-[#E8E4E0] text-sm text-[#9A948D]"><p>Features: Dashboard Widgets, Export Reports</p></div>
+                        </div>
+                    </div>
+                    
+                    <!-- ADD MODULE CARD -->
+                    <div class="add-module-card" onclick="alert('Add Module modal would open')">
+                        <div class="flex items-center justify-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-white border-2 border-[#D8B4FE] flex items-center justify-center">
+                                <svg class="w-6 h-6 text-[#9333EA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                            </div>
+                            <div class="text-left">
+                                <p class="font-semibold text-sm text-[#5B21B6]">Add New Module</p>
+                                <p class="text-xs text-[#9A948D]">Create a new module to organize features</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!-- TAB 2: WORKFLOWS (React Flow) -->
+            <div id="tab-workflows" class="tab-section flex-1 flex flex-col min-h-0">
+                <div class="flex-1 flex items-stretch min-h-0">
+                    
+                    <!-- LEFT SIDEBAR: Workflow Nav List -->
+                    <aside class="w-[240px] border-r border-[#E8E4E0] bg-white flex flex-col flex-shrink-0">
+                        <div class="p-4 border-b border-[#E8E4E0]">
+                            <h2 class="font-semibold text-sm text-[#2D1810]">Workflows</h2>
+                            <p class="text-xs text-[#9A948D] mt-1">Claims Portal</p>
+                        </div>
+                        <nav class="flex-1 overflow-y-auto p-3 space-y-1" id="workflow-nav">
+                            <div class="workflow-nav-item active" data-workflow="0" onclick="selectWorkflow(0)">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#9333EA] flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-[#2D1810] truncate">Claim Submission</p>
+                                        <p class="text-[10px] text-[#9A948D]">7 steps</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#9333EA]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#9333EA]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#E8E4E0]"></span>
+                                </div>
+                            </div>
+                            <div class="workflow-nav-item" data-workflow="1" onclick="selectWorkflow(1)">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#10B981] flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-[#2D1810] truncate">Approval Process</p>
+                                        <p class="text-[10px] text-[#9A948D]">7 steps</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#9333EA]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#9333EA]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#E8E4E0]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#E8E4E0]"></span>
+                                </div>
+                            </div>
+                            <div class="workflow-nav-item" data-workflow="2" onclick="selectWorkflow(2)">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#F59E0B] flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-[#2D1810] truncate">Payment Processing</p>
+                                        <p class="text-[10px] text-[#9A948D]">6 steps</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#9333EA]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#9333EA]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#9333EA]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#E8E4E0]"></span>
+                                </div>
+                            </div>
+                        </nav>
+                        <div class="p-3 border-t border-[#E8E4E0]">
+                            <button class="w-full btn-secondary text-sm flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                                Add Workflow
+                            </button>
+                        </div>
+                    </aside>
+                    
+                    <!-- CENTER: Full-height Workflow Canvas -->
+                    <main class="flex-1 relative overflow-hidden" id="workflow-canvas-container">
+                        <!-- Workflow header bar -->
+                        <div class="absolute top-0 left-0 right-0 z-10 bg-white/90 backdrop-blur-sm border-b border-[#E8E4E0] px-4 py-3 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div id="workflow-icon" class="w-8 h-8 rounded-lg bg-[#9333EA] flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+                                </div>
+                                <div>
+                                    <h3 id="workflow-title" class="font-semibold text-sm text-[#2D1810]">Claim Submission</h3>
+                                    <p id="workflow-desc" class="text-xs text-[#9A948D]">User submits a claim with attachments</p>
+                                </div>
+                            </div>
+                            <div id="workflow-badges" class="flex items-center gap-2">
+                                <span class="step-status-badge completed">3 completed</span>
+                                <span class="step-status-badge in-progress">1 in progress</span>
+                                <span class="step-status-badge pending">3 pending</span>
+                            </div>
+                        </div>
+                        <!-- React Flow Canvas -->
+                        <div id="workflow-canvas" class="w-full h-full pt-16"></div>
+                    </main>
+                    
+                    <!-- RIGHT: AI Chat Sidebar (starts collapsed) -->
+                    <aside id="chatSidebar" class="chat-sidebar collapsed border-l border-[#E8E4E0] bg-white flex flex-col flex-shrink-0 h-full overflow-hidden">
+                        <div class="p-4 border-b border-[#E8E4E0] flex items-start justify-between min-w-[320px]">
+                            <div>
+                                <h3 class="font-semibold text-sm flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-[#FF6B35]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="21" cy="5" r="2"/>
+                                        <path d="M9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12"/>
+                                    </svg>
+                                    AI Assistant
+                                </h3>
+                                <p class="text-xs text-[#9A948D] mt-1">Ask about this workflow</p>
+                            </div>
+                            <button onclick="toggleChatSidebar()" class="btn-ghost-icon" title="Close (Ctrl+I)">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Chat Messages -->
+                        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+                            <div class="flex gap-3">
+                                <div class="w-7 h-7 rounded-full bg-[#FF6B35] flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="21" cy="5" r="2"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-[#2D1810] leading-relaxed">This workflow shows the <strong>Claim Submission</strong> process. You can:</p>
+                                    <ul class="text-xs text-[#2D1810] mt-2 space-y-1 bg-[#F5F2EF] rounded-lg p-3">
+                                        <li>• <strong>Drag nodes</strong> to reposition them</li>
+                                        <li>• <strong>Click a node</strong> to edit details</li>
+                                        <li>• <strong>Connect handles</strong> to create edges</li>
+                                        <li>• <strong>Use toolbar</strong> to add new nodes</li>
+                                    </ul>
+                                    <span class="text-[10px] text-[#9A948D] block mt-2">Just now</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat Input -->
+                        <div class="p-4 border-t border-[#E8E4E0] min-w-[320px]">
+                            <div class="flex gap-2 items-end">
+                                <textarea 
+                                    rows="1"
+                                    placeholder="Ask about this workflow..." 
+                                    class="flex-1 text-sm bg-[#FAFAF9] border border-[#E8E4E0] rounded-lg px-3 py-2 outline-none focus:border-[#FF6B35] resize-none overflow-hidden min-h-[38px] max-h-[120px]"
+                                ></textarea>
+                                <button class="btn-primary px-3 py-2 flex-shrink-0">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="22" y1="2" x2="11" y2="13"/>
+                                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- CONTEXT PANEL OVERLAY -->
+    <div class="context-panel-overlay" id="contextOverlay" onclick="closeContextPanel()"></div>
+    
+    <!-- CONTEXT PANEL -->
+    <div class="context-panel" id="contextPanel">
+        <div class="p-4 border-b border-[#E8E4E0] flex items-center justify-between bg-[#FAFAF9]">
+            <div class="flex items-center gap-3">
+                <div id="contextPanelIcon" class="w-10 h-10 rounded-lg flex items-center justify-center"></div>
+                <div>
+                    <h3 id="contextPanelTitle" class="font-semibold text-[#2D1810]">Context Title</h3>
+                    <p id="contextPanelMeta" class="text-xs text-[#9A948D]">Added Feb 28 by David</p>
+                </div>
+            </div>
+            <button class="btn-ghost-icon" onclick="closeContextPanel()">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto p-6">
+            <div id="contextPanelContent" class="prose prose-sm max-w-none"></div>
+            
+            <div class="mt-8 pt-6 border-t border-[#E8E4E0]">
+                <h4 class="text-sm font-semibold text-[#2D1810] mb-3">Linked Features</h4>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-3 p-3 bg-[#F5F2EF] rounded-lg">
+                        <div class="w-8 h-8 rounded bg-[#F3E8FF] flex items-center justify-center">
+                            <svg class="w-4 h-4 text-[#9333EA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-[#2D1810]">Role-based Approval Levels</p>
+                            <p class="text-xs text-[#9A948D]">Approvals module</p>
+                        </div>
+                        <span class="coverage-badge covered">Covered</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-[#F5F2EF] rounded-lg">
+                        <div class="w-8 h-8 rounded bg-[#F3E8FF] flex items-center justify-center">
+                            <svg class="w-4 h-4 text-[#9333EA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-[#2D1810]">Delegation Support</p>
+                            <p class="text-xs text-[#9A948D]">Approvals module</p>
+                        </div>
+                        <span class="coverage-badge partial">Partial</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-4 border-t border-[#E8E4E0] bg-[#FAFAF9]">
+            <div class="flex items-center gap-2">
+                <button class="btn-secondary flex-1 text-sm">
+                    <svg class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Edit
+                </button>
+                <button class="btn-secondary flex-1 text-sm">
+                    <svg class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 20 2 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                    Copy
+                </button>
+                <button class="btn-ghost-icon text-[#EF4444]">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FLOATING AI FAB -->
+    <button class="chat-toggle-fab" id="chatFab" onclick="toggleChatSidebar()" title="AI Assistant (Ctrl+I)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            <circle cx="9" cy="10" r="1" fill="currentColor"/>
+            <circle cx="12" cy="10" r="1" fill="currentColor"/>
+            <circle cx="15" cy="10" r="1" fill="currentColor"/>
+        </svg>
+    </button>
+    
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.remove('tab-active');
+                    b.classList.add('text-[#9A948D]');
+                });
+                btn.classList.add('tab-active');
+                btn.classList.remove('text-[#9A948D]');
+                
+                document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+                document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+                
+                // Initialize React Flow when switching to workflows tab
+                if (btn.dataset.tab === 'workflows' && !window.workflowInitialized) {
+                    initWorkflowCanvas();
+                }
+            });
+        });
+        
+        // Context data for panels
+        const contextData = {
+            'meeting': {
+                icon: 'bg-[#FEF3C7]',
+                iconSvg: '<svg class="w-5 h-5 text-[#D97706]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>',
+                content: {
+                    'Kickoff Meeting': {
+                        meta: 'Feb 15, 2026 · Added by David',
+                        text: 'Discussed the multi-level approval workflow requirements with the client.'
+                    }
+                }
+            },
+            'document': {
+                icon: 'bg-[#EFF6FF]',
+                iconSvg: '<svg class="w-5 h-5 text-[#2563EB]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+                content: {
+                    'Requirements v2': {
+                        meta: 'Feb 18, 2026 · Added by David',
+                        text: '## Approval Workflow Requirements'
+                    }
+                }
+            },
+            'note': {
+                icon: 'bg-[#FFF7F3]',
+                iconSvg: '<svg class="w-5 h-5 text-[#FF6B35]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+                content: {
+                    'Developer Notes': {
+                        meta: 'Feb 25, 2026 · Added by Aisha',
+                        text: 'Technical notes from implementation.'
+                    }
+                }
+            }
+        };
+        
+        function openContextPanel(type, title) {
+            const panel = document.getElementById('contextPanel');
+            const overlay = document.getElementById('contextOverlay');
+            const data = contextData[type];
+            const content = data.content[title] || { meta: 'Unknown', text: 'No content available' };
+            
+            document.getElementById('contextPanelIcon').className = `w-10 h-10 rounded-lg flex items-center justify-center ${data.icon}`;
+            document.getElementById('contextPanelIcon').innerHTML = data.iconSvg;
+            document.getElementById('contextPanelTitle').textContent = title;
+            document.getElementById('contextPanelMeta').textContent = content.meta;
+            document.getElementById('contextPanelContent').innerHTML = `<p class="text-sm text-[#2D1810] whitespace-pre-wrap">${content.text}</p>`;
+            
+            panel.classList.add('active');
+            overlay.classList.add('active');
+        }
+        
+        function closeContextPanel() {
+            document.getElementById('contextPanel').classList.remove('active');
+            document.getElementById('contextOverlay').classList.remove('active');
+        }
+        
+        // Module accordion toggle
+        function toggleModule(header) {
+            const accordion = header.closest('.module-accordion');
+            accordion.classList.toggle('expanded');
+            accordion.classList.toggle('collapsed');
+        }
+        
+        // Feature selection
+        function selectFeature(card) {
+            document.querySelectorAll('.feature-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+        }
+        
+        // Workflow expand/collapse
+        function toggleWorkflowExpand(workflowId) {
+            const panel = document.getElementById(workflowId + '-panel');
+            const arrow = document.getElementById(workflowId + '-arrow');
+            panel.classList.toggle('expanded');
+            arrow.classList.toggle('expanded');
+        }
+        
+        // Show step detail panel
+        function showStepDetail(stepName, status) {
+            const detailPanel = document.getElementById('workflow1-step-detail');
+            const titleEl = document.getElementById('step-detail-title');
+            const descEl = document.getElementById('step-detail-desc');
+            
+            titleEl.textContent = stepName;
+            descEl.textContent = 'Step details';
+            detailPanel.style.display = 'block';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('chatFab').classList.add('visible');
+            }, 500);
+        });
+        
+        // ============================================
+        // REACT FLOW WORKFLOW CANVAS
+        // ============================================
+        
+        const { useState, useCallback } = React;
+        const { 
+            ReactFlow, 
+            Background, 
+            Controls, 
+            MiniMap,
+            Handle,
+            Position,
+            useNodesState,
+            useEdgesState,
+            MarkerType
+        } = window.ReactFlow || {};
+        
+        // Custom Node Components
+        const StartNode = ({ data }) => (
+            React.createElement('div', { className: `zoniq-node zoniq-node-start ${data.selected ? 'selected' : ''}` },
+                React.createElement(Handle, { type: 'source', position: Position.Bottom, style: { opacity: 0 } }),
+                data.label
+            )
+        );
+        
+        const EndNode = ({ data }) => (
+            React.createElement('div', { className: `zoniq-node zoniq-node-end ${data.selected ? 'selected' : ''}` },
+                React.createElement(Handle, { type: 'target', position: Position.Top, style: { opacity: 0 } }),
+                data.label
+            )
+        );
+        
+        const ActionNode = ({ data }) => (
+            React.createElement('div', { className: `zoniq-node zoniq-node-action ${data.status || ''} ${data.selected ? 'selected' : ''}` },
+                React.createElement(Handle, { type: 'target', position: Position.Top, style: { top: -4 } }),
+                data.status === 'completed' && React.createElement('div', { className: 'zoniq-node-status completed' },
+                    React.createElement('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'white', strokeWidth: '3' },
+                        React.createElement('path', { d: 'M5 13l4 4L19 7' })
+                    )
+                ),
+                data.status === 'in-progress' && React.createElement('div', { className: 'zoniq-node-status in-progress' }),
+                React.createElement('div', { className: 'zoniq-node-label' }, data.label),
+                data.sublabel && React.createElement('div', { className: 'zoniq-node-sublabel' }, data.sublabel),
+                React.createElement(Handle, { type: 'source', position: Position.Bottom, style: { bottom: -4 } })
+            )
+        );
+        
+        const DecisionNode = ({ data }) => (
+            React.createElement('div', { className: `zoniq-node zoniq-node-decision ${data.status || ''} ${data.selected ? 'selected' : ''}` },
+                React.createElement(Handle, { type: 'target', position: Position.Top, style: { top: -10, background: '#9333EA' } }),
+                React.createElement('span', null, data.label),
+                React.createElement(Handle, { type: 'source', position: Position.Bottom, id: 'yes', style: { bottom: -10, left: 12, background: '#10B981' } }),
+                React.createElement(Handle, { type: 'source', position: Position.Bottom, id: 'no', style: { bottom: -10, right: 12, background: '#EF4444' } })
+            )
+        );
+        
+        const nodeTypes = {
+            start: StartNode,
+            end: EndNode,
+            action: ActionNode,
+            decision: DecisionNode
+        };
+        
+        // Workflow Data
+        // NOTE: Nodes can include additional data for the detail panel:
+        // - description: string - shows in Description section
+        // - stories: [{ id, title, status, type }] - shows in Related Stories section
+        // - notes: string - shows in Notes section with orange highlight
+        const workflow1Nodes = [
+            { id: 'start', type: 'start', position: { x: 300, y: 20 }, data: { label: 'Start' } },
+            { id: 'submit', type: 'action', position: { x: 225, y: 100 }, data: { label: 'Submit Form', sublabel: 'User enters claim', status: 'completed', description: 'The claimant fills out the claim submission form with all required personal and claim details including policy number, incident date, and description.', stories: [{ id: 'ZON-101', title: 'Create claim submission form', status: 'Done', type: 'feature' }, { id: 'ZON-102', title: 'Form validation and error handling', status: 'Done', type: 'bug' }], notes: 'Added auto-save functionality to prevent data loss. Form now saves drafts every 30 seconds.' }},
+            { id: 'upload', type: 'action', position: { x: 120, y: 200 }, data: { label: 'Upload Files', sublabel: 'Attachments', status: 'completed', description: 'Claimants can upload supporting documents such as photos, receipts, police reports, and medical records. Supports PDF, JPG, PNG up to 10MB each.', stories: [{ id: 'ZON-103', title: 'File upload component with drag-drop', status: 'Done', type: 'feature' }], notes: 'Consider adding virus scanning for uploaded files in next sprint.' }},
+            { id: 'validate', type: 'action', position: { x: 330, y: 200 }, data: { label: 'Validate Data', sublabel: 'Check required', status: 'in-progress', description: 'System validates all submitted data against business rules: required fields, date ranges, policy status, and coverage verification.', stories: [{ id: 'ZON-104', title: 'Server-side validation rules', status: 'In Progress', type: 'feature' }, { id: 'ZON-105', title: 'Real-time validation feedback', status: 'To Do', type: 'feature' }], notes: 'Currently working on edge cases for international policy numbers. Need clarification on EU format.' }},
+            { id: 'decision', type: 'decision', position: { x: 284, y: 300 }, data: { label: 'Valid?', status: '' } },
+            { id: 'route', type: 'action', position: { x: 120, y: 420 }, data: { label: 'Route', sublabel: 'To approver', status: 'pending', description: 'Routes the validated claim to the appropriate approver based on claim type, amount, and policy holder tier. Uses rule-based routing engine.', stories: [{ id: 'ZON-106', title: 'Implement routing rules engine', status: 'To Do', type: 'feature' }] }},
+            { id: 'return', type: 'action', position: { x: 380, y: 420 }, data: { label: 'Return', sublabel: 'For editing', status: '' } },
+            { id: 'end', type: 'end', position: { x: 300, y: 540 }, data: { label: 'End' } }
+        ];
+        
+        const workflow1Edges = [
+            { id: 'e1', source: 'start', target: 'submit', animated: false, style: { stroke: '#9333EA' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#9333EA' } },
+            { id: 'e2', source: 'submit', target: 'upload', animated: false, style: { stroke: '#10B981' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#10B981' } },
+            { id: 'e3', source: 'submit', target: 'validate', animated: false, style: { stroke: '#F59E0B' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#F59E0B' } },
+            { id: 'e4', source: 'upload', target: 'decision', animated: false, style: { stroke: '#E8E4E0' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#9A948D' } },
+            { id: 'e5', source: 'validate', target: 'decision', animated: false, style: { stroke: '#E8E4E0' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#9A948D' } },
+            { id: 'e6', source: 'decision', target: 'route', sourceHandle: 'yes', animated: false, style: { stroke: '#10B981' }, label: 'Yes', labelStyle: { fill: '#059669', fontWeight: 600, fontSize: 10 }, labelBgStyle: { fill: '#D1FAE5' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#10B981' } },
+            { id: 'e7', source: 'decision', target: 'return', sourceHandle: 'no', animated: false, style: { stroke: '#EF4444' }, label: 'No', labelStyle: { fill: '#DC2626', fontWeight: 600, fontSize: 10 }, labelBgStyle: { fill: '#FEE2E2' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#EF4444' } },
+            { id: 'e8', source: 'route', target: 'end', animated: false, style: { stroke: '#9333EA' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#9333EA' } },
+            { id: 'e9', source: 'return', target: 'end', animated: false, style: { stroke: '#E8E4E0' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#9A948D' } }
+        ];
+        
+        const workflow2Nodes = [
+            { id: 'start', type: 'start', position: { x: 300, y: 20 }, data: { label: 'Start' } },
+            { id: 'notify', type: 'action', position: { x: 225, y: 100 }, data: { label: 'Notify', sublabel: 'Send alert', status: 'completed', description: 'Sends automated email and in-app notification to the assigned approver about the pending claim review. Includes claim summary and direct link.', stories: [{ id: 'ZON-201', title: 'Email notification service', status: 'Done', type: 'feature' }] }},
+            { id: 'review', type: 'action', position: { x: 225, y: 200 }, data: { label: 'Review', sublabel: 'Check claim', status: 'in-progress', description: 'Approver reviews claim details, attached documents, and claimant history. Can request additional information or escalate to senior approver.', stories: [{ id: 'ZON-202', title: 'Review dashboard UI', status: 'In Progress', type: 'feature' }, { id: 'ZON-203', title: 'Escalation workflow', status: 'To Do', type: 'feature' }], notes: 'Need to add comparison view for similar past claims to help approvers make consistent decisions.' }},
+            { id: 'decision', type: 'decision', position: { x: 284, y: 300 }, data: { label: 'OK?', status: '' } },
+            { id: 'approve', type: 'action', position: { x: 120, y: 420 }, data: { label: 'Approve', sublabel: 'Accept claim', status: 'pending', description: 'Approves the claim and triggers payment processing workflow. Sets approval timestamp and approver ID for audit trail.', stories: [{ id: 'ZON-204', title: 'One-click approval action', status: 'To Do', type: 'feature' }] }},
+            { id: 'reject', type: 'action', position: { x: 380, y: 420 }, data: { label: 'Reject', sublabel: 'Deny claim', status: '' } },
+            { id: 'end', type: 'end', position: { x: 300, y: 540 }, data: { label: 'End' } }
+        ];
+        
+        const workflow2Edges = [
+            { id: 'e1', source: 'start', target: 'notify', style: { stroke: '#9333EA' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#9333EA' } },
+            { id: 'e2', source: 'notify', target: 'review', style: { stroke: '#10B981' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#10B981' } },
+            { id: 'e3', source: 'review', target: 'decision', style: { stroke: '#F59E0B' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#F59E0B' } },
+            { id: 'e4', source: 'decision', target: 'approve', sourceHandle: 'yes', style: { stroke: '#10B981' }, label: 'Yes', labelStyle: { fill: '#059669', fontWeight: 600, fontSize: 10 }, labelBgStyle: { fill: '#D1FAE5' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#10B981' } },
+            { id: 'e5', source: 'decision', target: 'reject', sourceHandle: 'no', style: { stroke: '#EF4444' }, label: 'No', labelStyle: { fill: '#DC2626', fontWeight: 600, fontSize: 10 }, labelBgStyle: { fill: '#FEE2E2' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#EF4444' } },
+            { id: 'e6', source: 'approve', target: 'end', style: { stroke: '#9333EA' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#9333EA' } },
+            { id: 'e7', source: 'reject', target: 'end', style: { stroke: '#E8E4E0' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#9A948D' } }
+        ];
+        
+        const workflow3Nodes = [
+            { id: 'start', type: 'start', position: { x: 300, y: 20 }, data: { label: 'Start' } },
+            { id: 'payment', type: 'action', position: { x: 120, y: 120 }, data: { label: 'Process Payment', sublabel: 'Execute', status: 'completed', description: 'Initiates payment through integrated payment gateway. Supports ACH, wire transfer, and check issuance based on claimant preferences.', stories: [{ id: 'ZON-301', title: 'Payment gateway integration', status: 'Done', type: 'feature' }] }},
+            { id: 'ledger', type: 'action', position: { x: 120, y: 220 }, data: { label: 'Update Ledger', sublabel: 'Record', status: 'pending', description: 'Records the transaction in the general ledger and updates claim financial summary. Ensures compliance with accounting standards.', stories: [{ id: 'ZON-302', title: 'Ledger integration API', status: 'To Do', type: 'feature' }], notes: 'Waiting on finance team to confirm account codes for new claim categories.' }},
+            { id: 'email', type: 'action', position: { x: 350, y: 120 }, data: { label: 'Send Email', sublabel: 'Notify', status: 'completed' }},
+            { id: 'log', type: 'action', position: { x: 350, y: 220 }, data: { label: 'Log Activity', sublabel: 'Audit', status: 'pending' }},
+            { id: 'end', type: 'end', position: { x: 300, y: 340 }, data: { label: 'End' } }
+        ];
+        
+        const workflow3Edges = [
+            { id: 'e1', source: 'start', target: 'payment', style: { stroke: '#9333EA' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#9333EA' } },
+            { id: 'e2', source: 'start', target: 'email', style: { stroke: '#9333EA' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#9333EA' } },
+            { id: 'e3', source: 'payment', target: 'ledger', style: { stroke: '#10B981' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#10B981' } },
+            { id: 'e4', source: 'email', target: 'log', style: { stroke: '#10B981' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#10B981' } },
+            { id: 'e5', source: 'ledger', target: 'end', style: { stroke: '#9333EA' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#9333EA' } },
+            { id: 'e6', source: 'log', target: 'end', style: { stroke: '#9333EA' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#9333EA' } }
+        ];
+        
+        // Flow Component with editing
+        const Flow = ({ nodes: initialNodes, edges: initialEdges }) => {
+            const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+            const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+            const [selectedNode, setSelectedNode] = useState(null);
+            const [editLabel, setEditLabel] = useState('');
+            const [editSublabel, setEditSublabel] = useState('');
+            
+            const onConnect = useCallback((params) => {
+                setEdges((eds) => [...eds, { 
+                    ...params, 
+                    id: `e-${Date.now()}`,
+                    type: 'smoothstep',
+                    style: { stroke: '#9333EA' },
+                    markerEnd: { type: MarkerType.ArrowClosed, color: '#9333EA' }
+                }]);
+            }, [setEdges]);
+            
+            const onNodeClick = useCallback((event, node) => {
+                setSelectedNode(node);
+                setEditLabel(node.data.label || '');
+                setEditSublabel(node.data.sublabel || '');
+            }, []);
+            
+            const onPaneClick = useCallback(() => {
+                setSelectedNode(null);
+            }, []);
+            
+            const updateNodeLabel = useCallback(() => {
+                if (selectedNode) {
+                    setNodes((nds) => nds.map((n) => 
+                        n.id === selectedNode.id 
+                            ? { ...n, data: { ...n.data, label: editLabel, sublabel: editSublabel } }
+                            : n
+                    ));
+                }
+            }, [selectedNode, editLabel, editSublabel, setNodes]);
+            
+            const addNewNode = useCallback((type) => {
+                const newNode = {
+                    id: `node-${Date.now()}`,
+                    type,
+                    position: { x: 200 + Math.random() * 100, y: 100 + Math.random() * 100 },
+                    data: { 
+                        label: type === 'start' ? 'Start' : type === 'end' ? 'End' : 'New Step',
+                        sublabel: type === 'action' ? 'Description' : '',
+                        status: 'pending'
+                    }
+                };
+                setNodes((nds) => [...nds, newNode]);
+            }, [setNodes]);
+            
+            const deleteSelected = useCallback(() => {
+                if (selectedNode) {
+                    setNodes((nds) => nds.filter((n) => n.id !== selectedNode.id));
+                    setEdges((eds) => eds.filter((e) => e.source !== selectedNode.id && e.target !== selectedNode.id));
+                    setSelectedNode(null);
+                }
+            }, [selectedNode, setNodes, setEdges]);
+            
+            return React.createElement('div', { style: { width: '100%', height: '100%', position: 'relative' } },
+                React.createElement(ReactFlow, {
+                    nodes,
+                    edges,
+                    onNodesChange,
+                    onEdgesChange,
+                    onConnect,
+                    onNodeClick,
+                    onPaneClick,
+                    nodeTypes,
+                    fitView: true,
+                    fitViewOptions: { padding: 0.2 },
+                    minZoom: 0.5,
+                    maxZoom: 1.5,
+                    defaultEdgeOptions: { type: 'smoothstep' },
+                    snapToGrid: true,
+                    snapGrid: [15, 15]
+                },
+                    React.createElement(Background, { color: '#E8E4E0', gap: 20 }),
+                    React.createElement(Controls, { showInteractive: false }),
+                    React.createElement(MiniMap, { 
+                        nodeColor: (node) => {
+                            if (node.type === 'start') return '#9333EA';
+                            if (node.type === 'end') return '#10B981';
+                            if (node.data?.status === 'completed') return '#10B981';
+                            if (node.data?.status === 'in-progress') return '#F59E0B';
+                            return '#E8E4E0';
+                        },
+                        style: { background: 'white' }
+                    })
+                ),
+                // Detail Panel (Sidebar)
+                selectedNode && React.createElement('div', { 
+                    style: {
+                        position: 'absolute',
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: 'white',
+                        boxShadow: '-4px 0 20px rgba(0,0,0,0.1)',
+                        width: 320,
+                        zIndex: 10,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        overflow: 'hidden'
+                    }
+                },
+                    // Header
+                    React.createElement('div', { 
+                        style: { 
+                            padding: '16px 20px', 
+                            borderBottom: '1px solid #E8E4E0',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start'
+                        } 
+                    },
+                        React.createElement('div', null,
+                            React.createElement('div', { 
+                                style: { 
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    padding: '4px 10px',
+                                    borderRadius: 6,
+                                    fontSize: 10,
+                                    fontWeight: 600,
+                                    textTransform: 'uppercase',
+                                    marginBottom: 8,
+                                    background: selectedNode.type === 'start' ? '#F3E8FF' : selectedNode.type === 'end' ? '#D1FAE5' : selectedNode.type === 'decision' ? '#FEF3C7' : '#FEF3C7',
+                                    color: selectedNode.type === 'start' ? '#9333EA' : selectedNode.type === 'end' ? '#059669' : selectedNode.type === 'decision' ? '#D97706' : '#D97706'
+                                } 
+                            }, selectedNode.type),
+                            React.createElement('h3', { style: { fontSize: 16, fontWeight: 600, color: '#2D1810', margin: 0 } }, selectedNode.data.label),
+                            selectedNode.data.sublabel && React.createElement('p', { style: { fontSize: 12, color: '#9A948D', margin: '4px 0 0' } }, selectedNode.data.sublabel)
+                        ),
+                        React.createElement('button', { 
+                            onClick: () => setSelectedNode(null),
+                            style: { background: '#F5F2EF', border: 'none', cursor: 'pointer', fontSize: 14, color: '#9A948D', width: 28, height: 28, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }
+                        }, '×')
+                    ),
+                    // Content
+                    React.createElement('div', { style: { flex: 1, overflow: 'auto', padding: 20 } },
+                        // Status
+                        selectedNode.data.status && React.createElement('div', { style: { marginBottom: 20 } },
+                            React.createElement('label', { style: { display: 'block', fontSize: 10, fontWeight: 600, color: '#9A948D', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 } }, 'Status'),
+                            React.createElement('div', { 
+                                style: { 
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    padding: '6px 12px',
+                                    borderRadius: 6,
+                                    fontSize: 12,
+                                    fontWeight: 600,
+                                    background: selectedNode.data.status === 'completed' ? '#D1FAE5' : selectedNode.data.status === 'in-progress' ? '#FEF3C7' : '#F3F4F6',
+                                    color: selectedNode.data.status === 'completed' ? '#059669' : selectedNode.data.status === 'in-progress' ? '#D97706' : '#6B7280'
+                                } 
+                            },
+                                selectedNode.data.status === 'completed' && '✓',
+                                selectedNode.data.status === 'in-progress' && '◐',
+                                selectedNode.data.status === 'pending' && '○',
+                                selectedNode.data.status.charAt(0).toUpperCase() + selectedNode.data.status.slice(1).replace('-', ' ')
+                            )
+                        ),
+                        // Description
+                        selectedNode.data.description && React.createElement('div', { style: { marginBottom: 20 } },
+                            React.createElement('label', { style: { display: 'block', fontSize: 10, fontWeight: 600, color: '#9A948D', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 } }, 'Description'),
+                            React.createElement('p', { style: { fontSize: 13, color: '#4B4539', lineHeight: 1.6, margin: 0 } }, selectedNode.data.description)
+                        ),
+                        // Related Stories
+                        selectedNode.data.stories && selectedNode.data.stories.length > 0 && React.createElement('div', { style: { marginBottom: 20 } },
+                            React.createElement('label', { style: { display: 'block', fontSize: 10, fontWeight: 600, color: '#9A948D', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 } }, 
+                                'Related Stories (', selectedNode.data.stories.length, ')'
+                            ),
+                            React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 8 } },
+                                ...selectedNode.data.stories.map(story => 
+                                    React.createElement('div', { 
+                                        key: story.id,
+                                        style: { 
+                                            padding: 10,
+                                            background: '#FAFAF9',
+                                            borderRadius: 8,
+                                            border: '1px solid #E8E4E0',
+                                            cursor: 'pointer'
+                                        },
+                                        onClick: () => console.log('Open story:', story.id)
+                                    },
+                                        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 } },
+                                            React.createElement('span', { style: { fontSize: 11, fontWeight: 600, color: '#9333EA' } }, story.id),
+                                            React.createElement('span', { 
+                                                style: { 
+                                                    fontSize: 10,
+                                                    fontWeight: 500,
+                                                    padding: '2px 6px',
+                                                    borderRadius: 4,
+                                                    background: story.status === 'Done' ? '#D1FAE5' : story.status === 'In Progress' ? '#FEF3C7' : '#F3F4F6',
+                                                    color: story.status === 'Done' ? '#059669' : story.status === 'In Progress' ? '#D97706' : '#6B7280'
+                                                } 
+                                            }, story.status)
+                                        ),
+                                        React.createElement('p', { style: { fontSize: 12, color: '#2D1810', margin: 0 } }, story.title)
+                                    )
+                                )
+                            )
+                        ),
+                        // Notes
+                        selectedNode.data.notes && React.createElement('div', { style: { marginBottom: 20 } },
+                            React.createElement('label', { style: { display: 'block', fontSize: 10, fontWeight: 600, color: '#9A948D', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 } }, 'Notes'),
+                            React.createElement('div', { style: { background: '#FEF7ED', borderRadius: 8, padding: 12, borderLeft: '3px solid #FF6B35' } },
+                                React.createElement('p', { style: { fontSize: 12, color: '#4B4539', lineHeight: 1.5, margin: 0 } }, selectedNode.data.notes)
+                            )
+                        ),
+                        // Edit Section
+                        React.createElement('div', { style: { borderTop: '1px solid #E8E4E0', paddingTop: 16, marginTop: 8 } },
+                            React.createElement('label', { style: { display: 'block', fontSize: 10, fontWeight: 600, color: '#9A948D', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 } }, 'Quick Edit'),
+                            React.createElement('div', { style: { marginBottom: 12 } },
+                                React.createElement('label', { style: { display: 'block', fontSize: 11, color: '#6B7280', marginBottom: 4 } }, 'Label'),
+                                React.createElement('input', {
+                                    value: editLabel,
+                                    onChange: (e) => setEditLabel(e.target.value),
+                                    onBlur: updateNodeLabel,
+                                    style: { 
+                                        width: '100%', 
+                                        padding: '8px 10px', 
+                                        border: '1px solid #E8E4E0', 
+                                        borderRadius: 6, 
+                                        fontSize: 13,
+                                        outline: 'none',
+                                        boxSizing: 'border-box'
+                                    }
+                                })
+                            ),
+                            selectedNode.type === 'action' && React.createElement('div', { style: { marginBottom: 12 } },
+                                React.createElement('label', { style: { display: 'block', fontSize: 11, color: '#6B7280', marginBottom: 4 } }, 'Sublabel'),
+                                React.createElement('input', {
+                                    value: editSublabel,
+                                    onChange: (e) => setEditSublabel(e.target.value),
+                                    onBlur: updateNodeLabel,
+                                    style: { 
+                                        width: '100%', 
+                                        padding: '8px 10px', 
+                                        border: '1px solid #E8E4E0', 
+                                        borderRadius: 6, 
+                                        fontSize: 13,
+                                        outline: 'none',
+                                        boxSizing: 'border-box'
+                                    }
+                                })
+                            ),
+                            selectedNode.data.status && React.createElement('div', { style: { marginBottom: 12 } },
+                                React.createElement('label', { style: { display: 'block', fontSize: 11, color: '#6B7280', marginBottom: 4 } }, 'Status'),
+                                React.createElement('select', {
+                                    value: selectedNode.data.status || 'pending',
+                                    onChange: (e) => {
+                                        setNodes((nds) => nds.map((n) => 
+                                            n.id === selectedNode.id 
+                                                ? { ...n, data: { ...n.data, status: e.target.value } }
+                                                : n
+                                        ));
+                                    },
+                                    style: { 
+                                        width: '100%', 
+                                        padding: '8px 10px', 
+                                        border: '1px solid #E8E4E0', 
+                                        borderRadius: 6, 
+                                        fontSize: 13,
+                                        outline: 'none',
+                                        background: 'white',
+                                        boxSizing: 'border-box'
+                                    }
+                                },
+                                    React.createElement('option', { value: 'pending' }, 'Pending'),
+                                    React.createElement('option', { value: 'in-progress' }, 'In Progress'),
+                                    React.createElement('option', { value: 'completed' }, 'Completed')
+                                )
+                            )
+                        )
+                    ),
+                    // Footer
+                    React.createElement('div', { style: { padding: '16px 20px', borderTop: '1px solid #E8E4E0', background: '#FAFAF9' } },
+                        React.createElement('button', {
+                            onClick: deleteSelected,
+                            style: {
+                                width: '100%',
+                                padding: '10px',
+                                background: 'white',
+                                color: '#DC2626',
+                                border: '1px solid #FCA5A5',
+                                borderRadius: 8,
+                                fontSize: 13,
+                                fontWeight: 600,
+                                cursor: 'pointer'
+                            }
+                        }, 'Delete Step')
+                    )
+                ),
+                // Add Node Toolbar
+                React.createElement('div', { 
+                    style: {
+                        position: 'absolute',
+                        bottom: 10,
+                        left: 10,
+                        display: 'flex',
+                        gap: 6,
+                        background: 'white',
+                        padding: 6,
+                        borderRadius: 8,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        zIndex: 5
+                    }
+                },
+                    React.createElement('button', { 
+                        onClick: () => addNewNode('start'),
+                        style: { padding: '6px 10px', background: '#9333EA', color: 'white', border: 'none', borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: 'pointer' },
+                        title: 'Add Start'
+                    }, 'Start'),
+                    React.createElement('button', { 
+                        onClick: () => addNewNode('action'),
+                        style: { padding: '6px 10px', background: '#FF6B35', color: 'white', border: 'none', borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: 'pointer' },
+                        title: 'Add Action'
+                    }, 'Action'),
+                    React.createElement('button', { 
+                        onClick: () => addNewNode('decision'),
+                        style: { padding: '6px 10px', background: '#F59E0B', color: 'white', border: 'none', borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: 'pointer' },
+                        title: 'Add Decision'
+                    }, 'Decision'),
+                    React.createElement('button', { 
+                        onClick: () => addNewNode('end'),
+                        style: { padding: '6px 10px', background: '#10B981', color: 'white', border: 'none', borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: 'pointer' },
+                        title: 'Add End'
+                    }, 'End')
+                )
+            );
+        };
+        
+        // Workflow Management
+        let currentRoot = null;
+        let currentWorkflowIndex = 0;
+        
+        const workflows = [
+            { nodes: workflow1Nodes, edges: workflow1Edges, title: 'Claim Submission', desc: 'User submits a claim with attachments', color: '#9333EA' },
+            { nodes: workflow2Nodes, edges: workflow2Edges, title: 'Approval Process', desc: 'Multi-level approval with delegation', color: '#10B981' },
+            { nodes: workflow3Nodes, edges: workflow3Edges, title: 'Payment Processing', desc: 'Parallel execution of payment and notification', color: '#F59E0B' }
+        ];
+        
+        const renderFlow = (containerId, nodes, edges) => {
+            const container = document.getElementById(containerId);
+            if (container) {
+                if (currentRoot) {
+                    currentRoot.unmount();
+                }
+                currentRoot = ReactDOM.createRoot(container);
+                currentRoot.render(
+                    React.createElement(React.StrictMode, null,
+                        React.createElement('div', { style: { width: '100%', height: '100%' } },
+                            React.createElement(Flow, { nodes, edges })
+                        )
+                    )
+                );
+            }
+        };
+        
+        function selectWorkflow(index) {
+            currentWorkflowIndex = index;
+            const workflow = workflows[index];
+            
+            // Update nav items
+            document.querySelectorAll('.workflow-nav-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+            
+            // Update header
+            document.getElementById('workflow-title').textContent = workflow.title;
+            document.getElementById('workflow-desc').textContent = workflow.desc;
+            document.getElementById('workflow-icon').style.background = workflow.color;
+            
+            // Render selected workflow
+            renderFlow('workflow-canvas', workflow.nodes, workflow.edges);
+        }
+        
+        function toggleChatSidebar() {
+            const chatSidebar = document.getElementById('chatSidebar');
+            const chatFab = document.getElementById('chatFab');
+            const isCollapsed = chatSidebar.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                chatSidebar.classList.remove('collapsed');
+                chatSidebar.classList.add('expanded');
+                chatFab.classList.remove('visible');
+            } else {
+                chatSidebar.classList.remove('expanded');
+                chatSidebar.classList.add('collapsed');
+                setTimeout(() => chatFab.classList.add('visible'), 200);
+            }
+        }
+        
+        function initWorkflowCanvas() {
+            window.workflowInitialized = true;
+            selectWorkflow(0);
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+                e.preventDefault();
+                toggleChatSidebar();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -397,6 +397,47 @@ Both AI providers (Big Model, Claude) should use a similar interface to allow ea
 - FR37: Reviewers can approve stories
 - FR38: Reviewers can request changes on stories with comments
 
+### Kanban Board
+
+- FR39: Users can view all stories in a kanban board layout with columns (Backlog, Ready, In Progress, Testing, Review, Done)
+- FR40: Users can drag and drop stories between columns to change status
+- FR41: Users can filter kanban board by project, assignee, and priority
+- FR42: Users can add new stories directly from kanban columns
+
+### App Management
+
+- FR43: Users can view a list of all apps in the system
+- FR44: Users can view app details including version, status (online/offline), and description
+- FR45: Users can view project cards associated with an app with mini kanban displays
+- FR46: Users can view module test coverage with health indicators (Healthy, Needs Tests, Critical)
+- FR47: Users can view live logs with filtering by log level (All, Errors, Warnings)
+- FR48: System displays AI suggestions for error patterns with auto-ticket creation
+- FR49: Users can view environment cards (Development, Test, Acceptance, Production) with deployment status
+- FR50: Users can deploy to environments and see deployment status changes
+
+### Project Details
+
+- FR51: Users can view project overview with linked app information
+- FR52: Users can view project metrics including story counts and progress
+- FR53: Users can view team members assigned to a project
+- FR54: Users can navigate between project sections (Overview, Stories, Metrics, Team, Settings)
+- FR55: Users can view recent project activity timeline
+
+### Context Library
+
+- FR56: Users can view all context sources (Notes, Summaries, Technical docs)
+- FR57: Users can search context by title, type, or keywords
+- FR58: Users can filter context by type (Note, Summary, Technical)
+- FR59: Users can view linked story counts per context item
+- FR60: Users can add new context items
+
+### Floating AI Assistant
+
+- FR61: Users can access AI assistant via floating action button (FAB) on detail pages
+- FR62: FAB displays pulse animation to indicate availability
+- FR63: Users can toggle AI chat sidebar open/closed via FAB or keyboard shortcut (Ctrl+K)
+- FR64: AI chat provides tab-aware assistance based on current context
+
 ---
 
 ## Non-Functional Requirements

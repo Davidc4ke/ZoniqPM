@@ -269,31 +269,12 @@ The universal input is not just for note capture — it's a conversational comma
 
 ### Home Screen Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  ZONIQ                                    [Create] [Edit] [⚙️] [⌘K] │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 🔮 Ask me anything...                                       │   │
-│  │                                                             │   │
-│  │ Placeholder: "Paste notes, or try 'What do I review?'"      │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  [AI Response Area — inline responses appear here]                  │
-│                                                                     │
-├───────────────────────────────────┬─────────────────────────────────┤
-│  YOUR WORK                        │  PROJECT STATUS                 │
-│  ─────────────────────────────    │  ─────────────────────────────  │
-│                                   │                                 │
-│  📋 Assigned to You               │  Claims Portal        72% ████░ │
-│  [Story cards]                    │  Policy Management    45% ██░░░ │
-│                                   │                                 │
-│  🔍 Review Queue                  │  Team Activity (Today)          │
-│  [Stories for review]             │  [Activity feed]                │
-│                                   │                                 │
-└───────────────────────────────────┴─────────────────────────────────┘
-```
+**Layout:** Single column with hero input, followed by 3-column responsive grid for content cards.
+
+**Components:**
+- Hero Universal Input with AI icon, auto-expanding textarea, Ask button
+- "Your Work" section: Assigned to You + Review Queue cards
+- "Project Status" section: Mini kanban per project + Team Activity feed
 
 ### Universal Input Capabilities
 
@@ -309,59 +290,15 @@ The universal input is not just for note capture — it's a conversational comma
 
 ### Interaction Patterns
 
-**Pattern 1: Inline Response**
-```
-User: "What's the status of Claims Portal?"
+**Pattern 1: Inline Response** — User queries like "What's the status of Claims Portal?" → AI displays project status card with progress bar, story counts, and action buttons.
 
-AI:   ┌─────────────────────────────────────┐
-      │ Claims Portal — 72% Complete        │
-      │ ████████░░                          │
-      │                                     │
-      │ 24 stories · 16 ready · 5 in review │
-      │ ⚠️ 2 stories blocked                │
-      │                                     │
-      │ [View Project] [Show Blocked]       │
-      └─────────────────────────────────────┘
-```
+**Pattern 2: Action Confirmation** — User commands like "Assign story 47 to Aisha" → AI confirms action with checkmark and "View Story" button.
 
-**Pattern 2: Action Confirmation**
-```
-User: "Assign story 47 to Aisha"
+**Pattern 3: Smart Capture** — User pastes notes → AI detects context, suggests project, generates draft title with Create/Edit options.
 
-AI:   ✅ Done. Story #47 assigned to Aisha.
-      [View Story]
-```
+**Pattern 4: Navigation** — User types "Open story 47" → Direct navigation to story detail page.
 
-**Pattern 3: Smart Capture**
-```
-User: [Pastes notes about approval workflow]
-
-AI:   📝 This looks like a new story for Claims Portal.
-      
-      Title: "Approval Workflow by Role"
-      
-      [Create Story] [Different Project] [Edit Title]
-```
-
-**Pattern 4: Navigation**
-```
-User: "Open story 47"
-
-AI:   → [Navigates directly to story #47]
-```
-
-**Pattern 5: Search Results**
-```
-User: "Show stories about export"
-
-AI:   🔍 3 stories matching "export":
-      
-      #49 Export Feature · In Progress · 60%
-      #32 CSV Export · Done · 100%
-      #28 PDF Export · Ready · 85%
-      
-      [Open #49] [Open #32] [Open #28]
-```
+**Pattern 5: Search Results** — User searches "Show stories about export" → AI displays numbered story cards with status badges.
 
 ### Placeholder Rotation
 
@@ -728,56 +665,16 @@ transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
 ### Home Screen Layout
 
 **Default: Dashboard View**
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  [LOGO] ZONIQ   [Dashboard] [Kanban] [Projects] [Masterdata] [Accounts]     │
-│                                                        [Create▾] [💬] [👤]  │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │ 🔮 [Paste notes, or try 'What do I need to review?'...]        [Ask] │  │
-│  │ Try: "Open story 47" · "What's blocked?" · "Assign #52 to Aisha"     │  │
-│  │                                                            0 chars    │  │
-│  └───────────────────────────────────────────────────────────────────────┘  │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  ┌───────────────────┬───────────────────┬───────────────────┐              │
-│  │ 📋 Assigned       │ 🔍 Review         │ 📊 Projects       │              │
-│  │       (3)         │       (5)         │   View Kanban →   │              │
-│  │                   │                   │                   │              │
-│  │   [story cards]   │   [story cards]   │  [mini kanban     │              │
-│  │   warm gray bg    │   warm gray bg    │   per project]    │              │
-│  │                   │                   │  [progress bars]  │              │
-│  │                   │                   │                   │              │
-│  └───────────────────┴───────────────────┴───────────────────┘              │
-│  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │ 👥 Team Activity — Today                                              │  │
-│  │ [A moved #47] [M created #62] [T completed #44] [A generated plan]... │  │
-│  └───────────────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
 
-**Create Dropdown Menu:**
-```
-┌─────────────────┐
-│ ○  New Ticket   │
-│ 📁 New Project  │
-│ 📋 New Story    │
-│ ─────────────── │
-│ 📄 New Document │
-└─────────────────┘
-```
+**Structure:**
+- Topbar with logo, navigation, Create dropdown, AI Chat button, Profile dropdown
+- Hero Universal Input with placeholder rotation
+- Dashboard grid: Assigned to You, Review Queue, Projects columns
+- Team Activity horizontal feed at bottom
 
-**Profile Dropdown Menu:**
-```
-┌─────────────────────┐
-│ David               │
-│ david@zoniq.dev     │
-│ ─────────────────── │
-│ 👤 View Profile     │
-│ ⚙️ Settings         │
-│ ─────────────────── │
-│ 🚪 Sign Out         │
-└─────────────────────┘
-```
+**Create Dropdown Options:** New Ticket, New Project, New Story, New Document
+
+**Profile Dropdown Options:** View Profile, Settings, Sign Out
 
 ### Unified Topbar Navigation
 
@@ -786,6 +683,7 @@ transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
 | **Dashboard** | All users | Grid | Home dashboard with assigned stories |
 | **Kanban** | All users | Table | Full kanban board view |
 | **Projects** | All users | Folder | Project list and management |
+| **Apps** | All users | Layout | App management and monitoring |
 | **Masterdata** | Admins/Managers | Database | System configuration data |
 | **Accounts** | Admins/Managers | Users | User management |
 
@@ -802,16 +700,6 @@ transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
 ### Story Card Design (Dashboard)
 
 **Unified Card Structure:**
-```
-┌─────────────────────────────────────────────┐
-│ 🔴  #47 Approval Workflow            [A]    │  ← Priority · Title · Assignee
-│                                             │
-│ Implement multi-level approval based on     │  ← Description
-│ user role and amount                        │
-│                                             │
-│ 📂 Claims Portal · In Progress              │  ← Project · Status
-└─────────────────────────────────────────────┘
-```
 
 | Element | Position | Style |
 |---------|----------|-------|
@@ -1393,6 +1281,7 @@ Button, Input, Textarea, Card, Badge, Dialog, Command, Progress, Avatar, Dropdow
 | Dashboard | ✓ | ✓ | ✓ |
 | Kanban | ✓ | ✓ | ✓ |
 | Projects | ✓ | ✓ | ✓ |
+| Apps | ✓ | ✓ | ✓ |
 | Masterdata | ✗ | ✗ | ✓ |
 | Accounts | ✗ | ✗ | ✓ |
 
@@ -1517,33 +1406,19 @@ The Story Detail page is the primary workspace for working with individual stori
 
 ### Full Page Layout
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│  [LOGO] ZONIQ   [Dashboard] [Kanban] [Projects] [Masterdata] [Accounts]         │
-│                                                        [Create▾] [💬] [👤]      │
-├─────────────────────────────────────────────────────────────────────────────────┤
-│  #47  Approval Workflow by Role                                        [🔧 ⋮]   │
-│  Implement multi-level approval based on user role and request amount           │
-│  ─────────────────────────────────────────────────────────────────────────────  │
-│  Status      Priority    Assignee   Project        Module    Due Date   Quality │
-│  ● In Progress  ● High   [A] Aisha  Claims Portal  Approvals  Mar 15   65% ████ │
-├─────────────────────────────────────────────────────────────────────────────────┤
-│  Context(2) │ Requirements(2) │ Implementation(6) │ QA(5) │ Deployment │ Activity│
-├────────────────────────────────────────────────────┬────────────────────────────┤
-│                                                    │  🔮 AI Assistant           │
-│  [TAB CONTENT AREA]                                │  ──────────────────────    │
-│                                                    │                            │
-│  • Context: Questions + Context Sources            │  [Tab-aware AI responses]  │
-│  • Requirements: Given/When/Then criteria          │                            │
-│  • Implementation: Sections with steps             │  • Story summary           │
-│  • QA: UAT steps + Automated tests                 │  • Gap detection           │
-│  • Deployment: Release info, tasks, environments   │  • Implementation guidance │
-│  • Activity: Comments + History                    │  • Test coverage summary   │
-│                                                    │  • Deployment checklist    │
-│                                                    │                            │
-│                                                    │  [Quick Actions]           │
-└────────────────────────────────────────────────────┴────────────────────────────┘
-```
+**Structure:**
+- Topbar (navigation, Create dropdown, AI Chat button, Profile)
+- Story header with inline-editable title, description, and 7-column metadata grid
+- Tab navigation with count badges
+- Two-column layout: Main content (left) + AI Chat sidebar (right, 320px)
+
+**Tab Content Areas:**
+- Context: Questions + Context Sources
+- Requirements: Given/When/Then criteria
+- Implementation: Sections with steps
+- QA: UAT steps + Automated tests
+- Deployment: Release info, tasks, environments
+- Activity: Comments + History
 
 ### Page Header (StoryHeader Component)
 
@@ -1563,14 +1438,9 @@ The Story Detail page is the primary workspace for working with individual stori
 
 ### Tab Navigation (StoryTabs Component)
 
-**Tab Bar Layout:**
-```
-┌──────────┬───────────────┬────────────────┬──────────────┬────────────┬──────────┐
-│ Context  │ Requirements  │ Implementation │ Quality      │ Deployment │ Activity │
-│   (2)    │      (2)      │      (6)       │    (5)       │            │    •     │
-└──────────┴───────────────┴────────────────┴──────────────┴────────────┴──────────┘
-            ↑ Badge shows count of items
-```
+**Tabs:** Context | Requirements | Implementation | Quality Assurance | Deployment | Activity
+
+**Tab Badges:** Show count of items in each tab (e.g., "Context (2)")
 
 ---
 
@@ -1579,55 +1449,15 @@ The Story Detail page is the primary workspace for working with individual stori
 **Purpose:** Questions + Context Sources for the story
 
 **Questions Section:**
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  ❓ Questions                                    2 unanswered        │
-│  ─────────────────────────────────────────────────────────────────  │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ☐ What happens if the amount changes after partial approval?│   │
-│  │   Asked by David · Feb 28                    [Unanswered]   │   │
-│  │   ┌─────────────────────────────────────────────────────┐   │   │
-│  │   │ Type your answer...                                 │   │   │
-│  │   └─────────────────────────────────────────────────────┘   │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ☐ Should there be a time limit for approval responses?      │   │
-│  │   Asked by Marcus · Feb 28                  [Unanswered]   │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ☑ How should delegation be configured?             [Answered]│   │
-│  │   Answered by Aisha · Via delegation rules in user settings  │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  [+ Add Question]                                                   │
-└─────────────────────────────────────────────────────────────────────┘
-```
+- List of questions with checkbox states (answered/unanswered)
+- Each question shows: question text, asker name, date, answer input field
+- "Add Question" button at bottom
+- Unanswered count displayed in header
 
 **Context Sources Section:**
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  Context Sources                                                    │
-│  ─────────────────────────────────────────────────────────────────  │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 📝 Client Meeting Notes                              [✕]    │   │
-│  │     Note · Added Feb 28 by Marcus                           │   │
-│  │     Client wants approval workflow with different levels... │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 📄 approval-flow-diagram.png                         [✕]    │   │
-│  │     Document · 245 KB · Added Feb 28                        │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 🔗 Mendix Workflow Documentation                     [✕]    │   │
-│  │     URL · docs.mendix.com · Added Feb 28                   │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 📁 /modules/Approvals/UserRole.entity               [✕]    │   │
-│  │     Project File · Entity definition · Added Feb 28        │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  [+ Add Context Source ▾]                                          │
-│    → Add Note | Upload Document | Add URL | Link Project File     │
-└─────────────────────────────────────────────────────────────────────┘
-```
+- Cards for each context type: Notes (orange), Documents (blue), URLs (green), Project Files (amber)
+- Each card shows: icon, title, type, added date, added by user
+- "Add Context" dropdown with options: Note, Upload, URL, Project File
 
 **Context Source Types:**
 
@@ -1643,28 +1473,6 @@ The Story Detail page is the primary workspace for working with individual stori
 ### Tab 2: Requirements
 
 **Purpose:** AI-generated and manual requirements in Given/When/Then format
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  REQUIREMENTS (2)                                                   │
-│  ─────────────────────────────────────────────────────────────────  │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ○  Manager approval for amounts ≤ $5,000             [✕]    │   │
-│  │   ──────────────────────────────────────────────────────── │   │
-│  │   Given  a request with amount ≤ $5,000                     │   │
-│  │   When  a Manager submits approval                          │   │
-│  │   Then  the request is approved                             │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ ○  Director approval for amounts $5,001-$25,000      [✕]    │   │
-│  │   ──────────────────────────────────────────────────────── │   │
-│  │   Given  a request with amount between $5,001-$25,000       │   │
-│  │   When  a Director submits approval                         │   │
-│  │   Then  the request is approved                             │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  [+ Add Requirement]                                                │
-└─────────────────────────────────────────────────────────────────────┘
-```
 
 **Requirement Card Structure:**
 
@@ -1683,65 +1491,6 @@ The Story Detail page is the primary workspace for working with individual stori
 
 **Purpose:** Grouped implementation steps organized by section
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  IMPLEMENTATION                                                     │
-│  ─────────────────────────────────────────────────────────────────  │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 🟪 Domain Model                                    [✎] [🗑] │   │
-│  │     (3 steps)                                                │   │
-│  │   ┌─────────────────────────────────────────────────────┐   │   │
-│  │   │ ✓ Create ApprovalLevel Enumeration         [☑]      │   │   │
-│  │   │   Manager ($0-$5K), Director ($5K-$25K), VP (>$25K) │   │   │
-│  │   └─────────────────────────────────────────────────────┘   │   │
-│  │   ┌─────────────────────────────────────────────────────┐   │   │
-│  │   │ ✓ Extend User Entity with Role/Delegation  [☑]      │   │   │
-│  │   │   Add approval level and delegate association       │   │   │
-│  │   └─────────────────────────────────────────────────────┘   │   │
-│  │   ┌─────────────────────────────────────────────────────┐   │   │
-│  │   │ ✓ Create ApprovalRequest Entity            [☑]      │   │   │
-│  │   │   Fields: amount, status, requester, approver       │   │   │
-│  │   └─────────────────────────────────────────────────────┘   │   │
-│  │   [+ Add Step]                                              │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 🟠 Microflow Logic                                  [✎] [🗑] │   │
-│  │     (2 steps) · Current step highlighted                    │   │
-│  │   ┌─────────────────────────────────────────────────────┐   │   │
-│  │   │ 1 Implement Approval Microflow              [☐]     │   │   │
-│  │   │   Route requests based on amount thresholds         │   │   │
-│  │   │   ⚡ Current step · border orange                   │   │   │
-│  │   └─────────────────────────────────────────────────────┘   │   │
-│  │   ┌─────────────────────────────────────────────────────┐   │   │
-│  │   │ 2 Add Delegation Logic                      [☐]     │   │   │
-│  │   │   Handle unavailable approvers with delegates       │   │   │
-│  │   └─────────────────────────────────────────────────────┘   │   │
-│  │   [+ Add Step]                                              │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 🟢 Page Logic                                      [✎] [🗑] │   │
-│  │     (1 step)                                                │   │
-│  │   ┌─────────────────────────────────────────────────────┐   │   │
-│  │   │ 1 Create Approval UI Pages                  [☐]     │   │   │
-│  │   │   Request form, approval list, detail view          │   │   │
-│  │   └─────────────────────────────────────────────────────┘   │   │
-│  │   [+ Add Step]                                              │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 🔴 Security Check                                  [✎] [🗑] │   │
-│  │     (0 steps) · Empty state                                 │   │
-│  │   No steps yet. Add steps to define security requirements.  │   │
-│  │   [+ Add Step]                                              │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  [+ Add Section]                                                    │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
 **Section Types:**
 
 | Section | Icon | Color | Purpose |
@@ -1755,7 +1504,7 @@ The Story Detail page is the primary workspace for working with individual stori
 
 | State | Visual | Description |
 |-------|--------|-------------|
-| **Complete** | ✓ Green check, filled checkbox | Step done |
+| **Complete** | Green check, filled checkbox | Step done |
 | **Current** | Orange border, number badge | Active step |
 | **Pending** | Blue circle, empty checkbox | Not started |
 
@@ -1765,38 +1514,10 @@ The Story Detail page is the primary workspace for working with individual stori
 
 **Purpose:** UAT test steps + Automated test scripts
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  UAT Test Steps                                                     │
-│  ─────────────────────────────────────────────────────────────────  │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 1 Login as Manager user                             [☐]    │   │
-│  │   Use credentials: manager@test.com / Test123!              │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 2 Create new approval request with amount $3,000   [☐]    │   │
-│  │   Navigate to Requests → New Request → Fill form            │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 3 Submit and verify status changes to "Pending"    [☐]    │   │
-│  │   Check request details page for status                     │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  [+ Add Test Step]                                                  │
-│                                                                     │
-│  ─────────────────────────────────────────────────────────────────  │
-│                                                                     │
-│  Automated Tests                               2 passing            │
-│  ─────────────────────────────────────────────────────────────────  │
-│  approval-workflow.spec.ts                                          │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │  1 │ import { test, expect } from '@playwright/test';       │   │
-│  │  2 │ test.describe('Approval Workflow', () => {              │   │
-│  │  3 │   test('Manager approval...', async ({ page }) => {     │   │
-│  │ ...                                                         │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  [📋 Copy] [⬇️ Download .spec.ts] [Edit]                           │
-└─────────────────────────────────────────────────────────────────────┘
-```
+**Components:**
+- UAT Test Steps: Numbered steps with description and checkbox
+- Automated Tests: Playwright code block with syntax highlighting
+- Actions: Copy, Download .spec.ts, Edit, Regenerate
 
 ---
 
@@ -1804,39 +1525,10 @@ The Story Detail page is the primary workspace for working with individual stori
 
 **Purpose:** Release information, tasks, and environment tracking
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  Release Information                                                │
-│  ─────────────────────────────────────────────────────────────────  │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ Target Release Date    │  Version                           │   │
-│  │ [Mar 20, 2026    ]     │  [1.2.0        ]                   │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                     │
-│  Release Tasks                                                      │
-│  ─────────────────────────────────────────────────────────────────  │
-│  ☑ Create backup of production database                            │
-│  ☑ Run regression tests on test environment                        │
-│  ☐ Update release notes documentation                              │
-│  ☐ Notify stakeholders of deployment                               │
-│  ☐ Monitor post-deployment metrics                                 │
-│  [+ Add Task]                                                       │
-│                                                                     │
-│  Environment Deployment                                             │
-│  ─────────────────────────────────────────────────────────────────  │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 🧪 Test Environment                              [☑]        │   │
-│  │    Last deployed: Mar 10, 2026 at 2:30 PM                   │   │
-│  │    Status: ✓ Deployed                                       │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 🛡️ Production Environment                        [☐]        │   │
-│  │    Not yet deployed                                         │   │
-│  │    Status: ○ Pending                                        │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  [+ Add Environment]                                                │
-└─────────────────────────────────────────────────────────────────────┘
-```
+**Components:**
+- Release Information: Target date, version number
+- Release Tasks: Checklist with checkboxes
+- Environment Deployment: Cards for Test, Acceptance, Production with status
 
 ---
 
@@ -1844,27 +1536,11 @@ The Story Detail page is the primary workspace for working with individual stori
 
 **Purpose:** Comments and change history
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  [💬 Comments (3)]  [📜 History]                                    │
-│  ─────────────────────────────────────────────────────────────────  │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ [D] David                                 Feb 28, 3:45 PM   │   │
-│  │ @Aisha looks good overall. One question: what happens if    │   │
-│  │ someone changes the amount after partial approval?          │   │
-│  │ [👍 2] [Reply]                                              │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │     [A] Aisha                             Feb 28, 4:12 PM   │   │
-│  │     @David good catch! I'll add a criterion for amount...   │   │
-│  │     [👍 1] [Reply]                                          │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │ 💬 Add a comment... Use @ to mention team members           │   │
-│  │ [@ mention] [Attach]                          [Post Comment]│   │
-│  └─────────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────────┘
-```
+**Components:**
+- Comments/History toggle tabs
+- Comment cards with avatar, author, timestamp, @mentions, reactions
+- Reply field with @mention support
+- Threaded replies (indented)
 
 ---
 
@@ -2236,3 +1912,192 @@ xl: 1280px  /* Full desktop */
 | `Enter` | Activate focused element |
 | `Space` | Toggle checkboxes, kanban drag |
 | `Arrow keys` | Navigate lists, move kanban cards |
+
+## Kanban Board Page
+
+### Page Overview
+
+The Kanban Board provides a visual workflow management view for all stories across projects.
+
+### Layout
+
+**Structure:**
+- Topbar with navigation (Kanban tab active)
+- Filter bar with filter chips (Project, Assignee, Priority)
+- Horizontal scrollable kanban columns
+- Story cards with drag-and-drop support
+
+**Kanban Columns:**
+| Column | Color | Description |
+|--------|-------|-------------|
+| Backlog | Gray `#9A948D` | New/unplanned stories |
+| Ready | Green `#10B981` | Ready for development |
+| In Progress | Amber `#F59E0B` | Currently being worked on |
+| Testing | Purple `#9333EA` | In testing phase |
+| Review | Blue `#2563EB` | Ready for review |
+| Done | Green `#10B981` | Completed |
+
+**Story Card (Kanban):**
+- Priority dot (high/medium/low)
+- Story # and title
+- Description (truncated)
+- Project badge
+- Assignee avatar initials
+- Status badge
+
+**Filter Chips:**
+- Project filter (dropdown)
+- Assignee filter (dropdown)
+- Priority filter (High/Medium/Low)
+
+**Interactions:**
+- Drag story cards between columns to change status
+- Click card to open story detail
+- "Add story" button at bottom of each column
+- Column count badge in header
+
+### Design File Reference
+
+- Kanban Board: `_bmad-output/planning-artifacts/design-kanban-board.html`
+
+## Context Library Page
+
+### Page Overview
+
+The Context Library provides a centralized view of all context sources (notes, summaries, technical docs) across the system.
+
+### Layout
+
+**Structure:**
+- Topbar with navigation
+- Search input with icon
+- Filter chips (Note, Summary, Technical)
+- Context source cards in grid layout
+
+**Context Source Card:**
+- Type icon and badge
+- Title
+- Preview text (truncated)
+- Linked story count badge
+- Add date
+
+**Context Types:**
+
+| Type | Color | Icon | Description |
+|------|-------|------|-------------|
+| Note | Orange | Pencil | Freeform text notes |
+| Summary | Blue | File | AI-generated summaries |
+| Technical | Green | Code | Technical documentation |
+
+**Features:**
+- Search by title, type, or keywords
+- Filter by context type
+- View linked stories per context item
+- Add new context button
+
+### Design File Reference
+
+- Context Library: `_bmad-output/planning-artifacts/design-context-library.html`
+
+## Project Details Page
+
+### Page Overview
+
+The Project Details page provides a comprehensive view of a single project with section navigation.
+
+### Layout
+
+**Structure:**
+- Project Header (purple theme, sticky): Project icon, name, status, linked app info
+- Left Section Navigation sidebar: Overview, Stories, Metrics, Team, Settings
+- Main Content Area: Varies by selected section
+- Floating FAB for AI assistant
+
+**Section Navigation:**
+
+| Section | Content |
+|---------|---------|
+| Overview | Project summary, linked apps, recent activity timeline |
+| Stories | Story list with filters, story cards |
+| Metrics | Story counts, progress charts, burndown |
+| Team | Team members with roles and assignments |
+| Settings | Project configuration, notifications |
+
+**Project Header Elements:**
+- Project icon (purple background)
+- Project name (editable)
+- Status indicator (Active/Archived)
+- Description
+- Linked app card
+- Action buttons: View Kanban, View Stories
+
+**Linked App Card:**
+- App icon
+- App name with link
+- Version badge
+- Status indicator
+
+### Design File Reference
+
+- Project Details: `_bmad-output/planning-artifacts/design-project-details.html`
+
+## Floating AI Assistant (FAB)
+
+### Overview
+
+A Floating Action Button (FAB) provides quick access to the AI assistant on detail pages (Story Details, Project Details, App Management).
+
+### Design
+
+**Visual:**
+- Position: Fixed, bottom-right (20px, 24px)
+- Size: 48px diameter circle
+- Background: Orange gradient (`#FF6B35` to `#FF8F5A`)
+- Icon: AI/sparkle icon in white
+- Shadow: Orange glow (`0 4px 20px rgba(255, 107, 53, 0.4)`)
+
+**Animation:**
+- Entrance: Scale from 0.5 to 1 with bounce (0.4s cubic-bezier)
+- Pulse ring: 2s infinite animation expanding outward
+- Hover: Scale to 1.1, lift 2px, enhanced shadow
+- Tooltip appears on hover showing "Ask AI (Ctrl+K)"
+
+**States:**
+- Hidden: When AI sidebar is open
+- Visible: When AI sidebar is closed
+- Loading: Spinner icon during AI processing
+
+**Behavior:**
+- Click to toggle AI chat sidebar
+- Keyboard shortcut: Ctrl+K (Cmd+K on Mac)
+- Appears after 1s delay on page load
+- Disappears when AI sidebar opens
+
+### CSS Implementation
+
+```css
+.chat-toggle-fab {
+    position: fixed;
+    right: 20px;
+    bottom: 24px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FF6B35 0%, #FF8F5A 100%);
+    box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+}
+
+.chat-toggle-fab::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.3) 0%, rgba(255, 143, 90, 0.1) 100%);
+    animation: fabPulse 2s ease-in-out infinite;
+}
+
+@keyframes fabPulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.15); opacity: 0; }
+}
+```
