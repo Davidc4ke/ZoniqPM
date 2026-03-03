@@ -42,8 +42,8 @@ story_location: _bmad-output/implementation-artifacts
 development_status:
   epic-1: in-progress
   1-1-initialize-nextjs-project-with-tech-stack: done
-  1-2-configure-clerk-authentication: backlog
-  1-3-implement-user-login: backlog
+  1-2-configure-clerk-authentication: done
+  1-3-implement-user-login: done
   1-4-implement-user-logout: backlog
   1-5-implement-forgot-password-flow: backlog
   1-6-admin-user-management-create-users: backlog
