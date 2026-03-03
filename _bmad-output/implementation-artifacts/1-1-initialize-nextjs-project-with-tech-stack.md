@@ -1,6 +1,6 @@
 # Story 1.1: Initialize Next.js Project with Tech Stack
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -19,28 +19,28 @@ So that I have a consistent foundation for building the application.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Initialize Next.js project (AC: #1, #6)
-  - [ ] Run `npx create-next-app@latest zoniq --typescript --tailwind --eslint --app --src-dir --turbopack --import-alias "@/*"`
-  - [ ] Verify Next.js 16, React 19, TypeScript 5 are installed
-  - [ ] Confirm src-dir and App Router structure is correct
-- [ ] Task 2: Initialize shadcn/ui (AC: #3)
-  - [ ] Run `npx shadcn@latest init` with default settings
-  - [ ] Configure Manrope font in `src/app/layout.tsx`
-  - [ ] Add CSS variables for Zoniq design tokens
-- [ ] Task 3: Configure Tailwind design tokens (AC: #2)
-  - [ ] Update `tailwind.config.ts` with Zoniq color palette
-  - [ ] Add Primary: #FF6B35 (warm orange)
-  - [ ] Add Dark: #2D1810 (dark brown)
-  - [ ] Configure Manrope as primary font
-- [ ] Task 4: Install core dependencies (AC: #4)
-  - [ ] `npm install @xyflow/react framer-motion react-hook-form @hookform/resolvers zod`
-- [ ] Task 5: Configure code quality tools (AC: #5)
-  - [ ] Verify ESLint configuration from create-next-app
-  - [ ] Add Prettier with Tailwind plugin: `npm install -D prettier prettier-plugin-tailwindcss`
-  - [ ] Create `.prettierrc` configuration file
-- [ ] Task 6: Update globals.css with design system (AC: #2)
-  - [ ] Add CSS custom properties for Zoniq colors
-  - [ ] Configure Manrope font imports
+- [x] Task 1: Initialize Next.js project (AC: #1, #6)
+  - [x] Run `npx create-next-app@latest zoniq --typescript --tailwind --eslint --app --src-dir --turbopack --import-alias "@/*"`
+  - [x] Verify Next.js 16, React 19, TypeScript 5 are installed
+  - [x] Confirm src-dir and App Router structure is correct
+- [x] Task 2: Initialize shadcn/ui (AC: #3)
+  - [x] Run `npx shadcn@latest init` with default settings
+  - [x] Configure Manrope font in `src/app/layout.tsx`
+  - [x] Add CSS variables for Zoniq design tokens
+- [x] Task 3: Configure Tailwind design tokens (AC: #2)
+  - [x] Update `tailwind.config.ts` with Zoniq color palette
+  - [x] Add Primary: #FF6B35 (warm orange)
+  - [x] Add Dark: #2D1810 (dark brown)
+  - [x] Configure Manrope as primary font
+- [x] Task 4: Install core dependencies (AC: #4)
+  - [x] `npm install @xyflow/react framer-motion react-hook-form @hookform/resolvers zod`
+- [x] Task 5: Configure code quality tools (AC: #5)
+  - [x] Verify ESLint configuration from create-next-app
+  - [x] Add Prettier with Tailwind plugin: `npm install -D prettier prettier-plugin-tailwindcss`
+  - [x] Create `.prettierrc` configuration file
+- [x] Task 6: Update globals.css with design system (AC: #2)
+  - [x] Add CSS custom properties for Zoniq colors
+  - [x] Configure Manrope font imports
 
 ## Dev Notes
 
@@ -90,28 +90,21 @@ zoniq/
 - Font Family: Manrope (single font family)
 - Base spacing unit: 8px
 
-**Tailwind Config Extension:**
-```typescript
-// tailwind.config.ts
-const config = {
-  theme: {
-    extend: {
-      colors: {
-        primary: {
-          DEFAULT: '#FF6B35',
-          // Add shades as needed
-        },
-        dark: {
-          DEFAULT: '#2D1810',
-        },
-      },
-      fontFamily: {
-        sans: ['Manrope', 'system-ui', 'sans-serif'],
-      },
-    },
-  },
+**Tailwind v4 CSS-Based Theming (in globals.css):**
+```css
+@theme inline {
+  --color-zoniq-primary: var(--zoniq-primary);
+  --color-zoniq-dark: var(--zoniq-dark);
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+}
+
+:root {
+  --zoniq-primary: oklch(0.708 0.185 38.8);  /* ~#FF6B35 */
+  --zoniq-dark: oklch(0.205 0.015 38.8);     /* ~#2D1810 */
 }
 ```
+
+> **Note:** Tailwind v4 uses CSS-based configuration via `@theme inline {}` in globals.css instead of tailwind.config.ts
 
 ### Initialization Commands
 
@@ -159,47 +152,23 @@ npm install -D prettier prettier-plugin-tailwindcss
 
 ### Files to Create/Modify
 
-**1. `src/app/globals.css` - Add design tokens:**
+**1. `src/app/globals.css` - Add design tokens (Tailwind v4 format):**
 ```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-@layer base {
-  :root {
-    --color-primary: 255 107 53;
-    --color-dark: 45 24 16;
-  }
+@theme inline {
+  --color-zoniq-primary: var(--zoniq-primary);
+  --color-zoniq-dark: var(--zoniq-dark);
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
-```
-
-**2. `tailwind.config.ts` - Extend with Zoniq theme:**
-```typescript
-import type { Config } from 'tailwindcss'
-
-const config: Config = {
-  content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
-  theme: {
-    extend: {
-      colors: {
-        primary: 'rgb(var(--color-primary) / <alpha-value>)',
-        dark: 'rgb(var(--color-dark) / <alpha-value>)',
-      },
-      fontFamily: {
-        sans: ['Manrope', 'system-ui', 'sans-serif'],
-      },
-    },
-  },
-  plugins: [],
+:root {
+  --zoniq-primary: oklch(0.708 0.185 38.8);  /* ~#FF6B35 warm orange */
+  --zoniq-dark: oklch(0.205 0.015 38.8);     /* ~#2D1810 dark brown */
 }
-export default config
 ```
+
+**2. No tailwind.config.ts needed** - Tailwind v4 uses CSS-based configuration. Theme extensions are defined in globals.css using `@theme inline {}` directive.
 
 **3. `.prettierrc` - Formatting config:**
 ```json
@@ -265,10 +234,44 @@ export default function RootLayout({
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Code (claude-5-high-weight)
 
 ### Debug Log References
 
+None - implementation proceeded without issues.
+
 ### Completion Notes List
 
+- **Task 1:** Created Next.js 16.1.6 project with React 19.2.3, TypeScript 5.9.3, Tailwind CSS 4, ESLint, App Router, src-dir, and Turbopack
+- **Task 2:** Initialized shadcn/ui with defaults, configured Manrope font via next/font/google
+- **Task 3:** Configured Zoniq design tokens (primary: oklch(0.708 0.185 38.8) ~ #FF6B35, dark: oklch(0.205 0.015 38.8) ~ #2D1810) using Tailwind v4 CSS-based theming in globals.css
+- **Task 4:** Installed @xyflow/react, framer-motion, react-hook-form, @hookform/resolvers, zod, date-fns, sonner
+- **Task 5:** Added Prettier with prettier-plugin-tailwindcss, created .prettierrc config
+- **Task 6:** Updated globals.css with zoniq-primary and zoniq-dark CSS custom properties, configured font-sans to use Manrope
+
+All validation passed: `npm run lint` (0 errors), `npm run build` (compiled successfully)
+
 ### File List
+
+**Created:**
+- zoniq/ (entire Next.js project)
+- zoniq/src/app/layout.tsx (Manrope font configuration)
+- zoniq/src/app/globals.css (Zoniq design tokens in Tailwind v4 format)
+- zoniq/src/app/page.tsx (Zoniq welcome page)
+- zoniq/src/lib/utils.ts (shadcn cn utility - auto-generated)
+- zoniq/src/components/ui/.gitkeep (placeholder for shadcn components)
+- zoniq/components.json (shadcn configuration)
+- zoniq/.prettierrc (Prettier configuration)
+- zoniq/.prettierignore (Prettier ignore patterns)
+
+**Modified:**
+- zoniq/package.json (added core, dev dependencies, format script)
+
+**Deleted:**
+- zoniq/public/*.svg (removed placeholder SVGs: file.svg, globe.svg, next.svg, vercel.svg, window.svg)
+
+## Change Log
+
+- 2026-03-03: Story completed - Next.js 16 project initialized with full tech stack
+- 2026-03-03: Code review fixes - Added src/components/ui/ directory, updated page.tsx with Zoniq branding
+- 2026-03-03: Code review round 2 - Added format script, .prettierignore, removed placeholder SVGs, updated Dev Notes for Tailwind v4 accuracy
