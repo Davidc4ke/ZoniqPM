@@ -406,37 +406,120 @@ Both AI providers (Big Model, Claude) should use a similar interface to allow ea
 
 ### App Management
 
+**App CRUD & Details:**
 - FR43: Users can view a list of all apps in the system
 - FR44: Users can view app details including version, status (online/offline), and description
-- FR45: Users can view project cards associated with an app with mini kanban displays
-- FR46: Users can view module test coverage with health indicators (Healthy, Needs Tests, Critical)
-- FR47: Users can view live logs with filtering by log level (All, Errors, Warnings)
-- FR48: System displays AI suggestions for error patterns with auto-ticket creation
-- FR49: Users can view environment cards (Development, Test, Acceptance, Production) with deployment status
-- FR50: Users can deploy to environments and see deployment status changes
+- FR45: PMs can create new apps with name, description, and initial version
+- FR46: Users can edit app details including status and version
+- FR47: Users can deploy apps to environments and see deployment status changes
+- FR48: Users can view environment cards (Development, Test, Acceptance, Production) with deployment status
 
-### Project Details
+**Modules & Features:**
+- FR49: Users can add modules to apps with name and description
+- FR50: Users can add features within modules
+- FR51: Users can edit and delete modules and features
+- FR52: Users can search and filter modules by name
+- FR53: Module accordion expands/collapses to show features
+- FR54: Feature detail view displays test coverage, story counts, and bug counts
+- FR55: Feature detail view shows description and acceptance criteria
+- FR56: Users can link features to stories/tickets
+- FR57: Users can view related stories for each feature with status indicators
+- FR58: Users can navigate from feature to linked story details
 
-- FR51: Users can view project overview with linked app information
-- FR52: Users can view project metrics including story counts and progress
-- FR53: Users can view team members assigned to a project
-- FR54: Users can navigate between project sections (Overview, Stories, Metrics, Team, Settings)
-- FR55: Users can view recent project activity timeline
+**Test Coverage Tab:**
+- FR59: Users can view overall test coverage percentage per app
+- FR60: Users can view test suites organized by module
+- FR61: Users can run all tests or module-specific test suites
+- FR62: Users can view test results (passed/failed/pending) per module
+- FR63: System displays coverage health indicators (Excellent, Good, Critical)
+- FR64: Users can view coverage trends (increasing/decreasing/stable)
+- FR65: Users can export coverage reports
+
+**Workflows Tab:**
+- FR66: Users can view workflows relevant to the app
+- FR67: Workflows are filtered and associated by app context
+- FR68: Users can see workflow status and execution history
+
+**Context Tab:**
+- FR69: Users can view atomized context objects usable by AI
+- FR70: Context objects are associated with apps, modules, or features
+- FR71: Users can search context objects by keywords
+
+**Projects Tab:**
+- FR72: Users can view projects associated with an app
+- FR73: Projects display status and progress indicators
+- FR74: Users can navigate from app to project details
+
+**Metrics Tab:**
+- FR75: Users can view live application logs in real-time
+- FR76: Logs can be filtered by level (All, Info, Warning, Error)
+- FR77: Log stream can be paused and resumed
+- FR78: System displays log timestamps and severity badges
+
+**AI Sidebar for Apps:**
+- FR79: AI assistant provides app-specific context and suggestions
+- FR80: AI can suggest test generation for low-coverage modules
+- FR81: AI can identify error patterns and suggest ticket creation
+- FR82: AI can generate module/feature documentation
+
+### Project Management
+
+**Project Creation & Assignment:**
+- FR83: PMs can create new projects with name, description, and status
+- FR84: Projects must be assigned to an existing app (required relationship)
+- FR85: Users can view project overview with linked app information and overall progress
+- FR86: Users can view team members assigned to a project
+- FR87: Users can navigate between project tabs (Modules & Features, Workflows, Context)
+
+**Module & Feature Selection:**
+- FR88: Users can select relevant app modules to include in the project
+- FR89: Users can add new modules to the app from within the project view
+- FR90: Users can select relevant features from modules for the project
+- FR91: Users can add new features to modules from within the project view
+- FR92: Module accordion shows feature count and completion progress per module
+- FR93: Features display coverage status (Covered, Partial, Gap)
+
+**Feature-to-Ticket Integration:**
+- FR94: Users can view tickets relevant to each feature
+- FR95: Tickets display status (Done, In Progress, Ready, Backlog)
+- FR96: Users can create new tickets directly from feature view
+- FR97: System detects and displays coverage gaps (context mentions unimplemented features)
+- FR98: Features display linked context badges (Meeting, Document, Note)
+
+**Project Workflows Tab:**
+- FR99: Users can view workflows relevant to the project
+- FR100: Workflows display as visual flow diagrams with draggable nodes
+- FR101: Workflow nodes show step status (completed, in-progress, pending)
+- FR102: Users can add/edit workflow steps and connections
+- FR103: Workflows show step counts and progress indicators
+
+**Project Context Tab:**
+- FR104: Users can view context items associated with the project
+- FR105: Context can be filtered by type (Meeting, Note, Document, Technical)
+- FR106: Quick-add context input with type selector
+- FR107: AI help button for context creation assistance
+- FR108: Context cards show linked feature counts and dates
+- FR109: Users can search context by title, type, or content
+
+**AI Sidebar for Projects:**
+- FR110: AI assistant provides project-specific assistance on all tabs
+- FR111: AI can suggest creating missing tickets for coverage gaps
+- FR112: AI can answer questions about project progress and features
 
 ### Context Library
 
-- FR56: Users can view all context sources (Notes, Summaries, Technical docs)
-- FR57: Users can search context by title, type, or keywords
-- FR58: Users can filter context by type (Note, Summary, Technical)
-- FR59: Users can view linked story counts per context item
-- FR60: Users can add new context items
+- FR113: Users can view all context sources (Notes, Summaries, Technical docs)
+- FR114: Users can search context by title, type, or keywords
+- FR115: Users can filter context by type (Note, Summary, Technical)
+- FR116: Users can view linked story counts per context item
+- FR117: Users can add new context items
 
 ### Floating AI Assistant
 
-- FR61: Users can access AI assistant via floating action button (FAB) on detail pages
-- FR62: FAB displays pulse animation to indicate availability
-- FR63: Users can toggle AI chat sidebar open/closed via FAB or keyboard shortcut (Ctrl+K)
-- FR64: AI chat provides tab-aware assistance based on current context
+- FR118: Users can access AI assistant via floating action button (FAB) on detail pages
+- FR119: FAB displays pulse animation to indicate availability
+- FR120: Users can toggle AI chat sidebar open/closed via FAB or keyboard shortcut (Ctrl+K)
+- FR121: AI chat provides tab-aware assistance based on current context
 
 ---
 

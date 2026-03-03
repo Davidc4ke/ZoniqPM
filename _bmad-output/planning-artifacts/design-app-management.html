@@ -219,6 +219,24 @@
         }
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        
+        /* Tab styles */
+        .tab-section { display: none !important; }
+        .tab-section.active { display: flex !important; }
+        .tab-btn { border-bottom: 2px solid transparent; transition: all 0.2s ease; }
+        .tab-btn.tab-active { border-bottom-color: #2563EB; color: #2563EB; }
+        .tab-btn:hover:not(.tab-active) { background: #F5F2EF; }
+        
+        /* Module accordion styles */
+        .module-accordion { transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+        .module-accordion .module-content { max-height: 0; opacity: 0; overflow: hidden; }
+        .module-accordion.expanded .module-content { max-height: 2000px; opacity: 1; }
+        .module-accordion .chevron-icon { transition: transform 0.2s ease; }
+        .module-accordion.expanded .chevron-icon { transform: rotate(180deg); }
+        
+        .feature-item { transition: all 0.15s ease; cursor: pointer; }
+        .feature-item:hover { background: #EFF6FF; }
+        .feature-item.selected { background: #DBEAFE; border-color: #2563EB; }
     </style>
 </head>
 <body>
@@ -428,504 +446,480 @@
             </div>
         </section>
 
+        <!-- TAB NAVIGATION -->
+        <div class="bg-white border-b border-[#E8E4E0] px-6 flex-shrink-0">
+            <div class="flex items-center gap-1">
+                <button class="tab-btn tab-active px-4 py-3.5 text-sm font-medium" data-tab="modules">
+                    <svg class="w-4 h-4 inline mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    Modules & Features
+                    <span class="bg-[#DBEAFE] text-[#2563EB] px-2 py-0.5 rounded text-xs ml-2">12</span>
+                </button>
+                <button class="tab-btn px-4 py-3.5 text-sm font-medium text-[#9A948D]" data-tab="tests">
+                    <svg class="w-4 h-4 inline mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    Tests
+                    <span class="bg-[#E8E4E0] text-[#9A948D] px-2 py-0.5 rounded text-xs ml-2">142</span>
+                </button>
+                <button class="tab-btn px-4 py-3.5 text-sm font-medium text-[#9A948D]" data-tab="workflows">
+                    <svg class="w-4 h-4 inline mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    Workflows
+                    <span class="bg-[#E8E4E0] text-[#9A948D] px-2 py-0.5 rounded text-xs ml-2">5</span>
+                </button>
+                <button class="tab-btn px-4 py-3.5 text-sm font-medium text-[#9A948D]" data-tab="context">
+                    <svg class="w-4 h-4 inline mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    Context
+                    <span class="bg-[#E8E4E0] text-[#9A948D] px-2 py-0.5 rounded text-xs ml-2">8</span>
+                </button>
+                <button class="tab-btn px-4 py-3.5 text-sm font-medium text-[#9A948D]" data-tab="projects">
+                    <svg class="w-4 h-4 inline mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    Projects
+                    <span class="bg-[#E8E4E0] text-[#9A948D] px-2 py-0.5 rounded text-xs ml-2">0</span>
+                </button>
+                <button class="tab-btn px-4 py-3.5 text-sm font-medium text-[#9A948D]" data-tab="metrics">
+                    <svg class="w-4 h-4 inline mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                    Metrics
+                </button>
+            </div>
+        </div>
+
         <!-- MAIN CONTENT WITH CHAT SIDEBAR -->
         <div class="flex flex-1 overflow-hidden">
-            <!-- Left Section Navigation Sidebar (Step 2.22) - With visible labels -->
-            <nav class="section-nav w-36 bg-[#F5F2EF] border-r border-[#E8E4E0] flex flex-col py-3 gap-1 flex-shrink-0">
-                <a href="#projects" class="nav-link flex items-center gap-2 px-3 py-2 mx-2 rounded-lg text-[#2D1810] hover:bg-[#E8E4E0] transition-colors active">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-                    </svg>
-                    <span class="text-xs font-medium">Projects</span>
-                </a>
-                <a href="#modules" class="nav-link flex items-center gap-2 px-3 py-2 mx-2 rounded-lg text-[#9A948D] hover:bg-[#E8E4E0] hover:text-[#2D1810] transition-colors">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="7"/>
-                        <rect x="14" y="3" width="7" height="7"/>
-                        <rect x="14" y="14" width="7" height="7"/>
-                        <rect x="3" y="14" width="7" height="7"/>
-                    </svg>
-                    <span class="text-xs font-medium">Modules</span>
-                </a>
-                <a href="#logs" class="nav-link flex items-center gap-2 px-3 py-2 mx-2 rounded-lg text-[#9A948D] hover:bg-[#E8E4E0] hover:text-[#2D1810] transition-colors">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="16" y1="13" x2="8" y2="13"/>
-                        <line x1="16" y1="17" x2="8" y2="17"/>
-                    </svg>
-                    <span class="text-xs font-medium">Logs</span>
-                </a>
-                <a href="#changes" class="nav-link flex items-center gap-2 px-3 py-2 mx-2 rounded-lg text-[#9A948D] hover:bg-[#E8E4E0] hover:text-[#2D1810] transition-colors">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                    <span class="text-xs font-medium">Changes</span>
-                </a>
-                <a href="#environments" class="nav-link flex items-center gap-2 px-3 py-2 mx-2 rounded-lg text-[#9A948D] hover:bg-[#E8E4E0] hover:text-[#2D1810] transition-colors">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
-                        <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
-                    </svg>
-                    <span class="text-xs font-medium">Environments</span>
-                </a>
-                <a href="#widgets" class="nav-link flex items-center gap-2 px-3 py-2 mx-2 rounded-lg text-[#9A948D] hover:bg-[#E8E4E0] hover:text-[#2D1810] transition-colors">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="7"/>
-                        <rect x="14" y="3" width="7" height="7"/>
-                        <rect x="14" y="14" width="7" height="7"/>
-                        <rect x="3" y="14" width="7" height="7"/>
-                    </svg>
-                    <span class="text-xs font-medium">Widgets</span>
-                </a>
-            </nav>
-            <main class="main-content flex-1 overflow-hidden flex">
-                <div class="content-area flex-1 overflow-y-auto">
-            <!-- Projects Overview Section (Step 2.3) -->
-            <section id="projects" class="projects-overview px-6 py-5 max-w-[1280px] mx-auto">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-sm font-semibold text-[#9A948D] uppercase tracking-wide">Projects</h2>
-                    <a href="#" class="text-sm text-[#FF6B35] hover:text-[#E55A25] transition-colors">View All →</a>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="project-card bg-white rounded-xl p-4 border border-[#E8E4E0]">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-medium text-[#2D1810]">Claims Portal</h3>
-                            <span class="text-sm font-semibold text-[#10B981]">72%</span>
-                        </div>
-                        <div class="w-full h-2 bg-[#E8E4E0] rounded-full mb-3">
-                            <div class="h-full bg-[#10B981] rounded-full progress-bar" data-width="72%" style="width: 0"></div>
-                        </div>
-                        <div class="kanban-mini flex gap-2">
-                            <div class="flex-1 bg-[#F5F2EF] rounded-md py-2 px-1.5 text-center">
-                                <div class="w-2 h-2 rounded-full bg-[#9A948D] mx-auto mb-1.5"></div>
-                                <div class="font-bold text-xs text-[#2D1810]">3</div>
-                                <div class="text-[10px] text-[#9A948D]">Backlog</div>
-                            </div>
-                            <div class="flex-1 bg-[#F5F2EF] rounded-md py-2 px-1.5 text-center">
-                                <div class="w-2 h-2 rounded-full bg-[#F59E0B] mx-auto mb-1.5"></div>
-                                <div class="font-bold text-xs text-[#2D1810]">8</div>
-                                <div class="text-[10px] text-[#9A948D]">Active</div>
-                            </div>
-                            <div class="flex-1 bg-[#F5F2EF] rounded-md py-2 px-1.5 text-center">
-                                <div class="w-2 h-2 rounded-full bg-[#9333EA] mx-auto mb-1.5"></div>
-                                <div class="font-bold text-xs text-[#2D1810]">4</div>
-                                <div class="text-[10px] text-[#9A948D]">Testing</div>
-                            </div>
-                            <div class="flex-1 bg-[#F5F2EF] rounded-md py-2 px-1.5 text-center">
-                                <div class="w-2 h-2 rounded-full bg-[#2563EB] mx-auto mb-1.5"></div>
-                                <div class="font-bold text-xs text-[#2D1810]">5</div>
-                                <div class="text-[10px] text-[#9A948D]">Review</div>
-                            </div>
-                            <div class="flex-1 bg-[#F5F2EF] rounded-md py-2 px-1.5 text-center">
-                                <div class="w-2 h-2 rounded-full bg-[#10B981] mx-auto mb-1.5"></div>
-                                <div class="font-bold text-xs text-[#2D1810]">16</div>
-                                <div class="text-[10px] text-[#9A948D]">Done</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="project-card bg-white rounded-xl p-4 border border-[#E8E4E0]">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-medium text-[#2D1810]">Policy Management</h3>
-                            <span class="text-sm font-semibold text-[#F59E0B]">45%</span>
-                        </div>
-                        <div class="w-full h-2 bg-[#E8E4E0] rounded-full mb-3">
-                            <div class="h-full bg-[#F59E0B] rounded-full progress-bar" data-width="45%" style="width: 0"></div>
-                        </div>
-                        <div class="kanban-mini flex gap-2">
-                            <div class="flex-1 bg-[#F5F2EF] rounded-md py-2 px-1.5 text-center">
-                                <div class="w-2 h-2 rounded-full bg-[#9A948D] mx-auto mb-1.5"></div>
-                                <div class="font-bold text-xs text-[#2D1810]">5</div>
-                                <div class="text-[10px] text-[#9A948D]">Backlog</div>
-                            </div>
-                            <div class="flex-1 bg-[#F5F2EF] rounded-md py-2 px-1.5 text-center">
-                                <div class="w-2 h-2 rounded-full bg-[#F59E0B] mx-auto mb-1.5"></div>
-                                <div class="font-bold text-xs text-[#2D1810]">6</div>
-                                <div class="text-[10px] text-[#9A948D]">Active</div>
-                            </div>
-                            <div class="flex-1 bg-[#F5F2EF] rounded-md py-2 px-1.5 text-center">
-                                <div class="w-2 h-2 rounded-full bg-[#9333EA] mx-auto mb-1.5"></div>
-                                <div class="font-bold text-xs text-[#2D1810]">2</div>
-                                <div class="text-[10px] text-[#9A948D]">Testing</div>
-                            </div>
-                            <div class="flex-1 bg-[#F5F2EF] rounded-md py-2 px-1.5 text-center">
-                                <div class="w-2 h-2 rounded-full bg-[#2563EB] mx-auto mb-1.5"></div>
-                                <div class="font-bold text-xs text-[#2D1810]">3</div>
-                                <div class="text-[10px] text-[#9A948D]">Review</div>
-                            </div>
-                            <div class="flex-1 bg-[#F5F2EF] rounded-md py-2 px-1.5 text-center">
-                                <div class="w-2 h-2 rounded-full bg-[#10B981] mx-auto mb-1.5"></div>
-                                <div class="font-bold text-xs text-[#2D1810]">9</div>
-                                <div class="text-[10px] text-[#9A948D]">Done</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
             
-            <!-- Modules & Test Coverage Section (Step 2.4) -->
-            <section id="modules" class="modules-coverage px-6 py-5 max-w-[1280px] mx-auto">
-                <h2 class="text-sm font-semibold text-[#9A948D] uppercase tracking-wide mb-4">Modules & Test Coverage</h2>
-                <div class="bg-white rounded-xl border border-[#E8E4E0] overflow-hidden">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="border-b border-[#E8E4E0]">
-                                <th class="text-left text-xs font-medium text-[#6B7280] uppercase tracking-wide px-4 py-3">Module</th>
-                                <th class="text-left text-xs font-medium text-[#6B7280] uppercase tracking-wide px-4 py-3">Tickets</th>
-                                <th class="text-left text-xs font-medium text-[#6B7280] uppercase tracking-wide px-4 py-3">Coverage</th>
-                                <th class="text-left text-xs font-medium text-[#6B7280] uppercase tracking-wide px-4 py-3">Health</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b border-[#E8E4E0]">
-                                <td class="px-4 py-3 text-sm text-[#2D1810]">Approvals</td>
-                                <td class="px-4 py-3 text-sm text-[#9A948D]">3 / 2 / 1</td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-sm text-[#10B981]">85%</span>
-                                        <div class="w-16 h-1.5 bg-[#E8E4E0] rounded-full">
-                                            <div class="h-full bg-[#10B981] rounded-full progress-bar" data-width="85%" style="width: 0"></div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3">
-                                    <span class="flex items-center gap-1.5 text-sm text-[#10B981]">
-                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                                        Healthy
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr class="border-b border-[#E8E4E0]">
-                                <td class="px-4 py-3 text-sm text-[#2D1810]">User Management</td>
-                                <td class="px-4 py-3 text-sm text-[#9A948D]">1 / 4 / 0</td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-sm text-[#F59E0B]">72%</span>
-                                        <div class="w-16 h-1.5 bg-[#E8E4E0] rounded-full">
-                                            <div class="h-full bg-[#F59E0B] rounded-full progress-bar" data-width="72%" style="width: 0"></div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3">
-                                    <span class="flex items-center gap-1.5 text-sm text-[#F59E0B]">
-                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                                        Needs tests
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr class="border-b border-[#E8E4E0]">
-                                <td class="px-4 py-3 text-sm text-[#2D1810]">Reporting</td>
-                                <td class="px-4 py-3 text-sm text-[#9A948D]">2 / 1 / 3</td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-sm text-[#EF4444]">45%</span>
-                                        <div class="w-16 h-1.5 bg-[#E8E4E0] rounded-full">
-                                            <div class="h-full bg-[#EF4444] rounded-full progress-bar" data-width="45%" style="width: 0"></div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3">
-                                    <span class="flex items-center gap-1.5 text-sm text-[#EF4444]">
-                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                                        Critical
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr class="border-b border-[#E8E4E0]">
-                                <td class="px-4 py-3 text-sm text-[#2D1810]">Dashboard</td>
-                                <td class="px-4 py-3 text-sm text-[#9A948D]">0 / 2 / 2</td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-sm text-[#10B981]">90%</span>
-                                        <div class="w-16 h-1.5 bg-[#E8E4E0] rounded-full">
-                                            <div class="h-full bg-[#10B981] rounded-full progress-bar" data-width="90%" style="width: 0"></div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3">
-                                    <span class="flex items-center gap-1.5 text-sm text-[#10B981]">
-                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                                        Healthy
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-3 text-sm text-[#2D1810]">Notifications</td>
-                                <td class="px-4 py-3 text-sm text-[#9A948D]">1 / 1 / 0</td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-sm text-[#F59E0B]">60%</span>
-                                        <div class="w-16 h-1.5 bg-[#E8E4E0] rounded-full">
-                                            <div class="h-full bg-[#F59E0B] rounded-full progress-bar" data-width="60%" style="width: 0"></div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3">
-                                    <span class="flex items-center gap-1.5 text-sm text-[#F59E0B]">
-                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                                        Needs tests
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-            
-            <!-- Live Logging Panel Section (Step 2.5) -->
-            <section id="logs" class="live-logs px-6 py-5 max-w-[1280px] mx-auto">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-sm font-semibold text-[#9A948D] uppercase tracking-wide">Live Logs</h2>
-                    <div class="flex items-center gap-2">
-                        <button class="px-3 py-1 text-xs rounded-md bg-[#F5F2EF] text-[#2D1810] hover:bg-[#E8E4E0] transition-colors">All</button>
-                        <button class="px-3 py-1 text-xs rounded-md bg-[#FEE2E2] text-[#EF4444] hover:bg-[#FECACA] transition-colors">Errors</button>
-                        <button class="px-3 py-1 text-xs rounded-md bg-[#FEF3C7] text-[#F59E0B] hover:bg-[#FDE68A] transition-colors">Warnings</button>
-                    </div>
-                </div>
-                <div class="log-panel bg-white rounded-xl border border-[#E8E4E0] overflow-hidden">
-                    <div class="log-entries p-4 space-y-2 max-h-64 overflow-y-auto font-mono text-sm">
-                        <div class="log-entry flex items-start gap-3">
-                            <span class="text-[#6B7280] shrink-0">14:32:15</span>
-                            <span class="px-1.5 py-0.5 rounded text-xs font-medium bg-transparent text-[#9A948D] shrink-0">INFO</span>
-                            <span class="text-[#2D1810]">Request processed successfully</span>
-                        </div>
-                        <div class="log-entry flex items-start gap-3">
-                            <span class="text-[#6B7280] shrink-0">14:32:18</span>
-                            <span class="px-1.5 py-0.5 rounded text-xs font-medium bg-[#FEF3C7] text-[#F59E0B] shrink-0">WARN</span>
-                            <span class="text-[#2D1810]">Response time exceeded threshold (2.3s)</span>
-                        </div>
-                        <div class="log-entry flex items-start gap-3">
-                            <span class="text-[#6B7280] shrink-0">14:32:22</span>
-                            <span class="px-1.5 py-0.5 rounded text-xs font-medium bg-[#FEE2E2] text-[#EF4444] shrink-0">ERROR</span>
-                            <span class="text-[#EF4444]">Database connection timeout</span>
-                        </div>
-                        <div class="ai-suggestion-card bg-[#F5F2EF] border border-[#9333EA]/30 rounded-lg p-3 ml-8 my-2">
-                            <div class="flex items-center gap-2 mb-2">
-                                <svg class="w-4 h-4 text-[#9333EA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.912 5.813a2 2 0 001.272 1.272L21 12l-5.813 1.912a2 2 0 00-1.272 1.272L12 21l-1.912-5.813a2 2 0 00-1.272-1.272L3 12l5.813-1.912a2 2 0 001.272-1.272L12 3z"/></svg>
-                                <span class="text-sm font-medium text-[#9333EA]">AI Suggestion</span>
-                            </div>
-                            <p class="text-sm text-[#2D1810] mb-2">This error pattern matches #47 (Approval Workflow). The timeout occurs when approval requests exceed 100 concurrent users.</p>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs bg-[#FF6B35] text-white px-2 py-0.5 rounded font-medium">Ticket #89 auto-created</span>
-                                <button class="text-xs text-[#FF6B35] hover:underline">View Ticket</button>
-                            </div>
-                        </div>
-                        <div class="log-entry flex items-start gap-3">
-                            <span class="text-[#6B7280] shrink-0">14:32:25</span>
-                            <span class="px-1.5 py-0.5 rounded text-xs font-medium bg-transparent text-[#9A948D] shrink-0">INFO</span>
-                            <span class="text-[#2D1810]">Retrying database connection...</span>
-                        </div>
-                        <div class="log-entry flex items-start gap-3">
-                            <span class="text-[#6B7280] shrink-0">14:32:27</span>
-                            <span class="px-1.5 py-0.5 rounded text-xs font-medium bg-transparent text-[#9A948D] shrink-0">INFO</span>
-                            <span class="text-[#2D1810]">Connection restored</span>
+            <!-- TAB 1: MODULES & FEATURES -->
+            <div id="tab-modules" class="tab-section active flex-1 flex min-h-0">
+                <!-- Left Module Navigation Sidebar -->
+                <aside class="w-[260px] border-r border-[#E8E4E0] bg-white flex flex-col flex-shrink-0">
+                    <div class="p-4 border-b border-[#E8E4E0]">
+                        <div class="relative">
+                            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#9A948D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            <input type="text" placeholder="Search modules..." class="w-full pl-10 pr-3 py-2 text-sm border border-[#E8E4E0] rounded-lg focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]/20">
                         </div>
                     </div>
-                    <div class="flex items-center justify-between px-4 py-3 border-t border-[#E8E4E0] bg-[#F5F2EF]">
-                        <button class="flex items-center gap-1.5 text-sm text-[#9A948D] hover:text-[#2D1810] transition-colors">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-                            Pause
-                        </button>
-                        <button class="flex items-center gap-1.5 text-sm text-[#9A948D] hover:text-[#2D1810] transition-colors">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            Download
+                    <div class="flex-1 overflow-y-auto p-2">
+                        <!-- Claims Processing Module -->
+                        <div class="module-accordion expanded" data-module="claims">
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-[#F5F2EF] cursor-pointer module-header">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#2563EB]/10 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-[#2563EB]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-[#2D1810]">Claims Processing</div>
+                                        <div class="text-xs text-[#9A948D]">6 features</div>
+                                    </div>
+                                </div>
+                                <svg class="w-4 h-4 text-[#9A948D] chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                            <div class="module-content pl-11 pr-3 pb-2">
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Claim Intake</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Claim Validation</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Claim Assignment</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Claim Review</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Payment Processing</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Claim Closure</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Policy Management Module -->
+                        <div class="module-accordion" data-module="policy">
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-[#F5F2EF] cursor-pointer module-header">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#10B981]/10 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-[#10B981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-[#2D1810]">Policy Management</div>
+                                        <div class="text-xs text-[#9A948D]">5 features</div>
+                                    </div>
+                                </div>
+                                <svg class="w-4 h-4 text-[#9A948D] chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                            <div class="module-content pl-11 pr-3 pb-2">
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Policy Creation</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Policy Renewal</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Policy Endorsements</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Policy Cancellation</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Premium Calculation</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Approvals Module -->
+                        <div class="module-accordion" data-module="approvals">
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-[#F5F2EF] cursor-pointer module-header">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#F59E0B]/10 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-[#F59E0B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-[#2D1810]">Approvals</div>
+                                        <div class="text-xs text-[#9A948D]">3 features</div>
+                                    </div>
+                                </div>
+                                <svg class="w-4 h-4 text-[#9A948D] chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                            <div class="module-content pl-11 pr-3 pb-2">
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Approval Workflow</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Escalation Rules</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Delegation Management</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Account Management Module -->
+                        <div class="module-accordion" data-module="account">
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-[#F5F2EF] cursor-pointer module-header">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#9333EA]/10 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-[#9333EA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-[#2D1810]">Account Management</div>
+                                        <div class="text-xs text-[#9A948D]">5 features</div>
+                                    </div>
+                                </div>
+                                <svg class="w-4 h-4 text-[#9A948D] chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                            <div class="module-content pl-11 pr-3 pb-2">
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">User Registration</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Role Management</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Permission Sets</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">SSO Integration</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Audit Logging</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Master Data Module -->
+                        <div class="module-accordion" data-module="masterdata">
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-[#F5F2EF] cursor-pointer module-header">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#EF4444]/10 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-[#EF4444]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-[#2D1810]">Master Data</div>
+                                        <div class="text-xs text-[#9A948D]">5 features</div>
+                                    </div>
+                                </div>
+                                <svg class="w-4 h-4 text-[#9A948D] chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                            <div class="module-content pl-11 pr-3 pb-2">
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Customer Data</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Product Catalog</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Coverage Types</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Rate Tables</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Business Rules</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Reporting Module -->
+                        <div class="module-accordion" data-module="reporting">
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-[#F5F2EF] cursor-pointer module-header">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#06B6D4]/10 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-[#06B6D4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-[#2D1810]">Reporting</div>
+                                        <div class="text-xs text-[#9A948D]">4 features</div>
+                                    </div>
+                                </div>
+                                <svg class="w-4 h-4 text-[#9A948D] chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                            <div class="module-content pl-11 pr-3 pb-2">
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Standard Reports</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Custom Reports</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Dashboard Analytics</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Export Functions</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Notifications Module -->
+                        <div class="module-accordion" data-module="notifications">
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-[#F5F2EF] cursor-pointer module-header">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#EC4899]/10 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-[#EC4899]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-[#2D1810]">Notifications</div>
+                                        <div class="text-xs text-[#9A948D]">4 features</div>
+                                    </div>
+                                </div>
+                                <svg class="w-4 h-4 text-[#9A948D] chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                            <div class="module-content pl-11 pr-3 pb-2">
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Email Notifications</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">SMS Alerts</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">In-App Notifications</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Notification Templates</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Document Management Module -->
+                        <div class="module-accordion" data-module="documents">
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-[#F5F2EF] cursor-pointer module-header">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#84CC16]/10 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-[#84CC16]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-[#2D1810]">Document Management</div>
+                                        <div class="text-xs text-[#9A948D]">4 features</div>
+                                    </div>
+                                </div>
+                                <svg class="w-4 h-4 text-[#9A948D] chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                            <div class="module-content pl-11 pr-3 pb-2">
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Document Upload</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Document Storage</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Document Retrieval</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Digital Signatures</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Integration Layer Module -->
+                        <div class="module-accordion" data-module="integration">
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-[#F5F2EF] cursor-pointer module-header">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#8B5CF6]/10 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-[#8B5CF6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-[#2D1810]">Integration Layer</div>
+                                        <div class="text-xs text-[#9A948D]">4 features</div>
+                                    </div>
+                                </div>
+                                <svg class="w-4 h-4 text-[#9A948D] chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                            <div class="module-content pl-11 pr-3 pb-2">
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">External API Connectors</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Data Mapping</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Sync Services</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Error Handling</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Dashboard Module -->
+                        <div class="module-accordion" data-module="dashboard">
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-[#F5F2EF] cursor-pointer module-header">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#F97316]/10 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-[#F97316]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-[#2D1810]">Dashboard</div>
+                                        <div class="text-xs text-[#9A948D]">4 features</div>
+                                    </div>
+                                </div>
+                                <svg class="w-4 h-4 text-[#9A948D] chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                            <div class="module-content pl-11 pr-3 pb-2">
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">KPI Widgets</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Chart Components</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Filter Controls</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Personalization</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Workflow Engine Module -->
+                        <div class="module-accordion" data-module="workflow">
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-[#F5F2EF] cursor-pointer module-header">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#14B8A6]/10 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-[#14B8A6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-[#2D1810]">Workflow Engine</div>
+                                        <div class="text-xs text-[#9A948D]">4 features</div>
+                                    </div>
+                                </div>
+                                <svg class="w-4 h-4 text-[#9A948D] chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                            <div class="module-content pl-11 pr-3 pb-2">
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Workflow Designer</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Process Automation</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Task Queue</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">SLA Monitoring</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Communication Module -->
+                        <div class="module-accordion" data-module="communication">
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-[#F5F2EF] cursor-pointer module-header">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#6366F1]/10 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-[#6366F1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-[#2D1810]">Communication</div>
+                                        <div class="text-xs text-[#9A948D]">3 features</div>
+                                    </div>
+                                </div>
+                                <svg class="w-4 h-4 text-[#9A948D] chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                            <div class="module-content pl-11 pr-3 pb-2">
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Internal Messaging</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Customer Portal</div>
+                                <div class="feature-item p-2 rounded-md text-sm text-[#2D1810] border border-transparent">Activity Timeline</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 border-t border-[#E8E4E0]">
+                        <button class="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-[#2563EB] hover:bg-[#EFF6FF] rounded-lg transition-colors">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                            Add Module
                         </button>
                     </div>
-                </div>
-            </section>
-            
-            <!-- Recent Changes Section (Step 2.6) -->
-            <section id="changes" class="recent-changes px-6 py-5 max-w-[1280px] mx-auto">
-                <h2 class="text-sm font-semibold text-[#9A948D] uppercase tracking-wide mb-4">Recent Changes</h2>
-                <div class="bg-white rounded-xl border border-[#E8E4E0] overflow-hidden">
-                    <div class="divide-y divide-[#E8E4E0]">
-                        <div class="flex items-center justify-between px-4 py-3 hover:bg-[#F5F2EF] transition-colors">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-[#10B981]/20 flex items-center justify-center text-[#10B981] text-sm font-semibold">A</div>
-                                <div>
-                                    <p class="text-sm text-[#2D1810]"><span class="font-medium">Aisha</span> deployed <span class="text-[#FF6B35]">v2.4.1</span> to Test</p>
+                </aside>
+                
+                <!-- Main Content Area -->
+                <main class="main-content flex-1 overflow-hidden flex">
+                    <div class="content-area flex-1 overflow-y-auto bg-[#FAFAF9] p-6">
+                        <!-- Empty State -->
+                        <div id="featureEmptyState" class="h-full flex flex-col items-center justify-center text-center">
+                            <div class="w-16 h-16 rounded-2xl bg-[#E8E4E0] flex items-center justify-center mb-4">
+                                <svg class="w-8 h-8 text-[#9A948D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                            </div>
+                            <h3 class="text-lg font-semibold text-[#2D1810] mb-2">Select a Feature</h3>
+                            <p class="text-sm text-[#9A948D] max-w-xs">Choose a feature from the sidebar to view its details, test coverage, and related stories.</p>
+                        </div>
+                        
+                        <!-- Feature Detail Content -->
+                        <div id="featureContent" class="hidden">
+                            <div class="max-w-4xl">
+                                <!-- Feature Header -->
+                                <div class="flex items-start justify-between mb-6">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span id="featureModuleName" class="text-xs font-medium text-[#2563EB] bg-[#DBEAFE] px-2 py-0.5 rounded">Claims Processing</span>
+                                            <span class="text-xs text-[#9A948D]">Feature</span>
+                                        </div>
+                                        <h2 id="featureName" class="text-xl font-semibold text-[#2D1810]">Claim Intake</h2>
+                                        <p class="text-sm text-[#6B7280] mt-1">Handles the initial submission and registration of insurance claims from various channels.</p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button class="btn-secondary flex items-center gap-2 px-3 py-1.5 text-sm border border-[#E8E4E0] rounded-lg hover:bg-[#F5F2EF]">
+                                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                            Edit
+                                        </button>
+                                        <button class="btn-secondary flex items-center gap-2 px-3 py-1.5 text-sm border border-[#E8E4E0] rounded-lg hover:bg-[#F5F2EF]">
+                                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                                            More
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Stats Cards -->
+                                <div class="grid grid-cols-4 gap-4 mb-6">
+                                    <div class="bg-white rounded-xl border border-[#E8E4E0] p-4">
+                                        <div class="text-xs text-[#9A948D] mb-1">Test Coverage</div>
+                                        <div class="text-2xl font-semibold text-[#2D1810]">72%</div>
+                                        <div class="w-full h-1.5 bg-[#F5F2EF] rounded-full mt-2">
+                                            <div class="h-full bg-[#10B981] rounded-full" style="width: 72%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white rounded-xl border border-[#E8E4E0] p-4">
+                                        <div class="text-xs text-[#9A948D] mb-1">Stories</div>
+                                        <div class="text-2xl font-semibold text-[#2D1810]">8</div>
+                                        <div class="text-xs text-[#10B981] mt-2">3 completed</div>
+                                    </div>
+                                    <div class="bg-white rounded-xl border border-[#E8E4E0] p-4">
+                                        <div class="text-xs text-[#9A948D] mb-1">Open Bugs</div>
+                                        <div class="text-2xl font-semibold text-[#2D1810]">2</div>
+                                        <div class="text-xs text-[#F59E0B] mt-2">1 high priority</div>
+                                    </div>
+                                    <div class="bg-white rounded-xl border border-[#E8E4E0] p-4">
+                                        <div class="text-xs text-[#9A948D] mb-1">Last Updated</div>
+                                        <div class="text-2xl font-semibold text-[#2D1810]">2d</div>
+                                        <div class="text-xs text-[#9A948D] mt-2">by Sarah K.</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Description -->
+                                <div class="bg-white rounded-xl border border-[#E8E4E0] p-5 mb-6">
+                                    <h3 class="text-sm font-semibold text-[#2D1810] mb-3">Description</h3>
+                                    <p class="text-sm text-[#6B7280] leading-relaxed">This feature manages the intake process for all incoming insurance claims. It includes form validation, document attachment handling, initial triage, and automatic routing to the appropriate claims handler based on claim type and complexity. The system supports multiple intake channels including web portal, mobile app, and API integrations with broker systems.</p>
+                                </div>
+                                
+                                <!-- Acceptance Criteria -->
+                                <div class="bg-white rounded-xl border border-[#E8E4E0] p-5 mb-6">
+                                    <h3 class="text-sm font-semibold text-[#2D1810] mb-3">Acceptance Criteria</h3>
+                                    <ul class="space-y-2">
+                                        <li class="flex items-start gap-2 text-sm text-[#6B7280]">
+                                            <svg class="w-4 h-4 text-[#10B981] mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4.5 12.5"/></svg>
+                                            Users can submit claims through web and mobile interfaces
+                                        </li>
+                                        <li class="flex items-start gap-2 text-sm text-[#6B7280]">
+                                            <svg class="w-4 h-4 text-[#10B981] mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4.5 12.5"/></svg>
+                                            System validates required fields and document attachments
+                                        </li>
+                                        <li class="flex items-start gap-2 text-sm text-[#6B7280]">
+                                            <svg class="w-4 h-4 text-[#10B981] mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4.5 12.5"/></svg>
+                                            Claims are automatically assigned based on routing rules
+                                        </li>
+                                        <li class="flex items-start gap-2 text-sm text-[#6B7280]">
+                                            <svg class="w-4 h-4 text-[#9A948D] mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                                            Confirmation email is sent within 5 minutes of submission
+                                        </li>
+                                        <li class="flex items-start gap-2 text-sm text-[#6B7280]">
+                                            <svg class="w-4 h-4 text-[#9A948D] mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                                            System supports claims up to 50MB with multiple documents
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Related Stories -->
+                                <div class="bg-white rounded-xl border border-[#E8E4E0] p-5">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="text-sm font-semibold text-[#2D1810]">Related Stories</h3>
+                                        <a href="#" class="text-xs text-[#2563EB] hover:underline">View all</a>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between p-3 rounded-lg bg-[#F5F2EF] hover:bg-[#E8E4E0] transition-colors cursor-pointer">
+                                            <div class="flex items-center gap-3">
+                                                <span class="w-6 h-6 rounded bg-[#10B981]/10 flex items-center justify-center text-[#10B981] text-xs font-medium">✓</span>
+                                                <div>
+                                                    <div class="text-sm font-medium text-[#2D1810]">ZON-142</div>
+                                                    <div class="text-xs text-[#9A948D]">Web form submission</div>
+                                                </div>
+                                            </div>
+                                            <span class="text-xs px-2 py-0.5 rounded bg-[#10B981]/10 text-[#10B981]">Done</span>
+                                        </div>
+                                        <div class="flex items-center justify-between p-3 rounded-lg bg-[#F5F2EF] hover:bg-[#E8E4E0] transition-colors cursor-pointer">
+                                            <div class="flex items-center gap-3">
+                                                <span class="w-6 h-6 rounded bg-[#10B981]/10 flex items-center justify-center text-[#10B981] text-xs font-medium">✓</span>
+                                                <div>
+                                                    <div class="text-sm font-medium text-[#2D1810]">ZON-143</div>
+                                                    <div class="text-xs text-[#9A948D]">Mobile app submission</div>
+                                                </div>
+                                            </div>
+                                            <span class="text-xs px-2 py-0.5 rounded bg-[#10B981]/10 text-[#10B981]">Done</span>
+                                        </div>
+                                        <div class="flex items-center justify-between p-3 rounded-lg bg-[#F5F2EF] hover:bg-[#E8E4E0] transition-colors cursor-pointer">
+                                            <div class="flex items-center gap-3">
+                                                <span class="w-6 h-6 rounded bg-[#2563EB]/10 flex items-center justify-center">
+                                                    <svg class="w-3 h-3 text-[#2563EB]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                                                </span>
+                                                <div>
+                                                    <div class="text-sm font-medium text-[#2D1810]">ZON-156</div>
+                                                    <div class="text-xs text-[#9A948D]">Document upload validation</div>
+                                                </div>
+                                            </div>
+                                            <span class="text-xs px-2 py-0.5 rounded bg-[#2563EB]/10 text-[#2563EB]">In Progress</span>
+                                        </div>
+                                        <div class="flex items-center justify-between p-3 rounded-lg bg-[#F5F2EF] hover:bg-[#E8E4E0] transition-colors cursor-pointer">
+                                            <div class="flex items-center gap-3">
+                                                <span class="w-6 h-6 rounded bg-[#9A948D]/10 flex items-center justify-center text-[#9A948D] text-xs">○</span>
+                                                <div>
+                                                    <div class="text-sm font-medium text-[#2D1810]">ZON-167</div>
+                                                    <div class="text-xs text-[#9A948D]">Broker API integration</div>
+                                                </div>
+                                            </div>
+                                            <span class="text-xs px-2 py-0.5 rounded bg-[#9A948D]/10 text-[#9A948D]">Backlog</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <span class="text-xs text-[#6B7280]">10 min ago</span>
-                        </div>
-                        <div class="flex items-center justify-between px-4 py-3 hover:bg-[#F5F2EF] transition-colors">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-[#FF6B35]/20 flex items-center justify-center text-[#FF6B35] text-sm font-semibold">M</div>
-                                <div>
-                                    <p class="text-sm text-[#2D1810]"><span class="font-medium">Marcus</span> created <span class="text-[#FF6B35]">#89</span> (Fix DB timeout)</p>
-                                </div>
-                            </div>
-                            <span class="text-xs text-[#6B7280]">15 min ago</span>
-                        </div>
-                        <div class="flex items-center justify-between px-4 py-3 hover:bg-[#F5F2EF] transition-colors">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-[#10B981]/20 flex items-center justify-center text-[#10B981] text-sm font-semibold">D</div>
-                                <div>
-                                    <p class="text-sm text-[#2D1810]"><span class="font-medium">David</span> approved <span class="text-[#2563EB]">#47</span></p>
-                                </div>
-                            </div>
-                            <span class="text-xs text-[#6B7280]">1 hour ago</span>
-                        </div>
-                        <div class="flex items-center justify-between px-4 py-3 hover:bg-[#F5F2EF] transition-colors">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-[#2563EB]/20 flex items-center justify-center text-[#2563EB] text-sm font-semibold">T</div>
-                                <div>
-                                    <p class="text-sm text-[#2D1810]"><span class="font-medium">Tom</span> moved <span class="text-[#2563EB]">#52</span> to Done</p>
-                                </div>
-                            </div>
-                            <span class="text-xs text-[#6B7280]">2 hours ago</span>
-                        </div>
-                        <div class="flex items-center justify-between px-4 py-3 hover:bg-[#F5F2EF] transition-colors">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-[#9333EA]/20 flex items-center justify-center text-[#9333EA] text-sm font-semibold">A</div>
-                                <div>
-                                    <p class="text-sm text-[#2D1810]"><span class="font-medium">Aisha</span> generated Dev Plan for <span class="text-[#9333EA]">#58</span></p>
-                                </div>
-                            </div>
-                            <span class="text-xs text-[#6B7280]">3 hours ago</span>
                         </div>
                     </div>
-                    <div class="px-4 py-3 border-t border-[#E8E4E0] bg-[#F5F2EF]">
-                        <a href="#" class="text-sm text-[#FF6B35] hover:text-[#E55A25] transition-colors">View Full History →</a>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Environments & Deployments Section (Step 2.7) -->
-            <section id="environments" class="environments px-6 py-5 max-w-[1280px] mx-auto">
-                <h2 class="text-sm font-semibold text-[#9A948D] uppercase tracking-wide mb-4">Environments</h2>
-                <div class="grid grid-cols-4 gap-4">
-                    <div class="environment-card bg-white rounded-xl border border-[#E8E4E0] p-4">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-medium text-[#2D1810]">Development</h3>
-                            <span class="flex items-center gap-1.5 text-sm text-[#10B981]">
-                                <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
-                                Online
-                            </span>
-                        </div>
-                        <p class="text-sm text-[#9A948D] mb-3">v2.4.2-dev</p>
-                        <div class="space-y-2 text-xs text-[#6B7280] mb-4">
-                            <p>Last ping: <span class="text-[#9A948D]">2 min ago</span></p>
-                            <p>Deployed: <span class="text-[#9A948D]">Today 14:30</span></p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button class="flex-1 px-3 py-1.5 text-xs rounded-md bg-[#F5F2EF] text-[#9A948D] hover:bg-[#E8E4E0] transition-colors">Deploy</button>
-                            <button class="flex-1 px-3 py-1.5 text-xs rounded-md bg-[#F5F2EF] text-[#9A948D] hover:bg-[#E8E4E0] transition-colors">Logs</button>
-                        </div>
-                    </div>
-                    <div class="environment-card bg-white rounded-xl border border-[#E8E4E0] p-4">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-medium text-[#2D1810]">Test</h3>
-                            <span class="flex items-center gap-1.5 text-sm text-[#10B981]">
-                                <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
-                                Online
-                            </span>
-                        </div>
-                        <p class="text-sm text-[#9A948D] mb-3">v2.4.1</p>
-                        <div class="space-y-2 text-xs text-[#6B7280] mb-4">
-                            <p>Last ping: <span class="text-[#9A948D]">5 min ago</span></p>
-                            <p>Deployed: <span class="text-[#9A948D]">Today 12:00</span></p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button class="flex-1 px-3 py-1.5 text-xs rounded-md bg-[#F5F2EF] text-[#9A948D] hover:bg-[#E8E4E0] transition-colors">Deploy</button>
-                            <button class="flex-1 px-3 py-1.5 text-xs rounded-md bg-[#F5F2EF] text-[#9A948D] hover:bg-[#E8E4E0] transition-colors">Logs</button>
-                        </div>
-                    </div>
-                    <div class="environment-card bg-white rounded-xl border border-[#E8E4E0] p-4">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-medium text-[#2D1810]">Acceptance</h3>
-                            <span class="flex items-center gap-1.5 text-sm text-[#10B981]">
-                                <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
-                                Online
-                            </span>
-                        </div>
-                        <p class="text-sm text-[#9A948D] mb-3">v2.4.0</p>
-                        <div class="space-y-2 text-xs text-[#6B7280] mb-4">
-                            <p>Last ping: <span class="text-[#9A948D]">1 min ago</span></p>
-                            <p>Deployed: <span class="text-[#9A948D]">Feb 26</span></p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button class="flex-1 px-3 py-1.5 text-xs rounded-md bg-[#F5F2EF] text-[#9A948D] hover:bg-[#E8E4E0] transition-colors">Deploy</button>
-                            <button class="flex-1 px-3 py-1.5 text-xs rounded-md bg-[#F5F2EF] text-[#9A948D] hover:bg-[#E8E4E0] transition-colors">Logs</button>
-                        </div>
-                    </div>
-                    <div class="environment-card bg-white rounded-xl border border-[#E8E4E0] p-4">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-medium text-[#2D1810]">Production</h3>
-                            <span class="flex items-center gap-1.5 text-sm text-[#10B981]">
-                                <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
-                                Online
-                            </span>
-                        </div>
-                        <p class="text-sm text-[#9A948D] mb-3">v2.3.5</p>
-                        <div class="space-y-2 text-xs text-[#6B7280] mb-4">
-                            <p>Last ping: <span class="text-[#9A948D]">30 sec ago</span></p>
-                            <p>Deployed: <span class="text-[#9A948D]">Feb 24</span></p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button class="flex-1 px-3 py-1.5 text-xs rounded-md bg-[#F5F2EF] text-[#9A948D] hover:bg-[#E8E4E0] transition-colors">Deploy</button>
-                            <button class="flex-1 px-3 py-1.5 text-xs rounded-md bg-[#F5F2EF] text-[#9A948D] hover:bg-[#E8E4E0] transition-colors">Logs</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Additional Widgets Section (Step 2.9) -->
-            <section id="widgets" class="additional-widgets px-6 py-5 max-w-[1280px] mx-auto">
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="widget-card bg-white rounded-xl border border-[#E8E4E0] p-4">
-                        <h3 class="text-sm font-semibold text-[#9A948D] uppercase tracking-wide mb-4">Team Members</h3>
-                        <div class="flex flex-wrap gap-2">
-                            <div class="w-10 h-10 rounded-full bg-[#10B981] flex items-center justify-center text-sm font-semibold text-white" title="Aisha">A</div>
-                            <div class="w-10 h-10 rounded-full bg-[#F59E0B] flex items-center justify-center text-sm font-semibold text-white" title="Marcus">M</div>
-                            <div class="w-10 h-10 rounded-full bg-[#2563EB] flex items-center justify-center text-sm font-semibold text-white" title="Tom">T</div>
-                            <div class="w-10 h-10 rounded-full bg-[#FF6B35] flex items-center justify-center text-sm font-semibold text-white" title="David">D</div>
-                            <div class="w-10 h-10 rounded-full bg-[#9333EA] flex items-center justify-center text-sm font-semibold text-white" title="Emma">E</div>
-                        </div>
-                        <p class="text-xs text-[#6B7280] mt-3">5 members assigned</p>
-                    </div>
-                    <div class="widget-card bg-white rounded-xl border border-[#E8E4E0] p-4">
-                        <h3 class="text-sm font-semibold text-[#9A948D] uppercase tracking-wide mb-4">Activity Summary</h3>
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-[#9A948D]">Tickets created today</span>
-                                <span class="text-sm font-semibold text-[#2D1810]">12</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-[#9A948D]">Tickets completed today</span>
-                                <span class="text-sm font-semibold text-[#10B981]">8</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-[#9A948D]">Active developers</span>
-                                <span class="text-sm font-semibold text-[#2D1810]">4</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="widget-card bg-white rounded-xl border border-[#E8E4E0] p-4">
-                        <h3 class="text-sm font-semibold text-[#9A948D] uppercase tracking-wide mb-4">Quality Metrics</h3>
-                        <div class="space-y-3">
-                            <div>
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-sm text-[#9A948D]">Overall Coverage</span>
-                                    <span class="text-sm font-semibold text-[#10B981]">70%</span>
-                                </div>
-                                <div class="w-full h-1.5 bg-[#E8E4E0] rounded-full">
-                                    <div class="h-full bg-[#10B981] rounded-full progress-bar" data-width="70%" style="width: 0"></div>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-[#9A948D]">Open bugs</span>
-                                <span class="text-sm font-semibold text-[#EF4444]">3</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-[#9A948D]">Avg story quality</span>
-                                <span class="text-sm font-semibold text-[#F59E0B]">B+</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
                 </div>
                 
                 <!-- AI Chat Sidebar -->
@@ -1013,6 +1007,319 @@
             </aside>
             </main>
         </div>
+
+        <!-- TAB 2: TESTS -->
+        <div id="tab-tests" class="tab-section flex-1 min-h-0 bg-[#FAFAF9] overflow-y-auto">
+            <div class="p-6 max-w-6xl mx-auto">
+                <!-- Test Summary Header -->
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-lg font-semibold text-[#2D1810]">Test Coverage</h2>
+                        <p class="text-sm text-[#9A948D]">Last run: 2 hours ago • 142 tests</p>
+                    </div>
+                    <button class="btn-primary flex items-center gap-2 px-4 py-2 rounded-lg bg-[#2563EB] text-white font-medium text-sm hover:bg-[#1D4ED8]">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Run All Tests
+                    </button>
+                </div>
+
+                <!-- Summary Stats Cards -->
+                <div class="grid grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-xl border border-[#E8E4E0] p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-[#9A948D]">Overall Coverage</span>
+                            <span class="text-xs text-[#10B981] font-medium">+3%</span>
+                        </div>
+                        <div class="text-3xl font-bold text-[#2D1810]">68%</div>
+                        <div class="w-full h-2 bg-[#F5F2EF] rounded-full mt-3">
+                            <div class="h-full bg-[#10B981] rounded-full" style="width: 68%"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl border border-[#E8E4E0] p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-[#9A948D]">Tests Passed</span>
+                            <svg class="w-4 h-4 text-[#10B981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4.5 12.5"/></svg>
+                        </div>
+                        <div class="text-3xl font-bold text-[#10B981]">128</div>
+                        <div class="text-xs text-[#9A948D] mt-2">of 142 total</div>
+                    </div>
+                    <div class="bg-white rounded-xl border border-[#E8E4E0] p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-[#9A948D]">Tests Failed</span>
+                            <svg class="w-4 h-4 text-[#EF4444]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                        </div>
+                        <div class="text-3xl font-bold text-[#EF4444]">8</div>
+                        <div class="text-xs text-[#9A948D] mt-2">needs attention</div>
+                    </div>
+                    <div class="bg-white rounded-xl border border-[#E8E4E0] p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-[#9A948D]">Pending</span>
+                            <svg class="w-4 h-4 text-[#F59E0B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <div class="text-3xl font-bold text-[#F59E0B]">6</div>
+                        <div class="text-xs text-[#9A948D] mt-2">queued</div>
+                    </div>
+                </div>
+
+                <!-- Test Suites -->
+                <div class="bg-white rounded-xl border border-[#E8E4E0] mb-6">
+                    <div class="p-4 border-b border-[#E8E4E0]">
+                        <h3 class="text-sm font-semibold text-[#2D1810]">Test Suites</h3>
+                    </div>
+                    <div class="divide-y divide-[#E8E4E0]">
+                        <div class="p-4 flex items-center justify-between hover:bg-[#F5F2EF] cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-[#10B981]/10 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-[#10B981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4.5 12.5"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-[#2D1810]">Claims Processing Suite</div>
+                                    <div class="text-xs text-[#9A948D]">24 tests • 92% coverage</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="text-xs text-[#10B981]">24 passed</span>
+                                <svg class="w-4 h-4 text-[#9A948D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                            </div>
+                        </div>
+                        <div class="p-4 flex items-center justify-between hover:bg-[#F5F2EF] cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-[#EF4444]/10 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-[#EF4444]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-[#2D1810]">Policy Management Suite</div>
+                                    <div class="text-xs text-[#9A948D]">18 tests • 78% coverage</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="text-xs text-[#EF4444]">14 passed • 4 failed</span>
+                                <svg class="w-4 h-4 text-[#9A948D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                            </div>
+                        </div>
+                        <div class="p-4 flex items-center justify-between hover:bg-[#F5F2EF] cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-[#10B981]/10 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-[#10B981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4.5 12.5"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-[#2D1810]">Approvals Suite</div>
+                                    <div class="text-xs text-[#9A948D]">12 tests • 85% coverage</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="text-xs text-[#10B981]">12 passed</span>
+                                <svg class="w-4 h-4 text-[#9A948D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                            </div>
+                        </div>
+                        <div class="p-4 flex items-center justify-between hover:bg-[#F5F2EF] cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-[#F59E0B]/10 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-[#F59E0B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-[#2D1810]">Account Management Suite</div>
+                                    <div class="text-xs text-[#9A948D]">22 tests • 65% coverage</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="text-xs text-[#F59E0B]">18 passed • 2 failed • 2 pending</span>
+                                <svg class="w-4 h-4 text-[#9A948D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                            </div>
+                        </div>
+                        <div class="p-4 flex items-center justify-between hover:bg-[#F5F2EF] cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-[#EF4444]/10 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-[#EF4444]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-[#2D1810]">Reporting Suite</div>
+                                    <div class="text-xs text-[#9A948D]">16 tests • 45% coverage</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="text-xs text-[#EF4444]">8 passed • 4 failed • 4 pending</span>
+                                <svg class="w-4 h-4 text-[#9A948D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                            </div>
+                        </div>
+                        <div class="p-4 flex items-center justify-between hover:bg-[#F5F2EF] cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-[#10B981]/10 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-[#10B981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4.5 12.5"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-[#2D1810]">Notifications Suite</div>
+                                    <div class="text-xs text-[#9A948D]">14 tests • 88% coverage</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="text-xs text-[#10B981]">14 passed</span>
+                                <svg class="w-4 h-4 text-[#9A948D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Module Coverage Table -->
+                <div class="bg-white rounded-xl border border-[#E8E4E0]">
+                    <div class="p-4 border-b border-[#E8E4E0] flex items-center justify-between">
+                        <h3 class="text-sm font-semibold text-[#2D1810]">Coverage by Module</h3>
+                        <div class="flex items-center gap-2">
+                            <button class="px-3 py-1.5 text-xs rounded-lg bg-[#F5F2EF] text-[#9A948D] hover:bg-[#E8E4E0]">Export</button>
+                        </div>
+                    </div>
+                    <table class="w-full">
+                        <thead class="bg-[#F5F2EF]">
+                            <tr>
+                                <th class="text-left text-xs font-medium text-[#9A948D] px-4 py-3">Module</th>
+                                <th class="text-left text-xs font-medium text-[#9A948D] px-4 py-3">Coverage</th>
+                                <th class="text-left text-xs font-medium text-[#9A948D] px-4 py-3">Tests</th>
+                                <th class="text-left text-xs font-medium text-[#9A948D] px-4 py-3">Status</th>
+                                <th class="text-left text-xs font-medium text-[#9A948D] px-4 py-3">Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[#E8E4E0]">
+                            <tr class="hover:bg-[#F5F2EF]">
+                                <td class="px-4 py-3 text-sm text-[#2D1810]">Claims Processing</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-24 h-2 bg-[#F5F2EF] rounded-full">
+                                            <div class="h-full bg-[#10B981] rounded-full" style="width: 92%"></div>
+                                        </div>
+                                        <span class="text-xs text-[#2D1810]">92%</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-[#9A948D]">24</td>
+                                <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs bg-[#10B981]/10 text-[#10B981]">Excellent</span></td>
+                                <td class="px-4 py-3 text-xs text-[#10B981]">↑ +5%</td>
+                            </tr>
+                            <tr class="hover:bg-[#F5F2EF]">
+                                <td class="px-4 py-3 text-sm text-[#2D1810]">Policy Management</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-24 h-2 bg-[#F5F2EF] rounded-full">
+                                            <div class="h-full bg-[#F59E0B] rounded-full" style="width: 78%"></div>
+                                        </div>
+                                        <span class="text-xs text-[#2D1810]">78%</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-[#9A948D]">18</td>
+                                <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs bg-[#F59E0B]/10 text-[#F59E0B]">Good</span></td>
+                                <td class="px-4 py-3 text-xs text-[#10B981]">↑ +2%</td>
+                            </tr>
+                            <tr class="hover:bg-[#F5F2EF]">
+                                <td class="px-4 py-3 text-sm text-[#2D1810]">Approvals</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-24 h-2 bg-[#F5F2EF] rounded-full">
+                                            <div class="h-full bg-[#10B981] rounded-full" style="width: 85%"></div>
+                                        </div>
+                                        <span class="text-xs text-[#2D1810]">85%</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-[#9A948D]">12</td>
+                                <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs bg-[#10B981]/10 text-[#10B981]">Excellent</span></td>
+                                <td class="px-4 py-3 text-xs text-[#9A948D]">— 0%</td>
+                            </tr>
+                            <tr class="hover:bg-[#F5F2EF]">
+                                <td class="px-4 py-3 text-sm text-[#2D1810]">Account Management</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-24 h-2 bg-[#F5F2EF] rounded-full">
+                                            <div class="h-full bg-[#F59E0B] rounded-full" style="width: 65%"></div>
+                                        </div>
+                                        <span class="text-xs text-[#2D1810]">65%</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-[#9A948D]">22</td>
+                                <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs bg-[#F59E0B]/10 text-[#F59E0B]">Good</span></td>
+                                <td class="px-4 py-3 text-xs text-[#EF4444]">↓ -3%</td>
+                            </tr>
+                            <tr class="hover:bg-[#F5F2EF]">
+                                <td class="px-4 py-3 text-sm text-[#2D1810]">Master Data</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-24 h-2 bg-[#F5F2EF] rounded-full">
+                                            <div class="h-full bg-[#10B981] rounded-full" style="width: 82%"></div>
+                                        </div>
+                                        <span class="text-xs text-[#2D1810]">82%</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-[#9A948D]">10</td>
+                                <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs bg-[#10B981]/10 text-[#10B981]">Excellent</span></td>
+                                <td class="px-4 py-3 text-xs text-[#10B981]">↑ +1%</td>
+                            </tr>
+                            <tr class="hover:bg-[#F5F2EF]">
+                                <td class="px-4 py-3 text-sm text-[#2D1810]">Reporting</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-24 h-2 bg-[#F5F2EF] rounded-full">
+                                            <div class="h-full bg-[#EF4444] rounded-full" style="width: 45%"></div>
+                                        </div>
+                                        <span class="text-xs text-[#2D1810]">45%</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-[#9A948D]">16</td>
+                                <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs bg-[#EF4444]/10 text-[#EF4444]">Critical</span></td>
+                                <td class="px-4 py-3 text-xs text-[#9A948D]">— 0%</td>
+                            </tr>
+                            <tr class="hover:bg-[#F5F2EF]">
+                                <td class="px-4 py-3 text-sm text-[#2D1810]">Notifications</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-24 h-2 bg-[#F5F2EF] rounded-full">
+                                            <div class="h-full bg-[#10B981] rounded-full" style="width: 88%"></div>
+                                        </div>
+                                        <span class="text-xs text-[#2D1810]">88%</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-[#9A948D]">14</td>
+                                <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs bg-[#10B981]/10 text-[#10B981]">Excellent</span></td>
+                                <td class="px-4 py-3 text-xs text-[#10B981]">↑ +8%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: PROJECTS -->
+        <div id="tab-projects" class="tab-section flex-1 min-h-0 bg-[#FAFAF9] overflow-y-auto">
+            <div class="p-6 max-w-6xl mx-auto">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-lg font-semibold text-[#2D1810]">Projects</h2>
+                        <p class="text-sm text-[#9A948D]">Manage sprint and development projects</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl border border-[#E8E4E0] p-12 text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#F5F2EF] flex items-center justify-center">
+                        <svg class="w-8 h-8 text-[#9A948D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <h3 class="text-sm font-medium text-[#2D1810] mb-1">No projects yet</h3>
+                    <p class="text-sm text-[#9A948D]">Projects will appear here when created</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: METRICS -->
+        <div id="tab-metrics" class="tab-section flex-1 min-h-0 bg-[#FAFAF9] overflow-y-auto">
+            <div class="p-6 max-w-6xl mx-auto">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-lg font-semibold text-[#2D1810]">Metrics</h2>
+                        <p class="text-sm text-[#9A948D]">Performance and quality metrics</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl border border-[#E8E4E0] p-12 text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#F5F2EF] flex items-center justify-center">
+                        <svg class="w-8 h-8 text-[#9A948D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                    </div>
+                    <h3 class="text-sm font-medium text-[#2D1810] mb-1">Metrics coming soon</h3>
+                    <p class="text-sm text-[#9A948D]">Performance metrics will be displayed here</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1030,6 +1337,78 @@
                 document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
             }
         });
+
+        // Module accordion expand/collapse
+        document.querySelectorAll('.module-accordion .module-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const accordion = header.closest('.module-accordion');
+                accordion.classList.toggle('expanded');
+            });
+        });
+
+        // Feature item selection
+        document.querySelectorAll('.feature-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.feature-item.selected').forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+                
+                // Show feature content
+                const emptyState = document.getElementById('featureEmptyState');
+                const featureContent = document.getElementById('featureContent');
+                const featureName = document.getElementById('featureName');
+                const featureModuleName = document.getElementById('featureModuleName');
+                
+                if (emptyState && featureContent) {
+                    emptyState.classList.add('hidden');
+                    featureContent.classList.remove('hidden');
+                }
+                
+                // Update feature name
+                if (featureName) {
+                    featureName.textContent = item.textContent.trim();
+                }
+                
+                // Get module name from parent accordion
+                if (featureModuleName) {
+                    const accordion = item.closest('.module-accordion');
+                    if (accordion) {
+                        const moduleName = accordion.querySelector('.module-header .text-sm.font-medium');
+                        if (moduleName) {
+                            featureModuleName.textContent = moduleName.textContent.trim();
+                        }
+                    }
+                }
+            });
+        });
+
+        // Module search filtering
+        const moduleSearch = document.querySelector('input[placeholder="Search modules..."]');
+        if (moduleSearch) {
+            moduleSearch.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                document.querySelectorAll('.module-accordion').forEach(accordion => {
+                    const moduleName = accordion.querySelector('.module-header .text-sm.font-medium').textContent.toLowerCase();
+                    const features = accordion.querySelectorAll('.feature-item');
+                    let hasMatch = moduleName.includes(query);
+                    
+                    features.forEach(feature => {
+                        const featureName = feature.textContent.toLowerCase();
+                        if (query === '' || featureName.includes(query) || moduleName.includes(query)) {
+                            feature.style.display = '';
+                            if (featureName.includes(query)) hasMatch = true;
+                        } else {
+                            feature.style.display = 'none';
+                        }
+                    });
+                    
+                    accordion.style.display = hasMatch || query === '' ? '' : 'none';
+                    if (query !== '' && hasMatch) {
+                        accordion.classList.add('expanded');
+                    }
+                });
+            });
+        }
 
         function toggleChatSidebar() {
             const chatSidebar = document.getElementById('chatSidebar');

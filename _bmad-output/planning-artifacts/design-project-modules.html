@@ -99,6 +99,9 @@
         .flow-arrow.relevant { border-top-color: #9333EA; }
         .flow-arrow.completed { border-top-color: #10B981; }
         
+        .module-accordion { display: none; }
+        .module-accordion.selected { display: block; }
+        
         .flow-branch-label {
             font-size: 0.625rem; font-weight: 600; padding: 0.125rem 0.5rem;
             border-radius: 4px; text-transform: uppercase;
@@ -627,8 +630,12 @@
                     </div>
                     <div>
                         <div class="flex items-center gap-3">
-                            <h1 class="text-lg font-semibold text-[#5B21B6]">Claims Portal</h1>
+                            <h1 class="text-lg font-semibold text-[#5B21B6]">Claims Management Implementation</h1>
                             <span class="text-xs bg-[#D1FAE5] text-[#059669] px-2 py-0.5 rounded-full font-semibold">Active</span>
+                            <span class="text-xs text-[#6B7280] flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+                                Claims Portal
+                            </span>
                         </div>
                         <p class="text-sm text-[#6B7280]">Multi-level approval workflow for expense claims</p>
                     </div>
@@ -652,8 +659,8 @@
         </section>
         
         <!-- TAB NAVIGATION -->
-        <div class="bg-white border-b border-[#E8E4E0] px-8 flex-shrink-0">
-            <div class="max-w-6xl flex items-center gap-1">
+        <div class="bg-white border-b border-[#E8E4E0] px-6 flex-shrink-0">
+            <div class="flex items-center gap-1">
                 <button class="tab-btn tab-active px-4 py-3.5 text-sm font-medium" data-tab="modules">
                     <svg class="w-4 h-4 inline mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                     Modules & Features
@@ -664,6 +671,11 @@
                     Workflows
                     <span class="bg-[#E8E4E0] text-[#9A948D] px-2 py-0.5 rounded text-xs ml-2">3</span>
                 </button>
+                <button class="tab-btn px-4 py-3.5 text-sm font-medium text-[#9A948D]" data-tab="context">
+                    <svg class="w-4 h-4 inline mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    Context
+                    <span class="bg-[#E8E4E0] text-[#9A948D] px-2 py-0.5 rounded text-xs ml-2">6</span>
+                </button>
             </div>
         </div>
         
@@ -671,11 +683,82 @@
         <div class="flex-1 overflow-hidden flex flex-col">
             
             <!-- TAB 1: MODULES & FEATURES -->
-            <div id="tab-modules" class="tab-section active p-8 overflow-y-auto">
-                <div class="max-w-5xl mx-auto">
+            <div id="tab-modules" class="tab-section active flex-1 flex flex-col min-h-0">
+                <div class="flex-1 flex items-stretch min-h-0">
                     
-                    <!-- MODULE 1: Approvals (Expanded) -->
-                    <div class="module-accordion expanded card mb-4" data-module="approvals">
+                    <!-- LEFT SIDEBAR: Module Nav List -->
+                    <aside class="w-[240px] border-r border-[#E8E4E0] bg-white flex flex-col flex-shrink-0">
+                        <div class="p-4 border-b border-[#E8E4E0]">
+                            <h2 class="font-semibold text-sm text-[#2D1810]">Modules</h2>
+                            <p class="text-xs text-[#9A948D] mt-1">Claims Portal</p>
+                        </div>
+                        <nav class="flex-1 overflow-y-auto p-3 space-y-1" id="module-nav">
+                            <div class="workflow-nav-item active" data-module="approvals" onclick="selectModuleNav(0)">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#9333EA] flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-[#2D1810] truncate">Approvals</p>
+                                        <p class="text-[10px] text-[#9A948D]">4 features</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
+                                    <span class="text-[10px] text-[#9A948D] ml-1">75%</span>
+                                </div>
+                            </div>
+                            <div class="workflow-nav-item" data-module="claims" onclick="selectModuleNav(1)">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#2563EB] flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-[#2D1810] truncate">Claims Management</p>
+                                        <p class="text-[10px] text-[#9A948D]">3 features</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#D1D5DB]"></span>
+                                    <span class="text-[10px] text-[#9A948D] ml-1">60%</span>
+                                </div>
+                            </div>
+                            <div class="workflow-nav-item" data-module="reporting" onclick="selectModuleNav(2)">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#16A34A] flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-[#2D1810] truncate">Reporting</p>
+                                        <p class="text-[10px] text-[#9A948D]">2 features</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-[#D1D5DB]"></span>
+                                    <span class="text-[10px] text-[#9A948D] ml-1">33%</span>
+                                </div>
+                            </div>
+                        </nav>
+                        <div class="p-3 border-t border-[#E8E4E0]">
+                            <button class="w-full py-2 px-3 text-sm text-[#9333EA] hover:bg-[#FAF5FF] rounded-lg transition-colors flex items-center justify-center gap-2" onclick="alert('Add Module modal')">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                                Add Module
+                            </button>
+                        </div>
+                    </aside>
+                    
+                    <!-- CENTER: Module Content -->
+                    <main class="flex-1 overflow-y-auto p-6 bg-[#FAFAF9]">
+                        <div class="max-w-4xl">
+                            
+                            <!-- MODULE 1: Approvals (Expanded) -->
+                            <div id="module-0" class="module-accordion selected expanded card mb-4" data-module="approvals">
                         <div class="p-4 border-b border-[#E8E4E0] cursor-pointer" onclick="toggleModule(this)">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -817,7 +900,7 @@
                     </div>
                     
                     <!-- MODULE 2: Claims Management (Collapsed) -->
-                    <div class="module-accordion collapsed card mb-4" data-module="claims">
+                    <div id="module-1" class="module-accordion collapsed card mb-4" data-module="claims">
                         <div class="p-4 cursor-pointer" onclick="toggleModule(this)">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -846,7 +929,7 @@
                     </div>
                     
                     <!-- MODULE 3: Reporting (Collapsed) -->
-                    <div class="module-accordion collapsed card mb-4" data-module="reporting">
+                    <div id="module-2" class="module-accordion collapsed card mb-4" data-module="reporting">
                         <div class="p-4 cursor-pointer" onclick="toggleModule(this)">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -875,18 +958,73 @@
                     </div>
                     
                     <!-- ADD MODULE CARD -->
-                    <div class="add-module-card" onclick="alert('Add Module modal would open')">
-                        <div class="flex items-center justify-center gap-3">
-                            <div class="w-12 h-12 rounded-xl bg-white border-2 border-[#D8B4FE] flex items-center justify-center">
-                                <svg class="w-6 h-6 text-[#9333EA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                            <div class="add-module-card" onclick="alert('Add Module modal would open')">
+                                <div class="flex items-center justify-center gap-3">
+                                    <div class="w-12 h-12 rounded-xl bg-white border-2 border-[#D8B4FE] flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-[#9333EA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                                    </div>
+                                    <div class="text-left">
+                                        <p class="font-semibold text-sm text-[#5B21B6]">Add New Module</p>
+                                        <p class="text-xs text-[#9A948D]">Create a new module to organize features</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="text-left">
-                                <p class="font-semibold text-sm text-[#5B21B6]">Add New Module</p>
-                                <p class="text-xs text-[#9A948D]">Create a new module to organize features</p>
+                            
+                        </div>
+                    </main>
+                    
+                    <!-- RIGHT: AI Chat Sidebar (starts collapsed) -->
+                    <aside id="chatSidebar" class="chat-sidebar collapsed border-l border-[#E8E4E0] bg-white flex flex-col flex-shrink-0 h-full overflow-hidden">
+                        <div class="p-4 border-b border-[#E8E4E0] flex items-start justify-between min-w-[320px]">
+                            <div>
+                                <h3 class="font-semibold text-sm flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-[#FF6B35]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="21" cy="5" r="2"/>
+                                        <path d="M9 18.75c0 .912-.878 1.688-2 1.75A3.5 3.5 0 0 1 8 16.25V12a3.5 3.5 0 0 1 3.5-3.5h4.5A3.5 3.5 0 0 1 19.5 12"/>
+                                    </svg>
+                                    AI Assistant
+                                </h3>
+                                <p class="text-xs text-[#9A948D] mt-1">Ask about this project</p>
+                            </div>
+                            <button onclick="toggleChatSidebar()" class="btn-ghost-icon" title="Close (Ctrl+I)">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Chat Messages -->
+                        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+                            <div class="flex gap-3">
+                                <div class="w-7 h-7 rounded-full bg-[#FF6B35] flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="21" cy="5" r="2"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-[#2D1810] leading-relaxed">Hi! I'm your AI assistant for the <strong>Claims Management Implementation</strong> project. How can I help you today?</p>
+                                    <span class="text-[10px] text-[#9A948D] block mt-2">Just now</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
+                        
+                        <!-- Chat Input -->
+                        <div class="p-4 border-t border-[#E8E4E0] min-w-[320px]">
+                            <div class="flex gap-2 items-end">
+                                <textarea 
+                                    rows="1"
+                                    placeholder="Ask about this project..." 
+                                    class="flex-1 text-sm bg-[#FAFAF9] border border-[#E8E4E0] rounded-lg px-3 py-2 outline-none focus:border-[#FF6B35] resize-none overflow-hidden min-h-[38px] max-h-[120px]"
+                                ></textarea>
+                                <button class="btn-primary px-3 py-2 flex-shrink-0">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="22" y1="2" x2="11" y2="13"/>
+                                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </aside>
                 </div>
             </div>
             
@@ -993,7 +1131,7 @@
                     </main>
                     
                     <!-- RIGHT: AI Chat Sidebar (starts collapsed) -->
-                    <aside id="chatSidebar" class="chat-sidebar collapsed border-l border-[#E8E4E0] bg-white flex flex-col flex-shrink-0 h-full overflow-hidden">
+                    <aside id="chatSidebarWorkflows" class="chat-sidebar collapsed border-l border-[#E8E4E0] bg-white flex flex-col flex-shrink-0 h-full overflow-hidden">
                         <div class="p-4 border-b border-[#E8E4E0] flex items-start justify-between min-w-[320px]">
                             <div>
                                 <h3 class="font-semibold text-sm flex items-center gap-2">
@@ -1050,6 +1188,208 @@
                             </div>
                         </div>
                     </aside>
+                </div>
+            </div>
+            
+            <!-- TAB 3: CONTEXT -->
+            <div id="tab-context" class="tab-section flex-1 flex flex-col min-h-0">
+                <div class="flex-1 overflow-y-auto p-6 bg-[#FAFAF9]">
+                    <div class="max-w-5xl mx-auto">
+                        
+                        <!-- Quick Add Context -->
+                        <div class="card p-4 mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="flex-1 flex items-center gap-2">
+                                    <select id="contextTypeSelect" class="text-sm bg-[#FAFAF9] border border-[#E8E4E0] rounded-lg px-3 py-2.5 outline-none focus:border-[#9333EA] cursor-pointer">
+                                        <option value="note">📝 Note</option>
+                                        <option value="meeting">👥 Meeting</option>
+                                        <option value="document">📄 Document</option>
+                                        <option value="technical">⚙️ Technical</option>
+                                    </select>
+                                    <input 
+                                        type="text" 
+                                        id="quickContextInput"
+                                        placeholder="Add context quickly... (e.g., 'Client wants faster approval flow')"
+                                        class="flex-1 text-sm bg-[#FAFAF9] border border-[#E8E4E0] rounded-lg px-4 py-2.5 outline-none focus:border-[#9333EA] transition-all"
+                                    >
+                                </div>
+                                <button onclick="addQuickContext()" class="btn-primary px-4 py-2.5 text-sm flex items-center gap-2">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                                    Add
+                                </button>
+                                <button onclick="openAIContextHelper()" class="btn-secondary px-4 py-2.5 text-sm flex items-center gap-2 border-[#9333EA] text-[#9333EA] hover:bg-[#FAF5FF]">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                    AI Help
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Search Bar -->
+                        <div class="mb-6">
+                            <div class="relative">
+                                <svg class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-[#9A948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="11" cy="11" r="8"/>
+                                    <path d="m21 21-4.35-4.35"/>
+                                </svg>
+                                <input 
+                                    type="text" 
+                                    id="contextSearchInput"
+                                    placeholder="Search context by title, type, or content..."
+                                    class="w-full pl-12 pr-4 py-3 bg-white border border-[#E8E4E0] rounded-lg outline-none focus:border-[#9333EA] transition-all"
+                                    oninput="filterContextCards()"
+                                >
+                            </div>
+                        </div>
+                        
+                        <!-- Filter Tabs -->
+                        <div class="mb-6 flex items-center gap-2">
+                            <button class="btn-ghost text-sm px-3 py-2 context-filter active" data-filter="all" onclick="filterContextByType('all')">All</button>
+                            <button class="btn-ghost text-sm px-3 py-2 context-filter" data-filter="meeting" onclick="filterContextByType('meeting')">Meeting</button>
+                            <button class="btn-ghost text-sm px-3 py-2 context-filter" data-filter="note" onclick="filterContextByType('note')">Note</button>
+                            <button class="btn-ghost text-sm px-3 py-2 context-filter" data-filter="document" onclick="filterContextByType('document')">Document</button>
+                            <button class="btn-ghost text-sm px-3 py-2 context-filter" data-filter="technical" onclick="filterContextByType('technical')">Technical</button>
+                        </div>
+                        
+                        <!-- Context Cards Grid -->
+                        <div class="grid grid-cols-3 gap-5" id="contextCardsGrid">
+                            
+                            <!-- Context Card 1: Kickoff Meeting -->
+                            <div class="card p-5 cursor-pointer hover:border-[#9333EA] transition-all context-card animate-in delay-1" data-type="meeting" onclick="openContextPanel('meeting', 'Kickoff Meeting')">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-[#FEF3C7] flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-[#D97706]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                            <circle cx="9" cy="7" r="4"/>
+                                        </svg>
+                                    </div>
+                                    <span class="text-xs bg-[#FEF3C7] text-[#D97706] px-2 py-1 rounded-full font-semibold">Meeting</span>
+                                </div>
+                                <h3 class="font-semibold text-base mb-2 text-[#2D1810]">Kickoff Meeting Notes</h3>
+                                <p class="text-sm text-[#9A948D] mb-4 line-clamp-2">Initial requirements discussion with stakeholders about multi-level approval workflow.</p>
+                                <div class="flex items-center justify-between text-xs text-[#9A948D]">
+                                    <div class="flex items-center gap-1">
+                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        <span>4 features linked</span>
+                                    </div>
+                                    <span>Feb 15, 2026</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Context Card 2: Requirements Document -->
+                            <div class="card p-5 cursor-pointer hover:border-[#2563EB] transition-all context-card animate-in delay-2" data-type="document" onclick="openContextPanel('document', 'Requirements v2')">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-[#EFF6FF] flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-[#2563EB]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                            <polyline points="14 2 14 8 20 8"/>
+                                        </svg>
+                                    </div>
+                                    <span class="text-xs bg-[#EFF6FF] text-[#2563EB] px-2 py-1 rounded-full font-semibold">Document</span>
+                                </div>
+                                <h3 class="font-semibold text-base mb-2 text-[#2D1810]">Requirements v2.0</h3>
+                                <p class="text-sm text-[#9A948D] mb-4 line-clamp-2">Detailed approval workflow requirements including role thresholds and routing rules.</p>
+                                <div class="flex items-center justify-between text-xs text-[#9A948D]">
+                                    <div class="flex items-center gap-1">
+                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        <span>6 features linked</span>
+                                    </div>
+                                    <span>Feb 18, 2026</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Context Card 3: Technical Spec -->
+                            <div class="card p-5 cursor-pointer hover:border-[#6B7280] transition-all context-card animate-in delay-3" data-type="technical" onclick="openContextPanel('document', 'API Documentation')">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-[#F3F4F6] flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-[#6B7280]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                            <path d="M8 13h8M8 17h8"/>
+                                        </svg>
+                                    </div>
+                                    <span class="text-xs bg-[#F3F4F6] text-[#6B7280] px-2 py-1 rounded-full font-semibold">Technical</span>
+                                </div>
+                                <h3 class="font-semibold text-base mb-2 text-[#2D1810]">API Endpoints Spec</h3>
+                                <p class="text-sm text-[#9A948D] mb-4 line-clamp-2">REST API specifications for approval microflow endpoints with request/response schemas.</p>
+                                <div class="flex items-center justify-between text-xs text-[#9A948D]">
+                                    <div class="flex items-center gap-1">
+                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        <span>3 features linked</span>
+                                    </div>
+                                    <span>Feb 20, 2026</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Context Card 4: Sprint Planning -->
+                            <div class="card p-5 cursor-pointer hover:border-[#D97706] transition-all context-card animate-in delay-4" data-type="meeting" onclick="openContextPanel('meeting', 'Sprint Planning')">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-[#FEF3C7] flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-[#D97706]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                            <line x1="16" y1="2" x2="16" y2="6"/>
+                                            <line x1="8" y1="2" x2="8" y2="6"/>
+                                            <line x1="3" y1="10" x2="21" y2="10"/>
+                                        </svg>
+                                    </div>
+                                    <span class="text-xs bg-[#FEF3C7] text-[#D97706] px-2 py-1 rounded-full font-semibold">Meeting</span>
+                                </div>
+                                <h3 class="font-semibold text-base mb-2 text-[#2D1810]">Sprint 4 Planning</h3>
+                                <p class="text-sm text-[#9A948D] mb-4 line-clamp-2">Sprint planning notes covering delegation feature and notification implementation.</p>
+                                <div class="flex items-center justify-between text-xs text-[#9A948D]">
+                                    <div class="flex items-center gap-1">
+                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        <span>2 features linked</span>
+                                    </div>
+                                    <span>Feb 22, 2026</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Context Card 5: Client Feedback -->
+                            <div class="card p-5 cursor-pointer hover:border-[#FF6B35] transition-all context-card animate-in delay-5" data-type="note" onclick="openContextPanel('note', 'Client Feedback')">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-[#FFF7F3] flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-[#FF6B35]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                        </svg>
+                                    </div>
+                                    <span class="text-xs bg-[#FFF7F3] text-[#FF6B35] px-2 py-1 rounded-full font-semibold">Note</span>
+                                </div>
+                                <h3 class="font-semibold text-base mb-2 text-[#2D1810]">Client Feedback - Demo 3</h3>
+                                <p class="text-sm text-[#9A948D] mb-4 line-clamp-2">Client wants faster notification delivery and custom email templates for approvals.</p>
+                                <div class="flex items-center justify-between text-xs text-[#9A948D]">
+                                    <div class="flex items-center gap-1">
+                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        <span>2 features linked</span>
+                                    </div>
+                                    <span>Feb 25, 2026</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Context Card 6: Developer Notes -->
+                            <div class="card p-5 cursor-pointer hover:border-[#10B981] transition-all context-card animate-in delay-6" data-type="technical" onclick="openContextPanel('note', 'Developer Notes')">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-[#D1FAE5] flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-[#10B981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                        </svg>
+                                    </div>
+                                    <span class="text-xs bg-[#D1FAE5] text-[#10B981] px-2 py-1 rounded-full font-semibold">Technical</span>
+                                </div>
+                                <h3 class="font-semibold text-base mb-2 text-[#2D1810]">Developer Implementation Notes</h3>
+                                <p class="text-sm text-[#9A948D] mb-4 line-clamp-2">Technical notes from Aisha on microflow optimization and caching strategies.</p>
+                                <div class="flex items-center justify-between text-xs text-[#9A948D]">
+                                    <div class="flex items-center gap-1">
+                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        <span>3 features linked</span>
+                                    </div>
+                                    <span>Feb 27, 2026</span>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -1207,6 +1547,72 @@
             document.getElementById('contextOverlay').classList.remove('active');
         }
         
+        // Context Tab Functions
+        function filterContextCards() {
+            const searchTerm = document.getElementById('contextSearchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.context-card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const description = card.querySelector('p').textContent.toLowerCase();
+                const type = card.dataset.type;
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || type.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        function filterContextByType(filterType) {
+            const buttons = document.querySelectorAll('.context-filter');
+            buttons.forEach(btn => {
+                if (btn.dataset.filter === filterType) {
+                    btn.classList.add('active');
+                    btn.style.background = '#F3E8FF';
+                    btn.style.borderColor = '#9333EA';
+                    btn.style.color = '#9333EA';
+                } else {
+                    btn.classList.remove('active');
+                    btn.style.background = '';
+                    btn.style.borderColor = '';
+                    btn.style.color = '';
+                }
+            });
+            
+            const cards = document.querySelectorAll('.context-card');
+            cards.forEach(card => {
+                if (filterType === 'all' || card.dataset.type === filterType) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        function addQuickContext() {
+            const input = document.getElementById('quickContextInput');
+            const typeSelect = document.getElementById('contextTypeSelect');
+            const value = input.value.trim();
+            
+            if (value) {
+                alert(`Adding ${typeSelect.value} context: "${value}"`);
+                input.value = '';
+            }
+        }
+        
+        function openAIContextHelper() {
+            const input = document.getElementById('quickContextInput');
+            const value = input.value.trim();
+            
+            if (value) {
+                alert(`AI will help expand: "${value}" into a detailed context object.`);
+            } else {
+                alert('AI Assistant ready to help create context. Enter a topic or paste notes to get started.');
+            }
+        }
+        
         // Module accordion toggle
         function toggleModule(header) {
             const accordion = header.closest('.module-accordion');
@@ -1218,6 +1624,30 @@
         function selectFeature(card) {
             document.querySelectorAll('.feature-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
+        }
+        
+        // Module nav selection
+        function selectModuleNav(index) {
+            const navItems = document.querySelectorAll('#module-nav .workflow-nav-item');
+            const modules = document.querySelectorAll('.module-accordion');
+            
+            navItems.forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            modules.forEach((mod, i) => {
+                if (i === index) {
+                    mod.classList.add('selected');
+                    mod.classList.add('expanded');
+                    mod.classList.remove('collapsed');
+                } else {
+                    mod.classList.remove('selected');
+                }
+            });
         }
         
         // Workflow expand/collapse
@@ -1758,16 +2188,25 @@
         
         function toggleChatSidebar() {
             const chatSidebar = document.getElementById('chatSidebar');
+            const chatSidebarWorkflows = document.getElementById('chatSidebarWorkflows');
             const chatFab = document.getElementById('chatFab');
             const isCollapsed = chatSidebar.classList.contains('collapsed');
             
             if (isCollapsed) {
                 chatSidebar.classList.remove('collapsed');
                 chatSidebar.classList.add('expanded');
+                if (chatSidebarWorkflows) {
+                    chatSidebarWorkflows.classList.remove('collapsed');
+                    chatSidebarWorkflows.classList.add('expanded');
+                }
                 chatFab.classList.remove('visible');
             } else {
                 chatSidebar.classList.remove('expanded');
                 chatSidebar.classList.add('collapsed');
+                if (chatSidebarWorkflows) {
+                    chatSidebarWorkflows.classList.remove('expanded');
+                    chatSidebarWorkflows.classList.add('collapsed');
+                }
                 setTimeout(() => chatFab.classList.add('visible'), 200);
             }
         }
