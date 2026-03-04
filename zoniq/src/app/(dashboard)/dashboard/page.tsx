@@ -4,7 +4,7 @@ export default async function DashboardPage() {
   const user = await currentUser()
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-8">
+    <div className="flex flex-1 flex-col items-center justify-center p-8">
       <main className="flex flex-col items-center gap-8 text-center">
         <h1 className="text-4xl font-bold tracking-tight text-foreground">
           Welcome to Zoniq{user?.firstName ? `, ${user.firstName}` : ''}
