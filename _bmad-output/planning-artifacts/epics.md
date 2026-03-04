@@ -343,34 +343,7 @@ So that my session is terminated and my data remains secure. (FR2)
 **When** the user attempts to access a protected route
 **Then** the user is redirected to the login page
 
-### Story 1.5: Implement Forgot Password Flow
-
-As a user,
-I want to reset my password via email when I forget it,
-So that I can regain access to my account without admin assistance.
-
-**Acceptance Criteria:**
-
-**Given** a user on the login page
-**When** the user clicks "Forgot Password"
-**Then** the user is directed to the forgot password page
-
-**Given** a user on the forgot password page
-**When** the user enters their registered email and submits
-**Then** a password reset email is sent via Clerk
-**And** a success message is displayed indicating email was sent
-
-**Given** a user receives the password reset email
-**When** the user clicks the reset link
-**Then** the user is directed to the reset password page
-**And** the user can enter a new password
-
-**Given** a user on the reset password page
-**When** the user enters a valid new password and confirms
-**Then** the password is updated in Clerk
-**And** the user is redirected to login with a success message
-
-### Story 1.6: Admin User Management - Create Users
+### Story 1.5: Admin User Management - Create Users
 
 As an admin,
 I want to create new user accounts,
@@ -392,7 +365,7 @@ So that team members can access the system. (FR3)
 **When** the user attempts to access the user management page
 **Then** access is denied with appropriate message
 
-### Story 1.7: Admin User Management - Assign Roles
+### Story 1.6: Admin User Management - Assign Roles
 
 As an admin,
 I want to assign roles (Admin, PM, Consultant) to users,
@@ -411,7 +384,7 @@ So that users have appropriate permissions. (FR4)
 **Then** an error is displayed preventing the action
 **And** at least one admin must always exist in the system
 
-### Story 1.8: Admin User Management - Deactivate Users
+### Story 1.7: Admin User Management - Deactivate Users
 
 As an admin,
 I want to deactivate user accounts,
@@ -434,7 +407,7 @@ So that former team members cannot access the system. (FR5)
 **Then** an appropriate error message is displayed
 **And** the user cannot access the system
 
-### Story 1.9: User Profile View
+### Story 1.8: User Profile View
 
 As a user,
 I want to view my own profile information,

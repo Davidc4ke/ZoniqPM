@@ -38,7 +38,7 @@ So that I can access my Zoniq workspace securely. (FR1)
 - [x] Task 6: Run validation (All ACs)
   - [x] Run `npm run lint` - must pass
   - [x] Run `npm run build` - must compile successfully
-  - [ ] Manual test: login flow, redirect, error handling
+  - [x] Manual test: login flow, redirect, error handling
 
 ## Dev Notes
 

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Manrope } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 const manrope = Manrope({
@@ -22,7 +23,10 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={manrope.variable}>
-        <body className="font-sans antialiased">{children}</body>
+        <body className="font-sans antialiased">
+          {children}
+          <Toaster position="top-right" richColors />
+        </body>
       </html>
     </ClerkProvider>
   )

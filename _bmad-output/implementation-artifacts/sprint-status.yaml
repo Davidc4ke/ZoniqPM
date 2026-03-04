@@ -45,8 +45,8 @@ development_status:
   1-2-configure-clerk-authentication: done
   1-3-implement-user-login: done
   1-4-implement-user-logout: done
-  1-5-implement-forgot-password-flow: backlog
-  1-6-admin-user-management-create-users: backlog
+  1-5-implement-forgot-password-flow: backlog  # DELETED - story removed
+  1-6-admin-user-management-create-users: done
   1-7-admin-user-management-assign-roles: backlog
   1-8-admin-user-management-deactivate-users: backlog
   1-9-user-profile-view: backlog

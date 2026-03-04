@@ -1,4 +1,17 @@
 
+# Tasks at hand
+- Be able to update accounts once you've created them?
+
+# Zoniq app improvements
+- Have epics in the project management
+	- Can be a tab called Planning
+	- Planning has a list of epics with the stories
+	- Can still keep the modules and features functionality to see which features are relevant?
+- Auto generate questions to humans during story creation. Answering these questions could make the story better
+- Separate automatic review and manual review tasks
+- Agent management
+- Issue tracker on ticket level
+
 
 # BMAD Improvements 
 - No clear user actions after a story has been completed. It is sometimes mentioned in the story, but you are not prompted to work on the manual actions after a story has been completed
@@ -6,7 +19,9 @@
 - Manual story creation > implementation > Testing plans > Testing (move back to implementation stage if problems arise + update story if needed)  > reviewing (move back to implementation stage if problems arise + update story if needed )
 - At the end of the story, determine if the loop should stop 
 - BMAD should create XML/JSON so the output is readable by a user interface
-- No 
+- Sometimes easy to change code outside of agent scopes. Especially when 
+- Keep track how many times a review took place
+- Too much documents to track features. PRC and Epics both track stories. If i want to change stories, it seems like i need to change both. Creates risk of these files having differences between them and causing context for AI to be ambiguous  
 
 # Local tool idea
 - Feels a bit like studio pro. A local session of your development
@@ -16,6 +31,7 @@
 
 # To dos
 
+- 
 - Set the clerk credentials in the deployment server
 - Create admin in clerk dashboard
   Option A: Clerk Dashboard (Recommended for bootstrap)
