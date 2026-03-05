@@ -22,7 +22,11 @@
       "Bash(npm run test:run:*)",
       "Bash(curl:*)",
       "Bash(git restore:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(git -C \"C:\\Users\\David\\Mendix\\BMAD Zoniq\" log --oneline -10)",
+      "Bash(git checkout:*)",
+      "Bash(oniq:*)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []

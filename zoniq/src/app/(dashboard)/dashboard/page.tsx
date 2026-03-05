@@ -1,18 +1,20 @@
-import { currentUser } from '@clerk/nextjs/server'
+import { AssignedStoriesWidget } from '@/components/features/dashboard/assigned-stories-widget'
+import { ReviewQueueWidget } from '@/components/features/dashboard/review-queue-widget'
+import { ProjectsWidget } from '@/components/features/dashboard/projects-widget'
+import { TeamActivityWidget } from '@/components/features/dashboard/team-activity-widget'
 
-export default async function DashboardPage() {
-  const user = await currentUser()
-
+export default function DashboardPage() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center p-8">
-      <main className="flex flex-col items-center gap-8 text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-foreground">
-          Welcome to Zoniq{user?.firstName ? `, ${user.firstName}` : ''}
-        </h1>
-        <p className="max-w-md text-lg text-muted-foreground">
-          Your AI-powered requirements and project management workspace.
-        </p>
-      </main>
+    <div className="mx-auto max-w-[1280px] px-8 py-6">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-5">
+        <AssignedStoriesWidget />
+        <ReviewQueueWidget />
+        <ProjectsWidget />
+      </div>
+      
+      <div className="mt-5">
+        <TeamActivityWidget />
+      </div>
     </div>
   )
 }

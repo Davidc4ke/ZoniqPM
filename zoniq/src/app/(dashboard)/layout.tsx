@@ -1,7 +1,8 @@
 import { auth, clerkClient } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { UserButton } from '@clerk/nextjs'
+import { TopbarNav } from '@/components/features/topbar/topbar-nav'
+import { ZoniqLogo } from '@/components/features/topbar/zoniq-logo'
 
 export default async function DashboardLayout({
   children,
@@ -21,30 +22,20 @@ export default async function DashboardLayout({
   const isAdmin = (roles && roles.includes('admin')) || role === 'admin'
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="container flex h-14 items-center justify-between px-4">
+    <div className="min-h-screen bg-[#FAFAF9]">
+      <header className="sticky top-0 z-50 border-b border-[#E8E4E0] bg-white">
+        <div className="flex h-14 items-center justify-between px-6">
           <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="font-bold text-lg hover:opacity-80 transition-opacity">
-              Zoniq
+            <Link href="/dashboard" className="flex items-center gap-2.5 font-bold text-lg text-[#2D1810] hover:opacity-80 transition-opacity">
+              <ZoniqLogo />
+              <span className="text-[#FF6B35]">Zoniq</span>
             </Link>
-            <nav className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Dashboard
-              </Link>
-              {isAdmin && (
-                <Link href="/admin/users" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Users
-                </Link>
-              )}
-            </nav>
-          </div>
-          <div className="flex items-center gap-4">
-            <UserButton afterSignOutUrl="/sign-in" userProfileUrl="/profile" />
+
+            <TopbarNav isAdmin={isAdmin} />
           </div>
         </div>
       </header>
-      <main>{children}</main>
+      <main className="bg-[#FAFAF9]">{children}</main>
     </div>
   )
 }

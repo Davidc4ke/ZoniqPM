@@ -12,6 +12,7 @@
 - Separate automatic review and manual review tasks
 - Agent management
 - Issue tracker on ticket level
+- Insight in database structure. How does the actual database look like
 
 
 # BMAD Improvements 
