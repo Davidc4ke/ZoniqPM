@@ -20,7 +20,9 @@
       "Bash(npm run build:*)",
       "Bash(rm:*)",
       "Bash(npm run test:run:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(git restore:*)",
+      "Bash(npm run lint:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,6 +1,7 @@
 
 # Tasks at hand
-- Be able to update accounts once you've created them?
+- Update sprintr yaml, to remove story 1.5
+- user profile view already handled by clerk no? So why story 1.9? Can you check if 1.9 is still needed or not? Am i missing something?
 
 # Zoniq app improvements
 - Have epics in the project management
@@ -22,6 +23,7 @@
 - Sometimes easy to change code outside of agent scopes. Especially when 
 - Keep track how many times a review took place
 - Too much documents to track features. PRC and Epics both track stories. If i want to change stories, it seems like i need to change both. Creates risk of these files having differences between them and causing context for AI to be ambiguous  
+- Create skill to extract all user actions
 
 # Local tool idea
 - Feels a bit like studio pro. A local session of your development

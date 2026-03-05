@@ -40,7 +40,7 @@ export default async function DashboardLayout({
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <UserButton afterSignOutUrl="/sign-in" />
+            <UserButton afterSignOutUrl="/sign-in" userProfileUrl="/profile" />
           </div>
         </div>
       </header>
