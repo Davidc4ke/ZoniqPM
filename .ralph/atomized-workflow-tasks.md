@@ -1,17 +1,11 @@
-# BMAD Zoniq - Atomized Workflow Implementation
+# Atomized Workflow Implementation Tasks - Phase 1 Only
 
-> This file is the master task list for Ralph loop execution.
-> Actual tasks are in: `.ralph/atomized-workflow-tasks.md`
-
----
-
-## Current Phase: Phase 1 - Core Workflows
-
-Working through atomized-workflow-tasks.md ONE TASK AT A TIME.
+> Execute ONE task per Claude session. Mark [x] when done.
+> Plan reference: `_bmad-output/implementation-artifacts/ATOMIZED-DEV-WORKFLOW-PLAN.md`
 
 ---
 
-## Task List (from atomized-workflow-tasks.md)
+## Phase 1: Core Workflows (BMAD)
 
 ### 1.1 dev-story-analyze Workflow
 - [ ] 1.1.1 Create folder `_bmad/bmm/workflows/4-implementation/dev-story-analyze/`
@@ -65,16 +59,31 @@ Working through atomized-workflow-tasks.md ONE TASK AT A TIME.
 
 ## Summary
 
-| Section | Tasks | Completed |
-|---------|-------|-----------|
-| 1.1 dev-story-analyze | 5 | 0 |
-| 1.2 dev-story-task | 4 | 0 |
-| 1.3 dev-story-verify | 4 | 0 |
-| 1.4 dev-story-complete | 4 | 0 |
-| 1.5 context-handoff | 5 | 0 |
-| 1.6 dev-story-replan | 6 | 0 |
-| 1.7 dev-session-status | 6 | 0 |
-| **TOTAL** | **34** | **0** |
+| Section | Tasks |
+|---------|-------|
+| 1.1 dev-story-analyze | 5 |
+| 1.2 dev-story-task | 4 |
+| 1.3 dev-story-verify | 4 |
+| 1.4 dev-story-complete | 4 |
+| 1.5 context-handoff | 5 |
+| 1.6 dev-story-replan | 6 |
+| 1.7 dev-session-status | 6 |
+| **TOTAL** | **34** |
+
+---
+
+## Execution Instructions
+
+### For Ralph Loop:
+```
+ralph
+```
+Each iteration implements ONE task and marks it [x].
+
+### For Manual Execution:
+```
+Read `.ralph/atomized-workflow-tasks.md` and implement the FIRST unchecked task ONLY. Mark it [x] when done.
+```
 
 ---
 

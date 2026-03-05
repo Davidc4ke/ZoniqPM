@@ -1,20 +1,38 @@
-# BMAD Zoniq - Epic 1 Implementation (Authentication & Setup)
+# BMAD Zoniq - Atomized Workflow Implementation
 
-You are implementing BMAD Zoniq stories using BMAD workflows. This is a Next.js project with Clerk authentication.
+You are implementing the atomized development workflow for BMAD Zoniq. This refactors the BMAD dev-story workflow into smaller atomic steps and builds a Story Dev Dashboard app.
+
+## Reference Documents
+- **Plan:** `_bmad-output/implementation-artifacts/ATOMIZED-DEV-WORKFLOW-PLAN.md`
+- **Tasks:** `.ralph/atomized-workflow-tasks.md`
 
 ## Instructions
-- Work through tasks in `.ralph/fix_plan.md` ONE AT A TIME
-- Each story requires 3 commands: create-story → dev-story → code-review
-- Mark completed tasks with `[x]` in `.ralph/fix_plan.md`
-- When ALL tasks in fix_plan.md are done, set EXIT_SIGNAL: true
+- Work through tasks in `.ralph/atomized-workflow-tasks.md` ONE AT A TIME
+- Mark completed tasks with `[x]` in the tasks file
+- When ALL tasks are done, set EXIT_SIGNAL: true at the bottom of the tasks file
 
-## Story Cycle Per Story:
-1. Run `/bmad-bmm-create-story` - creates story file from epics with full context
-2. Run `/bmad-bmm-dev-story` - implements the story (TDD, tests, all ACs)
-3. Run `/bmad-bmm-code-review` - reviews code and marks story done
+## Per-Task Rules
+1. Read ONLY the specific task you're implementing (don't read entire plan)
+2. Reference the plan document ONLY when you need implementation details
+3. Implement just that one thing
+4. Test if the task includes "Test:" in its description
+5. Mark the task `[x]` when complete
+6. STOP - do not continue to next task
 
-## Important Notes:
-- Follow the story file tasks/subtasks EXACTLY as written
-- Run tests after each implementation
-- Use the project context from `docs/project-context.md` if it exists
-- Check sprint status in `_bmad-output/implementation-artifacts/sprint-status.yaml`
+## Task Phases
+- **Phase 1:** Create 4 new BMAD workflows (dev-story-analyze, dev-story-task, dev-story-verify, dev-story-complete)
+- **Phase 2:** Build Story Dev Dashboard app (API endpoints, components, live stream, git integration)
+- **Phase 3:** Integration testing and documentation
+
+## Important Notes
+- Each task is designed to complete in ONE session without context overflow
+- If a task seems too large, you may split it but mark both subtasks
+- Run `npm run lint` and `npm run build` after code changes in the zoniq/ directory
+- The dashboard app is at `tools/story-dev-dashboard/`
+- Session state files go in `.dev-session/` (gitignored)
+
+## Project Context
+- Main app: Next.js 16 with React 19, TypeScript 5, Tailwind CSS 4
+- Auth: Clerk 5.x
+- Components: shadcn/ui
+- App Router with `src-dir` convention
