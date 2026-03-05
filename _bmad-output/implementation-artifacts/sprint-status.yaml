@@ -48,8 +48,8 @@ development_status:
   1-5-implement-forgot-password-flow: backlog  # DELETED - story removed
   1-6-admin-user-management-create-users: done
   1-7-admin-user-management-assign-roles: done
-  1-8-admin-user-management-deactivate-users: backlog
-  1-9-user-profile-view: backlog
+  1-8-admin-user-management-deactivate-users: done
+  1-9-user-profile-view: ready-for-dev
   epic-1-retrospective: optional
 
   epic-2: backlog

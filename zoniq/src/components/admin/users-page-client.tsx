@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { AddUserDialog } from '@/components/admin/add-user-dialog'
 import { EditRoleDialog } from '@/components/admin/edit-role-dialog'
+import { DeactivateConfirmDialog, ReactivateConfirmDialog } from '@/components/admin/confirm-dialog'
 import { USER_ROLE_LABELS, type AdminUser, getUserRoles, type UserRole } from '@/lib/constants'
 
 interface RoleDisplayProps {
@@ -13,13 +14,14 @@ interface RoleDisplayProps {
 function RoleDisplay({ user, onClick }: RoleDisplayProps) {
   const roles = getUserRoles(user)
   const isPending = user.status === 'pending'
+  const isBanned = user.banned
 
   return (
     <button
       type="button"
       onClick={onClick}
-      disabled={isPending}
-      className={`flex flex-wrap gap-1 ${isPending ? 'cursor-not-allowed' : 'cursor-pointer hover:opacity-80 transition-opacity'}`}
+      disabled={isPending || isBanned}
+      className={`flex flex-wrap gap-1 ${(isPending || isBanned) ? 'cursor-not-allowed' : 'cursor-pointer hover:opacity-80 transition-opacity'}`}
     >
       {roles.map((role) => (
         <span
@@ -27,13 +29,15 @@ function RoleDisplay({ user, onClick }: RoleDisplayProps) {
           className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
             isPending
               ? 'bg-[#FEF3C7] text-[#D97706]'
+              : isBanned
+              ? 'bg-[#FEE2E2] text-[#DC2626]'
               : 'bg-[#FFF7F3] text-[#FF6B35]'
           }`}
         >
           {USER_ROLE_LABELS[role]}
         </span>
       ))}
-      {!isPending && (
+      {!isPending && !isBanned && (
         <svg className="h-4 w-4 text-[#9A948D] self-center ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
         </svg>
@@ -46,8 +50,11 @@ interface UserListProps {
   users: AdminUser[]
   isLoading: boolean
   totalCount?: number
+  currentUserId: string
   onRoleChange: (userId: string, roles: UserRole[]) => Promise<void>
   onUserClick: (user: AdminUser) => void
+  onDeactivate: (user: AdminUser) => void
+  onReactivate: (user: AdminUser) => void
 }
 
 function UserListSkeleton() {
@@ -61,6 +68,7 @@ function UserListSkeleton() {
               <th className="h-12 px-4 text-left font-semibold text-[#2D1810]">Email</th>
               <th className="h-12 px-4 text-left font-semibold text-[#2D1810]">Role</th>
               <th className="h-12 px-4 text-left font-semibold text-[#2D1810]">Status</th>
+              <th className="h-12 px-4 text-left font-semibold text-[#2D1810]">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -78,6 +86,9 @@ function UserListSkeleton() {
                 <td className="px-4 py-3">
                   <div className="h-5 w-16 animate-pulse rounded-full bg-[#E8E4E0]" />
                 </td>
+                <td className="px-4 py-3">
+                  <div className="h-5 w-20 animate-pulse rounded bg-[#E8E4E0]" />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -87,7 +98,7 @@ function UserListSkeleton() {
   )
 }
 
-function UserList({ users, isLoading, onUserClick }: UserListProps) {
+function UserList({ users, isLoading, currentUserId, onUserClick, onDeactivate, onReactivate }: UserListProps) {
   const getDisplayName = (user: AdminUser) => {
     if (user.firstName && user.lastName) {
       return `${user.firstName} ${user.lastName}`
@@ -104,7 +115,7 @@ function UserList({ users, isLoading, onUserClick }: UserListProps) {
       return { label: 'Pending', className: 'bg-[#FEF3C7] text-[#D97706]' }
     }
     if (user.banned) {
-      return { label: 'Banned', className: 'bg-[#FEE2E2] text-[#DC2626]' }
+      return { label: 'Inactive', className: 'bg-[#FEE2E2] text-[#DC2626]' }
     }
     return { label: 'Active', className: 'bg-[#D1FAE5] text-[#059669]' }
   }
@@ -123,18 +134,23 @@ function UserList({ users, isLoading, onUserClick }: UserListProps) {
               <th className="h-12 px-4 text-left font-semibold text-[#2D1810]">Email</th>
               <th className="h-12 px-4 text-left font-semibold text-[#2D1810]">Role</th>
               <th className="h-12 px-4 text-left font-semibold text-[#2D1810]">Status</th>
+              <th className="h-12 px-4 text-left font-semibold text-[#2D1810]">Actions</th>
             </tr>
           </thead>
           <tbody>
             {users.length === 0 ? (
               <tr>
-                <td colSpan={4} className="h-24 text-center text-[#9A948D]">
+                <td colSpan={5} className="h-24 text-center text-[#9A948D]">
                   No users found
                 </td>
               </tr>
             ) : (
               users.map((user) => {
                 const status = getStatus(user)
+                const isCurrentUser = user.id === currentUserId
+                const isBanned = user.banned
+                const isPending = user.status === 'pending'
+                
                 return (
                   <tr key={user.id} className="border-b border-[#E8E4E0] transition-colors hover:bg-[#FFF7F3]">
                     <td className="px-4 py-3 font-medium text-[#2D1810]">{getDisplayName(user)}</td>
@@ -146,6 +162,33 @@ function UserList({ users, isLoading, onUserClick }: UserListProps) {
                       <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide ${status.className}`}>
                         {status.label}
                       </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      {!isPending && (
+                        isBanned ? (
+                          <button
+                            type="button"
+                            onClick={() => onReactivate(user)}
+                            className="text-xs font-medium text-[#059669] hover:text-[#047857] transition-colors"
+                          >
+                            Reactivate
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => onDeactivate(user)}
+                            disabled={isCurrentUser}
+                            className={`text-xs font-medium transition-colors ${
+                              isCurrentUser 
+                                ? 'text-[#D1D5DB] cursor-not-allowed' 
+                                : 'text-[#DC2626] hover:text-[#B91C1C]'
+                            }`}
+                            title={isCurrentUser ? 'Cannot deactivate your own account' : undefined}
+                          >
+                            Deactivate
+                          </button>
+                        )
+                      )}
                     </td>
                   </tr>
                 )
@@ -161,15 +204,21 @@ function UserList({ users, isLoading, onUserClick }: UserListProps) {
 interface UsersPageClientProps {
   initialUsers: AdminUser[]
   totalCount?: number
+  currentUserId: string
 }
 
-export function UsersPageClient({ initialUsers, totalCount }: UsersPageClientProps) {
+export function UsersPageClient({ initialUsers, totalCount, currentUserId }: UsersPageClientProps) {
   const [users, setUsers] = useState<AdminUser[]>(initialUsers)
   const [totalUserCount, setTotalUserCount] = useState(totalCount ?? initialUsers.length)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [refreshError, setRefreshError] = useState<string | null>(null)
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [deactivateUser, setDeactivateUser] = useState<AdminUser | null>(null)
+  const [reactivateUser, setReactivateUser] = useState<AdminUser | null>(null)
+  const [isDeactivating, setIsDeactivating] = useState(false)
+  const [isReactivating, setIsReactivating] = useState(false)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   const refreshUsers = async () => {
     setIsRefreshing(true)
@@ -198,7 +247,7 @@ export function UsersPageClient({ initialUsers, totalCount }: UsersPageClientPro
   }
 
   const handleUserClick = (user: AdminUser) => {
-    if (user.status !== 'pending') {
+    if (user.status !== 'pending' && !user.banned) {
       setEditingUser(user)
       setIsDialogOpen(true)
     }
@@ -242,6 +291,73 @@ export function UsersPageClient({ initialUsers, totalCount }: UsersPageClientPro
     }
   }
 
+  const getDisplayName = (user: AdminUser) => {
+    if (user.firstName && user.lastName) {
+      return `${user.firstName} ${user.lastName}`
+    }
+    return user.firstName || user.lastName || 'this user'
+  }
+
+  const handleDeactivate = (user: AdminUser) => {
+    setDeactivateUser(user)
+  }
+
+  const handleReactivate = (user: AdminUser) => {
+    setReactivateUser(user)
+  }
+
+  const confirmDeactivate = async () => {
+    if (!deactivateUser) return
+
+    setIsDeactivating(true)
+    try {
+      const response = await fetch(`/api/admin/users/${deactivateUser.id}/deactivate`, {
+        method: 'POST',
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to deactivate user')
+      }
+
+      await refreshUsers()
+      setDeactivateUser(null)
+      setSuccessMessage(`${getDisplayName(deactivateUser)} has been deactivated`)
+    } catch (error) {
+      console.error('Failed to deactivate user:', error)
+      const message = error instanceof Error ? error.message : 'Failed to deactivate user'
+      setRefreshError(message)
+    } finally {
+      setIsDeactivating(false)
+    }
+  }
+
+  const confirmReactivate = async () => {
+    if (!reactivateUser) return
+
+    setIsReactivating(true)
+    try {
+      const response = await fetch(`/api/admin/users/${reactivateUser.id}/reactivate`, {
+        method: 'POST',
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to reactivate user')
+      }
+
+      await refreshUsers()
+      setReactivateUser(null)
+      setSuccessMessage(`${getDisplayName(reactivateUser)} has been reactivated`)
+    } catch (error) {
+      console.error('Failed to reactivate user:', error)
+      const message = error instanceof Error ? error.message : 'Failed to reactivate user'
+      setRefreshError(message)
+    } finally {
+      setIsReactivating(false)
+    }
+  }
+
   return (
     <div className="mx-auto max-w-6xl py-6 px-4">
       <div className="flex items-center justify-between mb-6">
@@ -251,22 +367,58 @@ export function UsersPageClient({ initialUsers, totalCount }: UsersPageClientPro
         </div>
         <AddUserDialog onUserAdded={handleUserAdded} />
       </div>
+      {successMessage && (
+        <div className="mb-4 rounded-xl border border-[#6EE7B7] bg-[#D1FAE5] p-4 text-sm text-[#059669]">
+          {successMessage}
+          <button
+            type="button"
+            onClick={() => setSuccessMessage(null)}
+            className="ml-2 font-medium hover:opacity-80"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
       {refreshError && (
         <div className="mb-4 rounded-xl border border-[#FCA5A5] bg-[#FEF2F2] p-4 text-sm text-[#DC2626]">
           <span className="font-medium">Error:</span> {refreshError}
+          <button
+            type="button"
+            onClick={() => setRefreshError(null)}
+            className="ml-2 font-medium hover:opacity-80"
+          >
+            Dismiss
+          </button>
         </div>
       )}
       <UserList 
         users={users} 
-        isLoading={isRefreshing} 
+        isLoading={isRefreshing}
+        currentUserId={currentUserId}
         onRoleChange={handleRoleChange}
         onUserClick={handleUserClick}
+        onDeactivate={handleDeactivate}
+        onReactivate={handleReactivate}
       />
       <EditRoleDialog
         user={editingUser}
         isOpen={isDialogOpen}
         onClose={handleDialogClose}
         onSave={handleRoleChange}
+      />
+      <DeactivateConfirmDialog
+        isOpen={deactivateUser !== null}
+        userName={deactivateUser ? getDisplayName(deactivateUser) : ''}
+        onConfirm={confirmDeactivate}
+        onCancel={() => setDeactivateUser(null)}
+        isLoading={isDeactivating}
+      />
+      <ReactivateConfirmDialog
+        isOpen={reactivateUser !== null}
+        userName={reactivateUser ? getDisplayName(reactivateUser) : ''}
+        onConfirm={confirmReactivate}
+        onCancel={() => setReactivateUser(null)}
+        isLoading={isReactivating}
       />
     </div>
   )

@@ -1,7 +1,8 @@
-import { auth, clerkClient } from '@clerk/nextjs/server'
+import { clerkClient } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { USER_ROLES, DEFAULT_REDIRECT_URL } from '@/lib/constants'
+import { verifyAdmin } from '@/lib/admin-auth'
 
 const createUserSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -11,25 +12,6 @@ const createUserSchema = z.object({
 
 function getAppUrl(): string {
   return process.env.NEXT_PUBLIC_APP_URL || DEFAULT_REDIRECT_URL
-}
-
-async function verifyAdmin() {
-  const { userId } = await auth()
-  if (!userId) {
-    return { authorized: false, error: 'Unauthorized', status: 401 }
-  }
-
-  const client = await clerkClient()
-  const user = await client.users.getUser(userId)
-  const roles = user.privateMetadata?.roles as string[] | undefined
-  const role = user.privateMetadata?.role as string | undefined
-
-  const isAdmin = (roles && roles.includes('admin')) || role === 'admin'
-  if (!isAdmin) {
-    return { authorized: false, error: 'Admin access required', status: 403 }
-  }
-
-  return { authorized: true }
 }
 
 const USERS_PAGE_SIZE = 100
@@ -64,7 +46,7 @@ export async function GET(request: Request) {
       lastName: user.lastName,
       privateMetadata: user.privateMetadata,
       banned: user.banned,
-      status: 'active' as const,
+      status: user.banned ? 'inactive' as const : 'active' as const,
       createdAt: user.createdAt,
     }))
 

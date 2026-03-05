@@ -26,7 +26,7 @@ export interface AdminUser {
     roles?: string[]
   }
   banned?: boolean
-  status: 'active' | 'pending'
+  status: 'active' | 'pending' | 'inactive'
   createdAt?: number
 }
 

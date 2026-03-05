@@ -1,7 +1,8 @@
-import { clerkClient } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import { UsersPageClient } from '@/components/admin/users-page-client'
 
 export default async function UsersPage() {
+  const { userId } = await auth()
   const client = await clerkClient()
   const [usersResponse, invitationsResponse] = await Promise.all([
     client.users.getUserList(),
@@ -15,7 +16,7 @@ export default async function UsersPage() {
     lastName: user.lastName,
     privateMetadata: user.privateMetadata,
     banned: user.banned,
-    status: 'active' as const,
+    status: user.banned ? 'inactive' as const : 'active' as const,
   createdAt: user.createdAt,
   }))
 
@@ -32,5 +33,5 @@ export default async function UsersPage() {
 
   const allUsers = [...users, ...pendingInvitations]
 
-  return <UsersPageClient initialUsers={allUsers} totalCount={usersResponse.totalCount + invitationsResponse.data.length} />
+  return <UsersPageClient initialUsers={allUsers} totalCount={usersResponse.totalCount + invitationsResponse.data.length} currentUserId={userId ?? ''} />
 }
