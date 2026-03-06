@@ -1,0 +1,39 @@
+name: dev-session-status
+description: 'Display current status of dev session including progress, plan version, and session state. Use when user says "check status" or "show session status" to see implementation progress'
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/dev-session-status"
+instructions: "{installed_path}/instructions.xml"
+
+# Workflow inputs
+story_key: "" # Derived from session.yaml path or explicit parameter
+dev_session_root: ".dev-session"
+session_file: "{dev_session_root}/{story_key}/session.yaml"
+plan_file: "{dev_session_root}/{story_key}/plan.md"
+context_handoff_file: "{dev_session_root}/{story_key}/context-handoff.md"
+progress_files_pattern: "{dev_session_root}/{story_key}/progress-*.md"
+verification_file: "{dev_session_root}/{story_key}/verification.md"
+story_file: "{implementation_artifacts}/{story_key}.md"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+
+# Workflow outputs
+status_display: "formatted"
+
+# Command line parameters
+parameters:
+  - name: story-key
+    type: string
+    required: false
+    description: Story key to show status for (e.g., "2-0-home-page-dashboard-layout"). If not provided, uses most recent dev session.
+  - name: format
+    type: string
+    required: false
+    description: Output format: "formatted" (default), "json", or "short"

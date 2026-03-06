@@ -1,0 +1,2 @@
+# This file ensures the .dev-session directory is tracked by git
+# Individual session folders will be gitignored

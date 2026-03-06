@@ -1,0 +1,34 @@
+name: dev-story-task
+description: 'Implement a single task from a story implementation plan. Reads session state, executes one task, and updates progress. Use when the user says "implement task N" or "dev task N"'
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/dev-story-task"
+instructions: "{installed_path}/instructions.xml"
+
+# Workflow inputs
+task_number: 0 # Task number to implement (1-indexed)
+story_key: "" # Derived from session.yaml path
+dev_session_root: ".dev-session"
+session_file: "{dev_session_root}/{story_key}/session.yaml"
+plan_file: "{dev_session_root}/{story_key}/plan.md"
+context_handoff_file: "{dev_session_root}/{story_key}/context-handoff.md"
+
+# Workflow outputs
+progress_file: "{dev_session_root}/{story_key}/progress-{task_number}.md"
+updated_session_file: "{dev_session_root}/{story_key}/session.yaml"
+updated_context_handoff_file: "{dev_session_root}/{story_key}/context-handoff.md"
+
+# Command line parameters
+parameters:
+  - name: task
+    type: integer
+    required: true
+    description: Task number to implement (1-indexed from plan.md)

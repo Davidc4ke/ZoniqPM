@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "_bmad-output/implementation-artifacts/ATOMIZED-WORKFLOW-ADDENDUM.md",
+                "file": "Notes and Improvements.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ATOMIZED-WORKFLOW-ADDENDUM"
+              "title": "Notes and Improvements"
             }
           }
         ]
@@ -185,19 +185,22 @@
   },
   "active": "0dbf00cf9393fb5e",
   "lastOpenFiles": [
+    "zoniq/src/components/features/dashboard/apps-widget.tsx.tmp.25720.1772775024703",
+    "zoniq/src/components/features/activity-feed/activity-feed.tsx",
+    "zoniq/src/components/features/activity-feed",
+    "zoniq/src/components/features/mini-kanban/mini-kanban.tsx",
+    "zoniq/src/components/features/mini-kanban",
+    "CLAUDE.md",
     "_bmad-output/implementation-artifacts/ATOMIZED-DEV-WORKFLOW-PLAN.md",
+    "zoniq/src/components/features/topbar/topbar.tsx",
+    "zoniq/src/components/features/topbar/profile-dropdown.tsx",
     "_bmad-output/implementation-artifacts/ATOMIZED-WORKFLOW-ADDENDUM.md",
+    "tools/story-dev-dashboard/node_modules/next/next-swc-fallback/@next/swc-win32-x64-msvc/README.md",
+    "tools/story-dev-dashboard/node_modules/next/next-swc-fallback/@next/swc-win32-x64-msvc/package.json",
+    "tools/story-dev-dashboard/node_modules/next/next-swc-fallback/@next/swc-win32-x64-msvc/next-swc.win32-x64-msvc.node",
+    "tools/story-dev-dashboard/node_modules/next/next-swc-fallback/@next/swc-win32-x64-msvc",
+    "tools/story-dev-dashboard/node_modules/next/next-swc-fallback/@next",
     "_bmad-output/implementation-artifacts/2-0-home-page-dashboard-layout.md",
-    "zoniq/src/components/features/dashboard/projects-widget.tsx",
-    "zoniq/src/components/features/dashboard/team-activity-widget.tsx.tmp.34088.1772692396295",
-    "zoniq/src/components/features/dashboard/team-activity-widget.tsx",
-    "zoniq/src/components/features/dashboard/mini-kanban.tsx",
-    "zoniq/src/components/features/dashboard/review-queue-widget.tsx",
-    "zoniq/src/components/features/dashboard/assigned-stories-widget.tsx",
-    "zoniq/src/components/features/dashboard/widget.tsx",
-    "zoniq/src/components/features/dashboard/story-card.tsx",
-    "zoniq/src/components/features/dashboard",
-    "zoniq/src/components/features/topbar/index.ts",
     "Notes and Improvements.md",
     "_bmad-output/implementation-artifacts/1-9-user-profile-view.md",
     "_bmad-output/implementation-artifacts/1-8-admin-user-management-deactivate-users.md",
@@ -209,7 +212,6 @@
     "_bmad-output/implementation-artifacts/1-3-implement-user-login.md",
     "_bmad-output/implementation-artifacts/1-4-implement-user-logout.md",
     "_bmad-output/implementation-artifacts/1-6-admin-user-management-create-users.md",
-    "CLAUDE.md",
     "zoniq/node_modules/webidl-conversions/README.md",
     "zoniq/node_modules/webidl-conversions/LICENSE.md",
     "zoniq/node_modules/whatwg-url/README.md",
@@ -219,8 +221,6 @@
     "zoniq/node_modules/xmlchars/README.md",
     "zoniq/node_modules/why-is-node-running/README.md",
     "_bmad/bmm/agents/qa.md",
-    "_bmad/bmm/agents/pm.md",
-    "_bmad/bmm/agents/dev.md",
     "zoniq/node_modules/date-fns/docs/logotype.svg",
     "zoniq/node_modules/date-fns/docs/logo.svg",
     "zoniq/public/window.svg",

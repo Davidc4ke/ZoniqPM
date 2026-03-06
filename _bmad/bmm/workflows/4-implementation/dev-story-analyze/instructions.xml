@@ -1,0 +1,259 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
+  <critical>Generate all documents in {document_output_language}</critical>
+  <critical>Execute ALL steps in exact order; do NOT skip steps</critical>
+  <critical>This is an ANALYSIS workflow only - NO code implementation</critical>
+
+  <step n="1" goal="Find and load the story" tag="story-discovery">
+    <check if="{{story_file}} is provided">
+      <action>Use {{story_file}} directly as the story path</action>
+      <action>Read COMPLETE story file</action>
+      <action>Extract story_key from filename or metadata</action>
+      <goto anchor="story_loaded" />
+    </check>
+
+    <!-- Sprint-based story discovery -->
+    <check if="{{sprint_status}} file exists">
+      <critical>MUST read COMPLETE sprint-status.yaml file from start to end to preserve order</critical>
+      <action>Load the FULL file: {{sprint_status}}</action>
+      <action>Read ALL lines from beginning to end - do not skip any content</action>
+      <action>Parse the development_status section completely to understand story order</action>
+
+      <action>Find the FIRST story (by reading in order from top to bottom) where:
+        - Key matches pattern: number-number-name (e.g., "1-2-user-auth")
+        - NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
+        - Status value equals "ready-for-dev"
+      </action>
+
+      <check if="no ready-for-dev story found">
+        <output>📋 No ready-for-dev stories found in sprint-status.yaml
+
+          **What would you like to do?**
+          1. Specify a particular story file to analyze (provide full path)
+          2. Check {{sprint_status}} file to see current sprint status
+        </output>
+        <ask>Choose option [1] or [2], or specify story file path:</ask>
+
+        <check if="user chooses '1'">
+          <ask>Provide the story file path to analyze:</ask>
+          <action>Store user-provided story path as {{story_file}}</action>
+          <goto anchor="story_loaded" />
+        </check>
+
+        <check if="user chooses '2'">
+          <output>Loading {{sprint_status}} for detailed status review...</output>
+          <action>Display detailed sprint status analysis</action>
+          <action>HALT - User can review sprint status and provide story path</action>
+        </check>
+
+        <check if="user provides story file path">
+          <action>Store user-provided story path as {{story_file}}</action>
+          <goto anchor="story_loaded" />
+        </check>
+      </check>
+    </check>
+
+    <!-- Non-sprint story discovery -->
+    <check if="{{sprint_status}} file does NOT exist and {{story_file}} is NOT provided">
+      <output>⚠️ No sprint-status.yaml found and no explicit story file provided.
+
+        **Please specify the story file to analyze:**
+        Provide the full path to the story file (e.g., _bmad-output/implementation-artifacts/2-0-home-page-dashboard-layout.md)
+      </output>
+      <ask>Provide the story file path to analyze:</ask>
+      <action>Store user-provided story path as {{story_file}}</action>
+    </check>
+
+    <action>Store the found story_key (e.g., "2-0-home-page-dashboard-layout") for later use</action>
+    <anchor id="story_loaded" />
+    <action>Parse sections: Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Dev Agent Record, File List, Change Log, Status</action>
+    <action>Extract story metadata: title, description, story_key, current_status</action>
+    <action>Load comprehensive context from story file's Dev Notes section</action>
+    <output>✅ **Story Loaded: {{story_key}}**</output>
+  </step>
+
+  <step n="2" goal="Load project context">
+    <critical>Load all available context to inform task breakdown</critical>
+
+    <check if="{{project_context}} file exists">
+      <action>Load {project_context} for coding standards and project-wide patterns</action>
+      <output>✅ Project context loaded from {project_context}</output>
+    </check>
+    <check if="{{project_context}} file does NOT exist">
+      <output>ℹ️ No project-context.md found - will use story Dev Notes for guidance</output>
+    </check>
+
+    <action>Load comprehensive context from story file's Dev Notes section</action>
+    <action>Extract developer guidance: architecture requirements, previous learnings, technical specifications</action>
+    <action>Identify relevant design tokens (colors, spacing, typography) from Dev Notes</action>
+    <action>Extract any risks or edge cases mentioned in Dev Notes</action>
+  </step>
+
+  <step n="3" goal="Create dev session directory">
+    <action>Create directory: {{dev_session_root}}/{{story_key}}</action>
+    <action>Verify directory creation succeeded</action>
+    <check if="directory creation fails">
+      <action>HALT: "Cannot create dev session directory"</action>
+    </check>
+    <output>✅ Dev session directory created: .dev-session/{{story_key}}</output>
+  </step>
+
+  <step n="4" goal="Generate implementation plan">
+    <action>Analyze story Tasks/Subtasks section</action>
+    <action>Break down complex tasks into atomic implementation steps</action>
+    <action>Each task should be implementable in a single session (aim for &lt;10k tokens)</action>
+    <action>Identify task dependencies and order them appropriately</action>
+
+    <action>Create plan file: {{plan_file}}</action>
+    <critical>Write the following structure to {{plan_file}}:</critical>
+    <file path="{{plan_file}}">
+# Dev Session Plan: {{story_key}}
+
+## Story Summary
+{{story_title}}
+{{story_description}}
+
+## Acceptance Criteria
+{{list all acceptance criteria}}
+
+## Tasks to Implement
+{{For each task/subtask from story, create atomic implementation tasks}}
+- [ ] Task 1: {{description}}
+  - Files to create/modify: {{list}}
+  - Dependencies: {{list or "none"}}
+  - Estimated complexity: {{simple/medium/complex}}
+- [ ] Task 2: {{description}}
+  ...
+
+## Architecture Context
+{{relevant patterns from dev notes}}
+{{any architectural constraints}}
+
+## Design Tokens Needed
+{{colors, spacing, typography from story dev notes}}
+
+## Risks / Edge Cases
+{{from story dev notes}}
+
+## Implementation Order
+{{Rationale for task ordering based on dependencies}}
+
+---
+**Generated:** {{date}}
+**Story File:** {{story_file}}
+    </file>
+    <output>✅ Implementation plan created: {{plan_file}}</output>
+  </step>
+
+  <step n="5" goal="Generate initial context handoff">
+    <action>Create initial context handoff file: {{context_handoff_file}}</action>
+    <critical>Write the following structure to {{context_handoff_file}}:</critical>
+    <file path="{{context_handoff_file}}">
+# Context Handoff: {{story_key}}
+
+> Last updated: {{date}} | After: Analysis
+
+## 🏗️ Architecture Decisions
+
+### Patterns to Follow
+{{from story dev notes}}
+
+### Folder Structure Planned
+```
+src/
+├── components/
+├── app/
+└── lib/
+```
+{{Expand based on story requirements}}
+
+## 📦 Expected Exports
+_TBD after task implementation_
+
+## 🔗 Task Dependencies
+{{calculated from task analysis in plan.md}}
+
+## ⚠️ Constraints
+{{from story dev notes}}
+
+## 🎨 Design System References
+{{design tokens and patterns to use}}
+
+---
+**Status:** Initial (pre-implementation)
+**Next Step:** Run `dev-story-task --task=1` to begin implementation
+    </file>
+    <output>✅ Context handoff initialized: {{context_handoff_file}}</output>
+  </step>
+
+  <step n="6" goal="Create session state file">
+    <action>Create session state file: {{session_file}}</action>
+    <critical>Write the following structure to {{session_file}}:</critical>
+    <file path="{{session_file}}">
+story_key: {{story_key}}
+story_path: {{story_file}}
+story_title: {{story_title}}
+current_task: 0
+total_tasks: {{count of tasks from plan}}
+plan_version: 1
+replan_reason: ""
+replan_proposal: ""
+replan_history: []
+status: analyzed
+created: {{date}}
+last_updated: {{date}}
+allows_auto_replan: false
+    </file>
+    <output>✅ Session state created: {{session_file}}</output>
+  </step>
+
+  <step n="7" goal="Complete and provide next steps">
+    <action>Verify all output files were created:
+      - {{plan_file}}
+      - {{context_handoff_file}}
+      - {{session_file}}
+    </action>
+
+    <check if="any output file missing">
+      <action>HALT: "Failed to create all required output files"</action>
+    </check>
+
+    <output>
+🎯 **Analysis Complete for {{story_key}}**
+
+**Session Location:** .dev-session/{{story_key}}/
+
+**Generated Files:**
+- plan.md - Implementation task breakdown
+- context-handoff.md - Inter-session context (will evolve as tasks complete)
+- session.yaml - Session state tracking
+
+**Next Steps:**
+1. Review the plan.md to ensure task breakdown is appropriate
+2. Run `/bmad-bmm-dev-story-task --task=1` to begin implementing the first task
+3. Repeat dev-story-task for each task in the plan
+4. Run `/bmad-bmm-dev-story-verify` after all tasks complete
+5. Run `/bmad-bmm-dev-story-complete` to finalize the story
+
+**View Status:**
+Run `/bmad-bmm-dev-session-status` at any time to check progress
+    </output>
+
+    <action>Ask user if they want to review the plan before proceeding to task implementation</action>
+    <check if="user wants to review plan">
+      <action>Display {{plan_file}} contents for review</action>
+      <ask>Are you satisfied with this task breakdown? [y/n]</ask>
+      <check if="user not satisfied">
+        <output>To modify the plan, you can either:
+          1. Edit .dev-session/{{story_key}}/plan.md directly
+          2. Run this workflow again to regenerate
+
+          After editing, run `/bmad-bmm-dev-story-task --task=1` to proceed.
+        </output>
+      </check>
+    </check>
+  </step>
+
+</workflow>

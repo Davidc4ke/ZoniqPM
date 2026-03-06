@@ -1,0 +1,353 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
+  <critical>Generate all documents in {document_output_language}</critical>
+  <critical>Execute ALL steps in exact order; do NOT skip steps</critical>
+  <critical>This workflow adjusts the implementation plan - NO code implementation</critical>
+
+  <step n="1" goal="Load and validate dev session" tag="session-load">
+    <action>Determine story_key from parameter or auto-discover</action>
+
+    <check if="{{story_key}} is NOT provided">
+      <action>List all dev sessions in {{dev_session_root}}</action>
+      <check if="no dev sessions exist">
+        <output>❌ Error: No dev sessions found
+
+          No active dev sessions in {{dev_session_root}}.
+
+          Please create a dev session first by running:
+          `/bmad-bmm-dev-story-analyze --story-file=<path-to-story>`
+        </output>
+        <action>HALT: "No dev sessions available"</action>
+      </check>
+
+      <action>Use most recently modified dev session (by session.yaml last_updated)</action>
+      <output>Using most recent dev session: {{story_key}}</output>
+    </check>
+
+    <action>Load session file: {{session_file}}</action>
+    <check if="{{session_file}} does NOT exist">
+      <output>❌ Error: Session file not found
+
+        Session file expected at: {{session_file}}
+
+        Please run `/bmad-bmm-dev-story-analyze` to create a dev session.
+      </output>
+      <action>HALT: "Session file not found"</action>
+    </check>
+
+    <action>Parse session.yaml to extract:
+      - story_key
+      - story_path
+      - story_title
+      - current_task
+      - total_tasks
+      - status
+    </action>
+    <output>✅ **Session Loaded:** {{story_key}} ({{status}})</output>
+  </step>
+
+  <step n="2" goal="Check for replan reason" tag="reason-check">
+    <critical>Check if this is a replan trigger from dev-story-task or user invocation</critical>
+
+    <check if="{{replan_reason}} is NOT empty">
+      <output>
+🔄 **Replan Triggered**
+
+**Replan Reason:**
+{{replan_reason}}
+
+This replan was triggered by dev-story-task encountering an issue during implementation.
+      </output>
+    </check>
+
+    <check if="{{replan_reason}} is empty or NOT set">
+      <output>
+ℹ️ No replan reason found in session.yaml.
+
+        This could mean:
+        1. This is a manual replan invocation
+        2. Session was just created and no issues encountered yet
+
+        **Would you like to:**
+        1. Provide a replan reason manually
+        2. Cancel and review session state
+      </output>
+      <ask>Choose option [1] or [2]:</ask>
+
+      <check if="user chooses '1'">
+        <ask>Provide the reason for replanning:</ask>
+        <action>Store user-provided reason as {{replan_reason}}</action>
+      </check>
+      <check if="user chooses '2'">
+        <output>Cancelling. Please review session state.
+
+          Run `/bmad-bmm-dev-session-status` to see session details.
+        </output>
+        <action>HALT: "User cancelled"</action>
+      </check>
+    </check>
+
+    <output>✅ **Replan reason identified:** {{replan_reason}}</output>
+  </step>
+
+  <step n="3" goal="Read plan and context" tag="plan-load">
+    <action>Load plan file: {{plan_file}}</action>
+    <check if="{{plan_file}} does NOT exist">
+      <output>❌ Error: Implementation plan not found
+
+        Plan file expected at: {{plan_file}}
+      </output>
+      <action>HALT: "Plan file not found"</action>
+    </check>
+
+    <action>Parse plan.md to extract:
+      - Current task list
+      - Task dependencies
+      - Task complexity estimates
+      - Current plan version (if tracked)
+    </action>
+
+    <action>Load context handoff file: {{context_handoff_file}}</action>
+    <check if="{{context_handoff_file}} does NOT exist">
+      <output>⚠️ Warning: Context handoff file not found</output>
+    </check>
+
+    <output>✅ **Plan and context loaded**</output>
+  </step>
+
+  <step n="4" goal="Analyze replan impact" tag="analyze-impact">
+    <critical>Understand which tasks are affected by the replan</critical>
+
+    <action>Analyze replan reason to determine scope of changes:</action>
+
+    <check if="replan_reason indicates task too large">
+      <output>
+📊 **Impact Analysis: Task Too Large**
+
+**Current Task:** Task {{current_task}}
+**Issue:** Task is too large to implement in a single session
+
+**Proposed Solution:**
+- Split Task {{current_task}} into multiple smaller tasks
+- Redefine task boundaries for better granularity
+- Update dependencies accordingly
+
+**Affected Tasks:**
+- Task {{current_task}} (will be split/replaced)
+- Tasks {{current_task + 1}} through {{total_tasks}} (may need task number renumbering)
+      </output>
+    </check>
+
+    <check if="replan_reason indicates missing dependencies">
+      <output>
+📊 **Impact Analysis: Missing Dependencies**
+
+**Issue:** Some task dependencies were not accounted for in original plan
+
+**Proposed Solution:**
+- Add missing dependency tasks
+- Reorder tasks to ensure dependencies are met
+- Update task dependency graph
+
+**Affected Tasks:**
+- New dependency tasks (to be added)
+- Dependent tasks (to be renumbered)
+      </output>
+    </check>
+
+    <check if="replan_reason indicates architecture change needed">
+      <output>
+📊 **Impact Analysis: Architecture Change Needed**
+
+**Issue:** Current plan doesn't account for architectural requirements discovered during implementation
+
+**Proposed Solution:**
+- Add architecture setup tasks
+- Adjust existing tasks to use new patterns
+- Update folder structure in plan
+
+**Affected Tasks:**
+- New architecture tasks (to be added)
+- All subsequent tasks (to reference new architecture)
+      </output>
+    </check>
+
+    <check if="replan_reason is other general issue">
+      <output>
+📊 **Impact Analysis: General Plan Issue**
+
+**Issue:** {{replan_reason}}
+
+**Proposed Solution:**
+- Adjust affected tasks
+- Update dependencies
+- Reestimate complexity if needed
+
+**Affected Tasks:**
+- Tasks {{current_task}} through {{total_tasks}} (potentially affected)
+      </output>
+    </check>
+  </step>
+
+  <step n="5" goal="Create replan proposal" tag="create-proposal">
+    <critical>Generate a new plan with adjusted tasks</critical>
+
+    <action>Based on impact analysis, create replan proposal:</action>
+
+    <action>Generate adjusted task list:
+      - Keep completed tasks (1 through {{current_task - 1}}) as-is
+      - Adjust/implement/replan affected tasks starting from {{current_task}}
+      - Update task numbers accordingly
+      - Recalculate total task count
+    </action>
+
+    <action>Display proposed changes:</action>
+    <output>
+📝 **Replan Proposal**
+
+**Original Plan:**
+- Total tasks: {{total_tasks}}
+- Current task: {{current_task}}
+
+**Proposed Changes:**
+{{Show specific changes:
+- Which tasks are being modified
+- Which new tasks are being added
+- Which tasks are being renumbered
+- How dependencies are changing}}
+
+**New Plan Summary:**
+- Total tasks: {{new_total_tasks}}
+- Current task: {{current_task}} (unchanged)
+- Tasks affected: {{count}} tasks
+
+**Would you like to:**
+1. Accept this replan proposal
+2. Modify the proposal
+3. Cancel replan
+    </output>
+    <ask>Choose option [1], [2], or [3]:</ask>
+
+    <check if="user chooses '1'">
+      <output>Proceeding with replan...</output>
+    </check>
+    <check if="user chooses '2'">
+      <output>Please describe your modifications to the replan proposal:</output>
+      <ask>Provide your modifications:</ask>
+      <action>Update replan proposal based on user feedback</action>
+      <output>Updated proposal accepted.</output>
+    </check>
+    <check if="user chooses '3'">
+      <output>Cancelling replan.
+
+        The session remains in its current state.
+        You may:
+        - Run `/bmad-bmm-dev-story-replan` again later
+        - Continue with current plan (may encounter same issue)
+      </output>
+      <action>HALT: "User cancelled replan"</action>
+    </check>
+  </step>
+
+  <step n="6" goal="Update plan file" tag="update-plan">
+    <action>Create backup of original plan file: {{plan_file}}.backup</action>
+
+    <action>Update {{plan_file}} with new task list:
+      - Keep Tasks 1 through {{current_task - 1}} unchanged
+      - Replace/update Tasks {{current_task}} and beyond
+      - Update total task count
+      - Update implementation order rationale
+    </action>
+
+    <action>Increment plan_version (add 1 to current or set to 1 if not set)</action>
+
+    <output>✅ **Plan updated** - Version {{plan_version}}</output>
+  </step>
+
+  <step n="7" goal="Update session with plan history" tag="update-session">
+    <action>Create or update plan history file: {{plan_history_file}}</action>
+    <file path="{{plan_history_file}}">
+# Plan History: {{story_key}}
+
+## Version {{plan_version}}
+**Date:** {{date}}
+**Replan Reason:** {{replan_reason}}
+**Triggered by:** {{dev-story-task or user}}
+**Implemented by:** {{user_name}}
+
+## Changes Made
+{{Summary of changes made to the plan}}
+
+### Tasks Modified
+{{List of tasks that were modified}}
+
+### Tasks Added
+{{List of new tasks added (if any)}}
+
+### Tasks Removed
+{{List of tasks removed (if any)}}
+
+### Dependency Changes
+{{Any changes to task dependencies}}
+
+## Next Steps
+- Continue with Task {{current_task}}
+- Note: Plan has been updated, verify task details before proceeding
+
+---
+
+## Previous Versions
+{{If this is not the first replan, preserve previous versions here}}
+    </file>
+
+    <action>Update {{session_file}}:
+      - plan_version: {{plan_version}}
+      - replan_reason: "" (clear after replan)
+      - replan_proposal: accepted (or modified if changed)
+      - last_updated: {{date}}
+      - allows_auto_replan: {{current_value}} (maintain or update as needed)
+    </action>
+
+    <output>✅ **Session updated** - Plan history recorded</output>
+  </step>
+
+  <step n="8" goal="Complete and provide next steps" tag="completion">
+    <action>Verify all actions completed:
+      - Plan file updated with new task list
+      - Plan history file created
+      - Session file updated with plan_version
+    </action>
+
+    <output>
+🔄 **Replan Complete!**
+
+**Story:** {{story_key}}
+**Plan Version:** {{plan_version}}
+**Updated:** {{date}}
+
+**Summary:**
+✅ Plan updated with {{count}} task modifications
+✅ Plan history recorded
+✅ Session updated to new plan version
+
+**Key Changes:**
+{{Summary of the most important changes made}}
+
+**Next Steps:**
+1. Review the updated plan at: {{plan_file}}
+2. Run `/bmad-bmm-dev-story-task --task={{current_task}}` to continue implementation
+3. If further issues arise, another replan can be triggered
+
+**View Status:**
+Run `/bmad-bmm-dev-session-status` to see session details
+    </output>
+
+    <action>Ask user if they want to view the updated plan</action>
+    <check if="user wants to view plan">
+      <action>Display {{plan_file}} contents</action>
+    </check>
+  </step>
+
+</workflow>

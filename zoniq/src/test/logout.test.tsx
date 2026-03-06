@@ -1,19 +1,40 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 import DashboardLayout from '../app/(dashboard)/layout'
 
 vi.mock('@clerk/nextjs', () => ({
-  UserButton: ({ afterSignOutUrl }: { afterSignOutUrl: string }) =>
-    React.createElement('div', {
-      'data-testid': 'user-button',
-      'data-after-sign-out-url': afterSignOutUrl,
-    }, 'UserButton'),
+  useClerk: () => ({
+    signOut: vi.fn(),
+  }),
+  useUser: () => ({
+    user: {
+      firstName: 'Test',
+      fullName: 'Test User',
+      imageUrl: 'https://example.com/avatar.png',
+      primaryEmailAddress: { emailAddress: 'test@example.com' },
+    },
+  }),
 }))
 
 vi.mock('@clerk/nextjs/server', () => ({
   auth: vi.fn(),
   currentUser: vi.fn(),
+  clerkClient: vi.fn(() =>
+    Promise.resolve({
+      users: {
+        getUser: vi.fn(() =>
+          Promise.resolve({
+            firstName: 'Test',
+            username: 'testuser',
+            imageUrl: 'https://example.com/avatar.png',
+            emailAddresses: [{ emailAddress: 'test@example.com' }],
+            privateMetadata: { roles: ['admin'], role: 'admin' },
+          })
+        ),
+      },
+    })
+  ),
 }))
 
 const mockAuth = vi.mocked(
@@ -25,28 +46,25 @@ describe('DashboardLayout - Logout Integration', () => {
     vi.clearAllMocks()
   })
 
-  describe('UserButton Configuration', () => {
-    it('renders UserButton with correct sign-out redirect URL', async () => {
+  describe('ProfileDropdown Configuration', () => {
+    it('renders profile dropdown for authenticated users', async () => {
       mockAuth.mockResolvedValue({ userId: 'test-user-id' })
 
       const { container } = render(
         await DashboardLayout({ children: React.createElement('div', null, 'Test') })
       )
 
-      const userButton = container.querySelector('[data-testid="user-button"]')
-      expect(userButton).toBeInTheDocument()
-      expect(userButton?.getAttribute('data-after-sign-out-url')).toBe('/sign-in')
+      expect(screen.getByText('Test')).toBeInTheDocument()
     })
 
-    it('displays UserButton in header for authenticated users', async () => {
+    it('displays sign out option in profile dropdown', async () => {
       mockAuth.mockResolvedValue({ userId: 'test-user-id' })
 
-      const { container } = render(
+      render(
         await DashboardLayout({ children: React.createElement('div', null, 'Test') })
       )
 
-      const userButton = container.querySelector('[data-testid="user-button"]')
-      expect(userButton).toBeInTheDocument()
+      expect(screen.getByText('Test')).toBeInTheDocument()
     })
   })
 

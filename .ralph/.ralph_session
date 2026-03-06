@@ -1,7 +1,7 @@
 {
   "session_id": "",
   "created_at": "",
-  "last_used": "2026-03-02T03:49:40+00:00",
-  "reset_at": "2026-03-02T03:49:40+00:00",
-  "reset_reason": "manual_reset_flag"
+  "last_used": "",
+  "reset_at": "2026-03-05T13:11:42+00:00",
+  "reset_reason": "permission_denied"
 }

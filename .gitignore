@@ -30,3 +30,6 @@ npm-debug.log*
 .mendix-cache/
 deployment/
 	releases/
+
+# Dev sessions (atomized workflow)
+.dev-session/*/

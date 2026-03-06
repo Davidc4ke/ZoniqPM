@@ -1,0 +1,354 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
+  <critical>Generate all documents in {document_output_language}</critical>
+  <critical>Execute ALL steps in exact order; do NOT skip steps</critical>
+  <critical>This workflow finalizes story implementation - NO code implementation</critical>
+
+  <step n="1" goal="Load and validate dev session" tag="session-load">
+    <action>Determine story_key from parameter or auto-discover</action>
+
+    <check if="{{story_key}} is NOT provided">
+      <action>List all dev sessions in {{dev_session_root}}</action>
+      <check if="no dev sessions exist">
+        <output>❌ Error: No dev sessions found
+
+          No active dev sessions in {{dev_session_root}}.
+
+          Please create a dev session first by running:
+          `/bmad-bmm-dev-story-analyze --story-file=<path-to-story>`
+        </output>
+        <action>HALT: "No dev sessions available"</action>
+      </check>
+
+      <action>Use most recently modified dev session (by session.yaml last_updated)</action>
+      <output>Using most recent dev session: {{story_key}}</output>
+    </check>
+
+    <action>Load session file: {{session_file}}</action>
+    <check if="{{session_file}} does NOT exist">
+      <output>❌ Error: Session file not found
+
+        Session file expected at: {{session_file}}
+
+        Please run `/bmad-bmm-dev-story-analyze` to create a dev session.
+      </output>
+      <action>HALT: "Session file not found"</action>
+    </check>
+
+    <action>Parse session.yaml to extract:
+      - story_key
+      - story_path
+      - story_title
+      - current_task
+      - total_tasks
+      - status
+    </action>
+
+    <check if="{{status}} is NOT 'in-progress' and {{status}} is NOT 'analyzed'">
+      <output>⚠️ Warning: Session status is "{{status}}"
+
+        Expected status: "in-progress" or "analyzed"
+
+        **Would you like to:**
+        1. Continue anyway (may re-complete already completed story)
+        2. Cancel and verify session status
+      </output>
+      <ask>Choose option [1] or [2]:</ask>
+
+      <check if="user chooses '1'">
+        <output>Proceeding with completion...</output>
+      </check>
+      <check if="user chooses '2'">
+        <output>Cancelling. Please verify session status.
+
+          Run `/bmad-bmm-dev-session-status` to see session details.
+        </output>
+        <action>HALT: "User cancelled"</action>
+      </check>
+    </check>
+
+    <output>✅ **Session Loaded:** {{story_key}} ({{status}})</output>
+  </step>
+
+  <step n="2" goal="Read all session files" tag="session-read">
+    <action>Load plan file: {{plan_file}}</action>
+    <check if="{{plan_file}} does NOT exist">
+      <output>❌ Error: Implementation plan not found
+
+        Plan file expected at: {{plan_file}}
+      </output>
+      <action>HALT: "Plan file not found"</action>
+    </check>
+
+    <action>Load context handoff file: {{context_handoff_file}}</action>
+    <check if="{{context_handoff_file}} does NOT exist">
+      <output>⚠️ Warning: Context handoff file not found at {{context_handoff_file}}
+      </output>
+    </check>
+
+    <action>Read all progress files matching pattern: {{progress_files_pattern}}</action>
+    <action>List all found progress files (progress-1.md, progress-2.md, etc.)</action>
+    <action>Calculate how many tasks have been completed (count of progress files)</action>
+
+    <action>Load verification file: {{verification_file}}</action>
+    <check if="{{verification_file}} exists">
+      <action>Extract verification results (test, lint, build status)</action>
+    </check>
+    <check if="{{verification_file}} does NOT exist">
+      <output>⚠️ Warning: No verification file found
+
+        Verification should be run before completion.
+
+        **Would you like to:**
+        1. Continue without verification (not recommended)
+        2. Cancel and run verification first
+      </output>
+      <ask>Choose option [1] or [2]:</ask>
+
+      <check if="user chooses '1'">
+        <output>⚠️ Continuing without verification (not recommended)</output>
+      </check>
+      <check if="user chooses '2'">
+        <output>Cancelling. Please run verification first.
+
+          Use `/bmad-bmm-dev-story-verify` to verify the implementation.
+        </output>
+        <action>HALT: "User cancelled"</action>
+      </check>
+    </check>
+
+    <output>✅ **Session files loaded:** {{completed_count}} task(s) completed</output>
+  </step>
+
+  <step n="3" goal="Load original story file" tag="story-load">
+    <action>Load story file: {{story_file}}</action>
+    <check if="{{story_file}} does NOT exist">
+      <output>❌ Error: Original story file not found
+
+        Story expected at: {{story_file}}
+      </output>
+      <action>HALT: "Story file not found"</action>
+    </check>
+
+    <action>Parse story file sections:
+      - Story
+      - Acceptance Criteria
+      - Tasks / Subtasks
+      - File List
+      - Status
+      - Dev Notes
+    </action>
+    <output>✅ **Story file loaded:** {{story_title}}</output>
+  </step>
+
+  <step n="4" goal="Update story file" tag="story-update">
+    <critical>Update the story file to mark all tasks as done and update file list</critical>
+
+    <action>Aggregate all files created/modified from all progress files</action>
+    <action>Build comprehensive file list with descriptions</action>
+
+    <action>Update story file: {{story_file}}</action>
+    <critical>Make these updates to {{story_file}}:</critical>
+
+    <action>Update Status section:</action>
+    <file_update file="{{story_file}}" section="Status">
+Status: done
+    </file_update>
+
+    <action>Update Tasks / Subtasks section - mark all completed:</action>
+    <file_update file="{{story_file}}" section="Tasks / Subtasks">
+- [x] Task 1: {{task 1 description}}
+  - [x] {{subtasks from progress-1.md}}
+- [x] Task 2: {{task 2 description}}
+  - [x] {{subtasks from progress-2.md}}
+... (all tasks marked as complete)
+    </file_update>
+
+    <action>Update File List section with all created/modified files:</action>
+    <file_update file="{{story_file}}" section="File List">
+## File List
+{{aggregate from all progress files - include file paths and brief descriptions}}
+
+### Created Files
+{{list of files created during implementation}}
+
+### Modified Files
+{{list of files modified during implementation}}
+
+### Deleted Files
+{{list of files deleted during implementation (if any)}}
+
+---
+**Last Updated:** {{date}}
+**Completed by:** {{user_name}}
+    </file_update>
+
+    <output>✅ **Story file updated**</output>
+  </step>
+
+  <step n="5" goal="Load and update sprint status" tag="sprint-update">
+    <action>Load sprint status file: {{sprint_status_file}}</action>
+    <check if="{{sprint_status_file}} does NOT exist">
+      <output>⚠️ Warning: Sprint status file not found
+
+        Sprint status expected at: {{sprint_status_file}}
+
+        Story file will be marked as done, but sprint status will not be updated.
+
+        **Would you like to:**
+        1. Continue without sprint status update
+        2. Cancel and create sprint status file first
+      </output>
+      <ask>Choose option [1] or [2]:</ask>
+
+      <check if="user chooses '1'">
+        <output>Continuing without sprint status update...</output>
+        <goto anchor="skip_sprint_update" />
+      </check>
+      <check if="user chooses '2'">
+        <output>Cancelling. Please create sprint status file first.
+
+          Use `/bmad-bmm-sprint-planning` to create sprint status.
+        </output>
+        <action>HALT: "User cancelled"</action>
+      </check>
+    </check>
+
+    <action>Parse sprint-status.yaml to find story {{story_key}}</action>
+    <check if="story {{story_key}} is NOT found in sprint-status.yaml">
+      <output>⚠️ Warning: Story {{story_key}} not found in sprint-status.yaml
+
+        Story file will be marked as done, but sprint status will not be updated.
+
+        **Would you like to:**
+        1. Continue without sprint status update
+        2. Cancel and verify sprint status
+      </output>
+      <ask>Choose option [1] or [2]:</ask>
+
+      <check if="user chooses '1'">
+        <output>Continuing without sprint status update...</output>
+        <goto anchor="skip_sprint_update" />
+      </check>
+      <check if="user chooses '2'">
+        <output>Cancelling. Please verify sprint status.
+
+          Use `/bmad-bmm-sprint-status` to view current sprint status.
+        </output>
+        <action>HALT: "User cancelled"</action>
+      </check>
+    </check>
+
+    <action>Update story status in sprint-status.yaml:</action>
+    <file_update file="{{sprint_status_file}}" section="development_status">
+{{story_key}}:
+  status: done
+  completed_date: {{date}}
+  completed_by: {{user_name}}
+    </file_update>
+
+    <output>✅ **Sprint status updated**</output>
+    <anchor id="skip_sprint_update" />
+  </step>
+
+  <step n="6" goal="Archive dev session" tag="session-archive">
+    <critical>Archive the dev session to preserve work history</critical>
+
+    <action>Create archive directory: {{archived_session_path}}</action>
+    <check if="archive directory creation fails">
+      <output>❌ Error: Cannot create archive directory</output>
+      <action>HALT: "Cannot create archive directory"</action>
+    </check>
+
+    <action>Move all session files to archive:
+      - {{session_file}}
+      - {{plan_file}}
+      - {{context_handoff_file}}
+      - All {{progress_files_pattern}}
+      - {{verification_file}} (if exists)
+    </action>
+
+    <action>Create archive summary file: {{archived_session_path}}/archive-summary.md</action>
+    <file path="{{archived_session_path}}/archive-summary.md">
+# Dev Session Archive: {{story_key}}
+
+**Story:** {{story_title}}
+**Archived:** {{date}}
+**Archived by:** {{user_name}}
+
+## Session Summary
+- Total Tasks: {{total_tasks}}
+- Completed Tasks: {{completed_count}}
+- Verification Status: {{verification_status from verification file}}
+
+## Files Created/Modified
+{{aggregate from all progress files}}
+
+## Archive Contents
+- session.yaml - Session state tracking
+- plan.md - Implementation task breakdown
+- context-handoff.md - Inter-session context
+- progress-*.md - Task progress reports
+- verification.md - Quality gate results
+
+---
+**Original Story File:** {{story_file}}
+**Sprint Status:** Updated to "done"
+    </file>
+
+    <action>Delete original session directory: {{dev_session_root}}/{{story_key}}</action>
+
+    <output>✅ **Dev session archived** to {{archived_session_path}}</output>
+  </step>
+
+  <step n="7" goal="Complete and provide summary" tag="completion">
+    <action>Verify all actions completed:
+      - Story file updated (status=done, tasks marked complete, file list updated)
+      - Sprint status updated (if applicable)
+      - Dev session archived
+    </action>
+
+    <check if="any required action failed">
+      <output>❌ Error: Completion process encountered errors
+
+        Some actions did not complete successfully.
+
+        Review the output above and manually fix any issues.
+      </output>
+      <action>HALT: "Completion process incomplete"</action>
+    </check>
+
+    <output>
+🎉 **STORY COMPLETED!**
+
+    Story {{story_key}} has been successfully completed and finalized.
+
+    **Summary:**
+    ✅ Story file updated to "done"
+    ✅ All tasks marked as complete
+    ✅ File list updated with {{file_count}} files
+    ✅ Sprint status updated (if applicable)
+    ✅ Dev session archived to {{archived_session_path}}
+
+    **Story File:** {{story_file}}
+    **Archive Location:** {{archived_session_path}}
+
+    **Next Steps:**
+    1. Review the completed story file for accuracy
+    2. Verify sprint status reflects the completion
+    3. Begin next story in the sprint plan
+
+    **View Status:**
+    Run `/bmad-bmm-sprint-status` to see updated sprint status
+    Run `/bmad-bmm-dev-session-status` to verify session archived
+    </output>
+
+    <action>Ask user if they want to view the updated story file</action>
+    <check if="user wants to view story file">
+      <action>Display {{story_file}} contents (or summary)</action>
+    </check>
+  </step>
+
+</workflow>

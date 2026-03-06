@@ -1,0 +1,32 @@
+name: dev-story-verify
+description: 'Verify story implementation by running tests, linting, and build checks. Ensures all tasks pass quality gates before completion. Use when the user says "verify this story" or "run verification" after implementing all tasks'
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/dev-story-verify"
+instructions: "{installed_path}/instructions.xml"
+
+# Workflow inputs
+story_key: "" # Derived from session.yaml path or explicit parameter
+dev_session_root: ".dev-session"
+session_file: "{dev_session_root}/{story_key}/session.yaml"
+plan_file: "{dev_session_root}/{story_key}/plan.md"
+context_handoff_file: "{dev_session_root}/{story_key}/context-handoff.md"
+progress_files_pattern: "{dev_session_root}/{story_key}/progress-*.md"
+
+# Workflow outputs
+verification_file: "{dev_session_root}/{story_key}/verification.md"
+
+# Command line parameters
+parameters:
+  - name: story-key
+    type: string
+    required: false
+    description: Story key to verify (e.g., "2-0-home-page-dashboard-layout"). If not provided, uses the most recent dev session.

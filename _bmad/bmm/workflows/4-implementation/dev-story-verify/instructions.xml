@@ -1,0 +1,374 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
+  <critical>Generate all documents in {document_output_language}</critical>
+  <critical>Execute ALL steps in exact order; do NOT skip steps</critical>
+  <critical>This workflow runs quality checks - NO code implementation</critical>
+
+  <step n="1" goal="Load and validate dev session" tag="session-load">
+    <action>Determine story_key from parameter or auto-discover</action>
+
+    <check if="{{story_key}} is NOT provided">
+      <action>List all dev sessions in {{dev_session_root}}</action>
+      <check if="no dev sessions exist">
+        <output>❌ Error: No dev sessions found
+
+          No active dev sessions in {{dev_session_root}}.
+
+          Please create a dev session first by running:
+          `/bmad-bmm-dev-story-analyze --story-file=<path-to-story>`
+        </output>
+        <action>HALT: "No dev sessions available"</action>
+      </check>
+
+      <action>Use the most recently modified dev session (by session.yaml last_updated)</action>
+      <output>Using most recent dev session: {{story_key}}</output>
+    </check>
+
+    <action>Load session file: {{session_file}}</action>
+    <check if="{{session_file}} does NOT exist">
+      <output>❌ Error: Session file not found
+
+        Session file expected at: {{session_file}}
+
+        Please run `/bmad-bmm-dev-story-analyze` to create a dev session.
+      </output>
+      <action>HALT: "Session file not found"</action>
+    </check>
+
+    <action>Parse session.yaml to extract:
+      - story_key
+      - story_path
+      - story_title
+      - current_task
+      - total_tasks
+      - status
+    </action>
+    <output>✅ **Session Loaded:** {{story_key}} ({{status}})</output>
+  </step>
+
+  <step n="2" goal="Read all progress files" tag="progress-read">
+    <action>Load plan file: {{plan_file}}</action>
+    <check if="{{plan_file}} does NOT exist">
+      <output>❌ Error: Implementation plan not found
+
+        Plan file expected at: {{plan_file}}
+      </output>
+      <action>HALT: "Plan file not found"</action>
+    </check>
+
+    <action>Read all progress files matching pattern: {{progress_files_pattern}}</action>
+    <action>List all found progress files (progress-1.md, progress-2.md, etc.)</action>
+    <action>Calculate how many tasks have been completed (count of progress files)</action>
+
+    <check if="no progress files found">
+      <output>⚠️ Warning: No progress files found
+
+        No task implementations have been completed yet.
+
+        **Would you like to:**
+        1. Continue anyway (verifies codebase state)
+        2. Cancel and implement tasks first
+      </output>
+      <ask>Choose option [1] or [2]:</ask>
+
+      <check if="user chooses '1'">
+        <output>Proceeding with verification anyway...</output>
+      </check>
+      <check if="user chooses '2'">
+        <output>Cancelling. Please implement tasks first.
+
+          Use `/bmad-bmm-dev-story-task --task=N` to implement tasks.
+        </output>
+        <action>HALT: "No progress files, user cancelled"</action>
+      </check>
+    </check>
+
+    <check if="completed tasks &lt; total_tasks">
+      <output>⚠️ Warning: Not all tasks completed
+
+        Completed tasks: {{completed_count}} / {{total_tasks}}
+
+        Verification will only check implemented code.
+        Consider implementing remaining tasks before full verification.
+      </output>
+    </check>
+
+    <output>✅ **Progress files loaded:** {{completed_count}} task(s) completed</output>
+  </step>
+
+  <step n="3" goal="Load story and context" tag="context-load">
+    <action>Load story file: {{story_path}}</action>
+    <check if="{{story_path}} does NOT exist">
+      <output>❌ Error: Original story file not found
+
+        Story expected at: {{story_path}}
+      </output>
+      <action>HALT: "Story file not found"</action>
+    </check>
+
+    <action>Extract story context:
+      - Acceptance Criteria
+      - Dev Notes
+      - File List (expected files)
+    </action>
+
+    <action>Load context handoff file: {{context_handoff_file}}</action>
+    <check if="{{context_handoff_file}} exists">
+      <action>Extract architecture decisions and exports</action>
+    </check>
+
+    <output>✅ **Story and context loaded**</output>
+  </step>
+
+  <step n="4" goal="Run tests" tag="test-check">
+    <output>🧪 Running test suite...</output>
+
+    <action>Run: npm run test (in zoniq/ directory)</action>
+    <action>Capture test output</action>
+
+    <check if="tests fail">
+      <output>
+❌ **TESTS FAILED**
+
+        {{test error output}}
+
+        **Test failures must be fixed before proceeding to completion.**
+
+        **Would you like to:**
+        1. View detailed test failure output
+        2. Cancel and fix tests
+        3. Continue verification anyway (not recommended)
+      </output>
+      <ask>Choose option [1], [2], or [3]:</ask>
+
+      <check if="user chooses '1'">
+        <action>Display detailed test failure information</action>
+        <ask>Continue? [y/n]</ask>
+        <check if="user chooses 'n'">
+          <action>HALT: "Test failures, user cancelled"</action>
+        </check>
+      </check>
+      <check if="user chooses '2'">
+        <output>Cancelling. Please fix test failures.
+
+          Use `/bmad-bmm-dev-story-task --task=N` to fix issues.
+        </output>
+        <action>HALT: "Test failures"</action>
+      </check>
+      <check if="user chooses '3'">
+        <output>⚠️ Continuing despite test failures (not recommended)</output>
+      </check>
+    </check>
+
+    <output>✅ **Tests passed**</output>
+  </step>
+
+  <step n="5" goal="Run lint check" tag="lint-check">
+    <output>🔍 Running lint check...</output>
+
+    <action>Run: npm run lint (in zoniq/ directory)</action>
+    <action>Capture lint output</action>
+
+    <check if="lint fails">
+      <output>
+❌ **LINT FAILED**
+
+        {{lint error output}}
+
+        **Lint errors must be fixed before proceeding to completion.**
+
+        **Would you like to:**
+        1. Fix lint errors automatically
+        2. Cancel and fix lint errors manually
+        3. Continue verification anyway (not recommended)
+      </output>
+      <ask>Choose option [1], [2], or [3]:</ask>
+
+      <check if="user chooses '1'">
+        <action>Attempt to fix lint errors automatically</action>
+        <action>Re-run: npm run lint</action>
+        <check if="lint still fails">
+          <output>⚠️ Some lint errors remain. Manual fix required.</output>
+          <ask>Continue anyway? [y/n]</ask>
+          <check if="user chooses 'n'">
+            <action>HALT: "Lint errors not resolved"</action>
+          </check>
+        </check>
+      </check>
+      <check if="user chooses '2'">
+        <output>Cancelling. Please fix lint errors.
+
+          Run `npm run lint` to see specific errors.
+        </output>
+        <action>HALT: "Lint errors"</action>
+      </check>
+      <check if="user chooses '3'">
+        <output>⚠️ Continuing despite lint errors (not recommended)</output>
+      </check>
+    </check>
+
+    <output>✅ **Lint check passed**</output>
+  </step>
+
+  <step n="6" goal="Run build check" tag="build-check">
+    <output>🏗️ Running build check...</output>
+
+    <action>Run: npm run build (in zoniq/ directory)</action>
+    <action>Capture build output</action>
+
+    <check if="build fails">
+      <output>
+❌ **BUILD FAILED**
+
+        {{build error output}}
+
+        **Build errors must be fixed before proceeding to completion.**
+
+        **Would you like to:**
+        1. View detailed build error output
+        2. Cancel and fix build errors
+        3. Continue verification anyway (not recommended)
+      </output>
+      <ask>Choose option [1], [2], or [3]:</ask>
+
+      <check if="user chooses '1'">
+        <action>Display detailed build failure information</action>
+        <ask>Continue? [y/n]</ask>
+        <check if="user chooses 'n'">
+          <action>HALT: "Build errors, user cancelled"</action>
+        </check>
+      </check>
+      <check if="user chooses '2'">
+        <output>Cancelling. Please fix build errors.
+
+          Review build output for TypeScript errors, missing files, etc.
+        </output>
+        <action>HALT: "Build errors"</action>
+      </check>
+      <check if="user chooses '3'">
+        <output>⚠️ Continuing despite build errors (not recommended)</output>
+      </check>
+    </check>
+
+    <output>✅ **Build check passed**</output>
+  </step>
+
+  <step n="7" goal="Generate verification report" tag="verification-report">
+    <critical>Document all verification results</critical>
+
+    <action>Create verification file: {{verification_file}}</action>
+    <file path="{{verification_file}}">
+# Verification Report: {{story_key}}
+
+**Story:** {{story_title}}
+**Verified:** {{date}}
+**Session Status:** {{status}}
+
+## Test Results
+**Status:** {{test_status}}
+{{test_output_summary}}
+
+## Lint Results
+**Status:** {{lint_status}}
+{{lint_output_summary}}
+
+## Build Results
+**Status:** {{build_status}}
+{{build_output_summary}}
+
+## Progress Summary
+**Completed Tasks:** {{completed_count}} / {{total_tasks}}
+**Progress Files:** {{list of progress files}}
+
+## Acceptance Criteria Status
+{{Map each acceptance criteria to completed tasks}}
+{{Show which ACs are addressed by implemented tasks}}
+
+## File Verification
+**Expected Files (from story):** {{list from story}}
+**Created/Modified Files:** {{aggregate from progress files}}
+**Missing Files:** {{list of expected but not created files}}
+
+## Overall Assessment
+{{Summarize verification status:
+- If all checks pass: "✅ VERIFICATION PASSED - Ready for completion"
+- If any checks fail: "⚠️ VERIFICATION WARNINGS - Review before completion"
+- If critical checks fail: "❌ VERIFICATION FAILED - Fix before completion"
+}}
+
+## Issues Found
+{{List any issues discovered during verification:
+- Test failures
+- Lint errors
+- Build errors
+- Missing files
+- Incomplete acceptance criteria
+}}
+
+## Recommendations
+{{Provide specific recommendations for fixing any issues found}}
+
+---
+**Next Steps:**
+- If verification passed: Run `/bmad-bmm-dev-story-complete` to finalize the story
+- If verification failed: Fix issues and re-run `/bmad-bmm-dev-story-verify`
+    </file>
+    <output>✅ **Verification report created:** {{verification_file}}</output>
+  </step>
+
+  <step n="8" goal="Complete and provide next steps" tag="completion">
+    <check if="all quality checks passed (test, lint, build)">
+      <output>
+🎉 **VERIFICATION PASSED!**
+
+        Story {{story_key}} has passed all quality gates.
+
+        **Summary:**
+        ✅ Tests passed
+        ✅ Lint passed
+        ✅ Build passed
+        ✅ {{completed_count}} / {{total_tasks}} tasks completed
+
+        **Generated Files:**
+        - {{verification_file}} - Detailed verification report
+
+        **Next Steps:**
+        1. Review the verification report for any findings
+        2. Run `/bmad-bmm-dev-story-complete` to finalize the story and update sprint status
+
+        **View Status:**
+        Run `/bmad-bmm-dev-session-status` to see session details
+      </output>
+    </check>
+
+    <check if="not all quality checks passed">
+      <output>
+⚠️ **VERIFICATION WITH WARNINGS**
+
+        Story {{story_key}} has quality issues that need attention.
+
+        **Summary:**
+        {{Summary of which checks failed}}
+
+        **Generated Files:**
+        - {{verification_file}} - Detailed verification report with issues
+
+        **Next Steps:**
+        1. Review the verification report for specific issues
+        2. Fix the identified issues
+        3. Re-run `/bmad-bmm-dev-story-verify` to confirm fixes
+
+        **To fix issues:**
+        Use `/bmad-bmm-dev-story-task --task=N` to implement or fix specific tasks.
+      </output>
+    </check>
+
+    <action>Ask user if they want to view the verification report</action>
+    <check if="user wants to view report">
+      <action>Display {{verification_file}} contents</action>
+    </check>
+  </step>
+
+</workflow>

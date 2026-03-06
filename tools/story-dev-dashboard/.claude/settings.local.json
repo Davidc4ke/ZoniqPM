@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(npx next build:*)",
+      "Bash(node:*)",
+      "Bash(npm install:*)",
+      "Bash(1)",
+      "Bash(npm run dev:*)",
+      "Read(//c/Users/David/Mendix/BMAD Zoniq/**)",
+      "Bash(curl:*)",
+      "Bash(taskkill:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

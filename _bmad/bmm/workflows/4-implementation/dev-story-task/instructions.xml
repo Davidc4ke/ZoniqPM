@@ -1,0 +1,576 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
+  <critical>Generate all documents in {document_output_language}</critical>
+  <critical>Execute ALL steps in exact order; do NOT skip steps</critical>
+  <critical>This workflow implements a SINGLE task only - do not implement multiple tasks</critical>
+
+  <step n="1" goal="Load session state" tag="session-load">
+    <critical>Validate task_number parameter is provided and valid</critical>
+    <check if="{{task_number}} is NOT provided or {{task_number}} &lt; 1">
+      <output>❌ Error: --task=N parameter is required (N must be &gt;= 1)
+
+        Usage: /bmad-bmm-dev-story-task --task=N
+        Where N is the task number to implement (1-indexed)
+      </output>
+      <action>HALT: "Invalid task_number parameter"</action>
+    </check>
+
+    <action>Load session file: {{session_file}}</action>
+    <check if="{{session_file}} does NOT exist">
+      <output>❌ Error: No active dev session found
+
+        Session file expected at: {{session_file}}
+
+        Please run `/bmad-bmm-dev-story-analyze` first to create a dev session.
+      </output>
+      <action>HALT: "No active dev session"</action>
+    </check>
+
+    <action>Parse session.yaml to extract:
+      - story_key
+      - story_path
+      - story_title
+      - current_task
+      - total_tasks
+      - status
+    </action>
+    <output>✅ **Session Loaded:** {{story_key}} ({{status}})</output>
+  </step>
+
+  <step n="2" goal="Validate task number and load plan" tag="plan-load">
+    <action>Load plan file: {{plan_file}}</action>
+    <check if="{{plan_file}} does NOT exist">
+      <output>❌ Error: Implementation plan not found
+
+        Plan file expected at: {{plan_file}}
+
+        Please run `/bmad-bmm-dev-story-analyze` to create a dev session and plan.
+      </output>
+      <action>HALT: "No implementation plan"</action>
+    </check>
+
+    <action>Parse plan.md to extract the task list</action>
+    <action>Count total tasks in plan.md</action>
+
+    <check if="{{task_number}} &gt; total_tasks">
+      <output>❌ Error: Task number {{task_number}} exceeds total tasks in plan
+
+        Plan contains {{total_tasks}} tasks.
+        Valid task numbers: 1 to {{total_tasks}}
+      </output>
+      <action>HALT: "Task number out of range"</action>
+    </check>
+
+    <check if="{{task_number}} &lt;= {{current_task}}">
+      <output>⚠️ Warning: Task {{task_number}} appears to already be completed
+
+        Current task in session: {{current_task}}
+        Requested task: {{task_number}}
+
+        **Would you like to:**
+        1. Proceed anyway (re-implement task {{task_number}})
+        2. Choose a different task number
+        3. Cancel
+      </output>
+      <ask>Choose option [1], [2], or [3]:</ask>
+
+      <check if="user chooses '1'">
+        <output>Proceeding with task {{task_number}} implementation...</output>
+      </check>
+      <check if="user chooses '2'">
+        <ask>Enter task number to implement:</ask>
+        <action>Store new {{task_number}}</action>
+        <goto anchor="plan_load" />
+      </check>
+      <check if="user chooses '3'">
+        <action>HALT: "User cancelled"</action>
+      </check>
+    </check>
+
+    <action>Extract details for task {{task_number}} from plan.md:
+      - Task description
+      - Files to create/modify
+      - Dependencies
+      - Estimated complexity
+    </action>
+    <output>✅ **Task {{task_number}} Loaded:** {{task_description}}</output>
+  </step>
+
+  <step n="3" goal="Load context handoff at session start" tag="context-load">
+    <critical>Load context-handoff.md at session start to get exports from previous tasks</critical>
+
+    <action>Load context handoff file: {{context_handoff_file}}</action>
+    <check if="{{context_handoff_file}} does NOT exist">
+      <output>⚠️ Warning: Context handoff file not found at {{context_handoff_file}}
+
+        New sessions (task=1) may not have a context handoff yet.
+        Proceeding without previous task context.
+
+        This is normal for the first task implementation.
+      </output>
+    </check>
+    <check if="{{context_handoff_file}} exists">
+      <action>Extract context from context-handoff.md:
+        - Architecture decisions made
+        - Patterns to follow
+        - Exports from previous tasks (Task {{task_number - 1}} exports)
+        - Constraints and risks
+        - Design system references
+      </action>
+      <output>✅ **Context handoff loaded at session start** - Using {{count}} previous exports</output>
+    </check>
+  </step>
+
+  <step n="4" goal="Load original story context" tag="story-load">
+    <action>Load story file: {{story_path}}</action>
+    <check if="{{story_path}} does NOT exist">
+      <output>❌ Error: Original story file not found
+
+        Story expected at: {{story_path}}
+      </output>
+      <action>HALT: "Story file not found"</action>
+    </check>
+
+    <action>Extract story context:
+      - Acceptance Criteria
+      - Dev Notes
+      - Architecture requirements
+      - File List
+    </action>
+    <output>✅ **Story context loaded:** {{story_title}}</output>
+  </step>
+
+  <step n="5" goal="Verify task dependencies" tag="dependency-check">
+    <check if="task has dependencies that are not yet completed">
+      <output>⚠️ Warning: Task {{task_number}} has dependencies that may not be complete
+
+        **Dependencies:**
+        {{list of dependencies from plan.md}}
+
+        **Recommended:**
+        Ensure dependent tasks are implemented before this task.
+
+        **Would you like to:**
+        1. Proceed anyway (at your own risk)
+        2. Cancel and implement dependencies first
+      </output>
+      <ask>Choose option [1] or [2]:</ask>
+
+      <check if="user chooses '1'">
+        <output>Proceeding with task {{task_number}} implementation...</output>
+      </check>
+      <check if="user chooses '2'">
+        <output>Cancelling. Please implement dependent tasks first.
+
+          To view task dependencies, check: {{plan_file}}
+        </output>
+        <action>HALT: "Dependencies not met"</action>
+      </check>
+    </check>
+  </step>
+
+  <step n="6" goal="Implement the task" tag="task-implementation">
+    <critical>This is the CORE implementation step - implement ONLY task {{task_number}}</critical>
+    <critical>Do NOT implement any other tasks from the plan</critical>
+    <critical>Detect plan issues during implementation and trigger replan if needed</critical>
+
+    <action>Read task {{task_number}} details from plan.md</action>
+    <action>Review files to create/modify list</action>
+    <action>Check for existing files that need modification</action>
+
+    <output>
+🚀 **Starting Task {{task_number}} Implementation**
+
+**Task:** {{task_description}}
+**Complexity:** {{complexity}}
+**Files to create/modify:** {{file list}}
+
+**Context from previous tasks:**
+{{summary of exports from context-handoff.md}}
+    </output>
+
+    <action>Implement the task following this approach:
+      1. Create new files as specified
+      2. Modify existing files as needed
+      3. Follow patterns from context-handoff.md
+      4. Adhere to design tokens and architecture constraints
+      5. Ensure all acceptance criteria related to this task are met
+    </action>
+
+    <critical>Monitor for plan issues during implementation. If any of these occur, trigger replan:</critical>
+    <check if="implementation encounters ANY of these plan issues:
+      - Task is too large to complete in a single session (approaches token limit)
+      - Missing dependencies discovered during implementation
+      - Architectural constraints not accounted for in plan
+      - Technical blockers that require task breakdown
+      - Task complexity was underestimated
+      - Requirements discovered that aren't covered by current plan">
+      <output>⚠️ **Plan Issue Detected**
+
+        The task cannot be completed as planned due to a plan issue.
+
+        **Detected Issue:** {{describe the specific plan issue}}
+        **Issue Type:**
+        {{Choose from: Task Too Large, Missing Dependencies, Architecture Change Needed, Complexity Underestimated, Other}}
+
+        **Why Plan Is Insufficient:**
+        {{Explain why the current plan doesn't account for this issue}}
+
+        **Suggested Adjustments:**
+        {{Provide specific suggestions for how the plan should be adjusted}}
+
+        **Options:**
+        1. Write replan_reason to session.yaml and halt (triggers dev-story-replan workflow)
+        2. Attempt workarounds within current session (not recommended for plan issues)
+      </output>
+      <ask>Choose option [1] or [2]:</ask>
+
+      <check if="user chooses '1'">
+        <action>Write replan_reason and related fields to {{session_file}}:
+          - replan_reason: {{Issue Type: {{specific issue description}}}
+          - replan_proposal: "triggered"
+          - Note: plan_version and replan_history remain unchanged (updated by replan workflow)
+        </action>
+        <output>
+❌ **HALTING - Replan Triggered**
+
+        replan_reason written to {{session_file}}.
+        Run `/bmad-bmm-dev-story-replan` to create an adjusted plan.
+
+        This allows the plan to be fixed before continuing implementation.
+
+        **Session State:**
+        - current_task: {{task_number}} (unchanged - will proceed after replan)
+        - replan_reason: Set (triggers replan detection)
+        - replan_proposal: "triggered"
+        </output>
+        <action>HALT: "Plan issue detected - Replan required"</action>
+      </check>
+      <check if="user chooses '2'">
+        <output>⚠️ Attempting workarounds (not recommended for plan issues)</output>
+        <output>Note: Workarounds may not resolve fundamental plan issues.</output>
+      </check>
+    </check>
+
+    <output>✅ **Task {{task_number}} implementation complete**</output>
+  </step>
+
+  <step n="7" goal="Run lint check" tag="lint-check">
+    <action>Run: npm run lint (in zoniq/ directory)</action>
+
+    <check if="lint fails">
+      <output>⚠️ Lint errors detected:
+
+        {{lint error output}}
+
+        **Lint errors must be fixed before proceeding.**
+
+        **Would you like to:**
+        1. Fix lint errors automatically
+        2. Fix lint errors manually
+        3. Cancel and review
+      </output>
+      <ask>Choose option [1], [2], or [3]:</ask>
+
+      <check if="user chooses '1'">
+        <action>Fix lint errors automatically</action>
+        <action>Re-run: npm run lint</action>
+        <check if="lint still fails">
+          <output>⚠️ Some lint errors remain. Please fix manually or cancel.</output>
+          <ask>Continue to next step? [y/n]</ask>
+          <check if="user chooses 'n'">
+            <action>HALT: "Lint errors not resolved"</action>
+          </check>
+        </check>
+      </check>
+      <check if="user chooses '2'">
+        <action>Pause for manual lint fix</action>
+        <ask>Press Enter when lint errors are fixed:</ask>
+        <action>Run: npm run lint</action>
+        <check if="lint fails">
+          <output>❌ Lint still fails. Please fix all lint errors.</output>
+          <action>HALT: "Lint errors not resolved"</action>
+        </check>
+      </check>
+      <check if="user chooses '3'">
+        <action>HALT: "User cancelled at lint check"</action>
+      </check>
+    </check>
+
+    <output>✅ **Lint check passed**</output>
+  </step>
+
+  <step n="8" goal="Generate progress report with validation" tag="progress-report">
+    <critical>Validate implementation before writing progress report</critical>
+    
+    <action>Collect implementation data:
+      - List all files created during this task
+      - List all files modified during this task
+      - List all files deleted during this task
+      - Extract exports (components, hooks, utilities) created
+      - Note any issues or blockers encountered
+    </action>
+    
+    <action>Validate required files exist:
+      - Check each file in "Files to create/modify" from plan.md
+      - For planned files that don't exist, note in "Issues Encountered"
+      - Verify file paths are correct (relative to project root)
+    </action>
+    
+    <action>Validate lint status from step 7:
+      - If lint failed and was fixed, document in "Issues Encountered"
+      - If lint passed, note in "Implementation Notes"
+    </action>
+    
+    <action>Create progress file: {{progress_file}}</action>
+    <critical>Write the following structure to {{progress_file}}:</critical>
+    <file path="{{progress_file}}">
+# Task {{task_number}} Progress Report
+
+**Story:** {{story_key}}
+**Completed:** {{date}}
+
+## Task Description
+{{task_description}}
+
+## Implementation Details
+
+### Files Created
+{{list of files created with full relative paths}}
+
+### Files Modified
+{{list of files modified with brief change descriptions}}
+
+### Files Deleted
+{{list of files deleted (if any)}}
+
+### Validation Results
+- ✅ All planned files created: {{yes/no}}
+- ✅ Lint check passed: {{yes/no}}
+- ✅ Files validated: {{count}} files
+
+## Implementation Notes
+{{any important notes about the implementation}}
+
+## Issues Encountered
+{{any issues encountered and how they were resolved}}
+{{any planned files that were not created}}
+
+## Next Steps
+{{suggestions for next task}}
+
+## Exports for Context Handoff
+{{list of exports (new components, utilities, patterns, etc.) for use by subsequent tasks}}
+Format:
+- **ComponentName** (`path/to/file.tsx`)
+  - Brief description
+  - Props/signature if applicable
+
+---
+
+**Status:** ✅ Complete
+**Next Task:** {{task_number + 1}}
+    </file>
+    
+    <action>Verify progress file was created successfully</action>
+    <output>✅ **Progress report created and validated:** {{progress_file}}
+
+      **Validation Summary:**
+      - Files created: {{files_created_count}}
+      - Files modified: {{files_modified_count}}
+      - Exports documented: {{exports_count}}
+      - Issues: {{issues_count}}
+    </output>
+  </step>
+
+  <step n="9" goal="Update context handoff with auto-discovered exports" tag="context-update">
+    <critical>Automatically discover and merge exports into context-handoff.md</critical>
+
+    <action>Read current {{context_handoff_file}}</action>
+    <action>Read {{progress_file}} to get manually documented exports</action>
+    
+    <action>Auto-discover exports from files created in this task:
+      - For each file in files_created list:
+        - Scan file for export statements (export default, export const, export function)
+        - Extract React components (files with JSX return, functions starting with uppercase)
+        - Extract custom hooks (functions starting with 'use')
+        - Extract utility functions (export const/function)
+        - Extract TypeScript interfaces/types (export interface/type)
+      - Build structured exports list with:
+        - Export name
+        - File path
+        - Type (component/hook/utility/type)
+        - Brief description (from JSDoc or inference)
+    </action>
+    
+    <action>Compare auto-discovered exports with manually documented exports:
+      - If discrepancy found, prefer auto-discovered but flag in output
+      - Note any exports that were documented but not found in code
+    </action>
+
+    <action>Add new exports to "🔄 Exports Registry" section:
+      ### Task {{task_number}} Exports
+      
+      **Components:**
+      {{For each component discovered:
+      - **ComponentName** (`path/to/file.tsx`)
+        - Brief description
+        - Props: {{extracted props interface}}
+      }}
+      
+      **Hooks:**
+      {{For each hook discovered:
+      - **useHookName** (`path/to/file.ts`)
+        - Signature: {{function signature}}
+        - Description: {{brief desc}}
+      }}
+      
+      **Utilities:**
+      {{For each utility discovered:
+      - **utilityName** (`path/to/file.ts`)
+        - Signature: {{function signature}}
+      }}
+      
+      **Types:**
+      ```typescript
+      {{For each type/interface discovered:
+      // Extracted from file.ts
+      export interface TypeName { ... }
+      }}
+      ```
+    </action>
+
+    <action>Update "### Patterns to Follow" section with new patterns:
+      - {{Any new architectural patterns from this task}}
+      - {{New code patterns established}}
+      - {{New testing patterns introduced}}
+      - {{Import patterns used}}
+    </action>
+    
+    <action>Update "### Folder Structure" section if new folders created</action>
+
+    <action>Update "📦 Expected Exports" section:
+      - Mark Task {{task_number}} exports as completed: [x]
+      - Keep future tasks unchecked: [ ]
+    </action>
+    
+    <action>Update header:
+      - Last updated: {{iso_timestamp}}
+      - After: Task {{task_number}}
+    </action>
+
+    <output>✅ **Context handoff updated with auto-discovered exports**
+
+      **Exports discovered:**
+      - Components: {{components_count}}
+      - Hooks: {{hooks_count}}
+      - Utilities: {{utilities_count}}
+      - Types: {{types_count}}
+      
+      {{if discrepancies:
+      ⚠️ **Discrepancies found:**
+      - Documented but not found: {{list}}
+      - Found but not documented: {{list}}
+      }}
+    </output>
+  </step>
+
+  <step n="10" goal="Update session state with enhanced tracking" tag="session-update">
+    <critical>Update session.yaml with comprehensive task completion tracking</critical>
+    
+    <action>Read current {{session_file}}</action>
+    
+    <action>Extract task completion data from {{progress_file}}:
+      - files_created: list of files created during task
+      - files_modified: list of files modified during task
+      - exports: list of exports/components/utilities created
+      - issues: any issues encountered
+    </action>
+    
+    <action>Update {{session_file}} with enhanced tracking:
+      - Add {{task_number}} to completed_tasks array
+      - Update task_status.{{task_number}}:
+          status: completed
+          completed_at: {{iso_timestamp}}
+          progress_file: {{progress_file}}
+          files_created: {{list from progress}}
+          files_modified: {{list from progress}}
+          exports: {{exports from progress}}
+          issues: {{issues from progress}}
+      - Set current_task to next incomplete task:
+          - Find first task N where task_status.N.status != "completed"
+          - If all tasks completed, set current_task = {{total_tasks}}
+          - Else set current_task = {{next_incomplete_task}}
+      - last_updated: {{iso_timestamp}}
+      - status: in-progress (or "ready-for-verify" if all tasks done)
+    </action>
+    
+    <action>Validate session state consistency:
+      - Verify {{progress_file}} exists
+      - Verify completed_tasks array length matches task_status entries with status="completed"
+      - Verify current_task points to incomplete task or total_tasks
+    </action>
+    
+    <output>✅ **Session state updated with enhanced tracking**
+    
+      **Updated fields:**
+      - completed_tasks: {{updated array}}
+      - task_status.{{task_number}}: marked completed
+      - current_task: {{next_task}}
+      - Files tracked: {{files_created_count}} created, {{files_modified_count}} modified
+      - Exports tracked: {{exports_count}} new exports
+    </output>
+  </step>
+
+  <step n="11" goal="Complete and provide next steps" tag="completion">
+    <action>Verify all outputs were created:
+      - {{progress_file}}
+      - Updated {{context_handoff_file}}
+      - Updated {{session_file}}
+    </action>
+
+    <check if="{{task_number}} == {{total_tasks}}">
+      <output>
+🎉 **ALL TASKS COMPLETE!**
+
+        Story {{story_key}} implementation is done.
+
+        **Next Steps:**
+        1. Run `/bmad-bmm-dev-story-verify` to run tests, lint, and build
+        2. After verification passes, run `/bmad-bmm-dev-story-complete` to finalize
+
+        **View Status:**
+        Run `/bmad-bmm-dev-session-status` to see session details
+      </output>
+    </check>
+    <check if="{{task_number}} &lt; {{total_tasks}}">
+      <output>
+✅ **Task {{task_number}} Complete!**
+
+        **Story:** {{story_key}}
+        **Progress:** {{task_number}} / {{total_tasks}} tasks complete
+
+        **Generated Files:**
+        - {{progress_file}} - Task progress report
+        - Updated context-handoff.md - Exports for next task
+
+        **Next Steps:**
+        1. Run `/bmad-bmm-dev-story-task --task={{task_number + 1}}` to implement next task
+        2. Or run `/bmad-bmm-dev-session-status` to see overall progress
+
+        **View Status:**
+        Run `/bmad-bmm-dev-session-status` at any time to check progress
+      </output>
+    </check>
+
+    <action>Ask user if they want to continue to the next task immediately</action>
+    <check if="user wants to continue and {{task_number}} &lt; {{total_tasks}}">
+      <output>Starting task {{task_number + 1}}...</output>
+      <action>Set {{task_number}} = {{task_number + 1}}</action>
+      <goto anchor="plan_load" />
+    </check>
+  </step>
+
+</workflow>

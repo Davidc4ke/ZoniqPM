@@ -2,6 +2,11 @@
 # Tasks at hand
 - Update sprintr yaml, to remove story 1.5
 - user profile view already handled by clerk no? So why story 1.9? Can you check if 1.9 is still needed or not? Am i missing something?
+- For the atomized workflow, 
+	- What would be the correct way to provide feedback?
+	- Can't start from dashboard
+	- Is it updating bmad files correctly?
+	- 
 
 # Zoniq app improvements
 - Have epics in the project management
