@@ -26,6 +26,10 @@
 
     <action>Check if {{sprint_status}} file exists for auto discover</action>
     <check if="sprint status file does NOT exist">
+      <check if="#autopilot">
+        <output>⚙️ Autopilot: No sprint status file found - HALT (run sprint-planning first)</output>
+        <action>HALT - Cannot auto-discover stories without sprint-status.yaml</action>
+      </check>
       <output>🚫 No sprint status file found and no story specified</output>
       <output>
         **Required Options:**

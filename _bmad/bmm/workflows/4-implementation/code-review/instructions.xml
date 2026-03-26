@@ -16,6 +16,10 @@
 
 
   <step n="1" goal="Load story and discover changes">
+    <check if="#autopilot AND {{story_path}} is empty">
+      <action>Auto-discover: Load {sprint_status} and find the FIRST story with status "review" to review</action>
+      <action>Set {{story_path}} from discovered story key in {implementation_artifacts}</action>
+    </check>
     <action>Use provided {{story_path}} or ask user which story file to review</action>
     <action>Read COMPLETE story file</action>
     <action>Set {{story_key}} = extracted key from filename (e.g., "1-2-user-authentication.md" → "1-2-user-authentication") or story
@@ -138,15 +142,20 @@
       - Git commit message quality
     </output>
 
-    <ask>What should I do with these issues?
+    <check if="NOT #autopilot">
+      <ask>What should I do with these issues?
 
-      1. **Fix them automatically** - I'll update the code and tests
-      2. **Create action items** - Add to story Tasks/Subtasks for later
-      3. **Show me details** - Deep dive into specific issues
+        1. **Fix them automatically** - I'll update the code and tests
+        2. **Create action items** - Add to story Tasks/Subtasks for later
+        3. **Show me details** - Deep dive into specific issues
 
-      Choose [1], [2], or specify which issue to examine:</ask>
+        Choose [1], [2], or specify which issue to examine:</ask>
+    </check>
+    <check if="#autopilot">
+      <action>Autopilot: Auto-selecting option 1 - Fix all issues automatically</action>
+    </check>
 
-    <check if="user chooses 1">
+    <check if="user chooses 1 OR #autopilot">
       <action>Fix all HIGH and MEDIUM issues in the code</action>
       <action>Add/update tests as needed</action>
       <action>Update File List in story if files changed</action>

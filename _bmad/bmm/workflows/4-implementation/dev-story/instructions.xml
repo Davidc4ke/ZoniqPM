@@ -34,6 +34,10 @@
       </action>
 
       <check if="no ready-for-dev or in-progress story found">
+        <check if="#autopilot">
+          <output>⚙️ Autopilot: No ready-for-dev stories found - HALT (create-story should run first in the pipeline)</output>
+          <action>HALT - No stories available for development in autopilot mode</action>
+        </check>
         <output>📋 No ready-for-dev stories found in sprint-status.yaml
 
           **Current Sprint Status:** {{sprint_status_summary}}
@@ -378,33 +382,38 @@
     <action>Summarize key accomplishments: story ID, story key, title, key changes made, tests added, files modified</action>
     <action>Provide the story file path and current status (now "review")</action>
 
-    <action>Based on {user_skill_level}, ask if user needs any explanations about:
-      - What was implemented and how it works
-      - Why certain technical decisions were made
-      - How to test or verify the changes
-      - Any patterns, libraries, or approaches used
-      - Anything else they'd like clarified
-    </action>
+    <check if="NOT #autopilot">
+      <action>Based on {user_skill_level}, ask if user needs any explanations about:
+        - What was implemented and how it works
+        - Why certain technical decisions were made
+        - How to test or verify the changes
+        - Any patterns, libraries, or approaches used
+        - Anything else they'd like clarified
+      </action>
 
-    <check if="user asks for explanations">
-      <action>Provide clear, contextual explanations tailored to {user_skill_level}</action>
-      <action>Use examples and references to specific code when helpful</action>
+      <check if="user asks for explanations">
+        <action>Provide clear, contextual explanations tailored to {user_skill_level}</action>
+        <action>Use examples and references to specific code when helpful</action>
+      </check>
+
+      <action>Once explanations are complete (or user indicates no questions), suggest logical next steps</action>
+      <action>Recommended next steps (flexible based on project setup):
+        - Review the implemented story and test the changes
+        - Verify all acceptance criteria are met
+        - Ensure deployment readiness if applicable
+        - Run `code-review` workflow for peer review
+        - Optional: If Test Architect module installed, run `/bmad:tea:automate` to expand guardrail tests
+      </action>
+
+      <output>💡 **Tip:** For best results, run `code-review` using a **different** LLM than the one that implemented this story.</output>
+      <check if="{sprint_status} file exists">
+        <action>Suggest checking {sprint_status} to see project progress</action>
+      </check>
+      <action>Remain flexible - allow user to choose their own path or ask for other assistance</action>
     </check>
-
-    <action>Once explanations are complete (or user indicates no questions), suggest logical next steps</action>
-    <action>Recommended next steps (flexible based on project setup):
-      - Review the implemented story and test the changes
-      - Verify all acceptance criteria are met
-      - Ensure deployment readiness if applicable
-      - Run `code-review` workflow for peer review
-      - Optional: If Test Architect module installed, run `/bmad:tea:automate` to expand guardrail tests
-    </action>
-
-    <output>💡 **Tip:** For best results, run `code-review` using a **different** LLM than the one that implemented this story.</output>
-    <check if="{sprint_status} file exists">
-      <action>Suggest checking {sprint_status} to see project progress</action>
+    <check if="#autopilot">
+      <output>⚙️ Autopilot: Development complete. Proceeding to next pipeline stage.</output>
     </check>
-    <action>Remain flexible - allow user to choose their own path or ask for other assistance</action>
   </step>
 
 </workflow>

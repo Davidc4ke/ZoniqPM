@@ -47,7 +47,7 @@
       <iterate>For each step in instructions:</iterate>
 
       <substep n="2a" title="Handle Step Attributes">
-        <check>If optional="true" and NOT #yolo → Ask user to include</check>
+        <check>If optional="true" and NOT #yolo and NOT #autopilot → Ask user to include</check>
         <check>If if="condition" → Evaluate condition</check>
         <check>If for-each="item" → Repeat step for each item</check>
         <check>If repeat="n" → Repeat step n times</check>
@@ -72,27 +72,32 @@
           <mandate>Generate content for this section</mandate>
           <mandate>Save to file (Write first time, Edit subsequent)</mandate>
           <action>Display generated content</action>
-          <ask> [a] Advanced Elicitation, [c] Continue, [p] Party-Mode, [y] YOLO the rest of this document only. WAIT for response. <if
-              response="a">
-              <action>Start the advanced elicitation workflow {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml</action>
-            </if>
-            <if
-              response="c">
-              <action>Continue to next step</action>
-            </if>
-            <if response="p">
-              <action>Start the party-mode workflow {project-root}/_bmad/core/workflows/party-mode/workflow.md</action>
-            </if>
-            <if
-              response="y">
-              <action>Enter #yolo mode for the rest of the workflow</action>
-            </if>
-          </ask>
+          <check if="NOT #autopilot">
+            <ask> [a] Advanced Elicitation, [c] Continue, [p] Party-Mode, [y] YOLO the rest of this document only. WAIT for response. <if
+                response="a">
+                <action>Start the advanced elicitation workflow {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml</action>
+              </if>
+              <if
+                response="c">
+                <action>Continue to next step</action>
+              </if>
+              <if response="p">
+                <action>Start the party-mode workflow {project-root}/_bmad/core/workflows/party-mode/workflow.md</action>
+              </if>
+              <if
+                response="y">
+                <action>Enter #yolo mode for the rest of the workflow</action>
+              </if>
+            </ask>
+          </check>
+          <check if="#autopilot">
+            <action>Auto-continue to next step (autopilot mode)</action>
+          </check>
         </if>
       </substep>
 
       <substep n="2d" title="Step Completion">
-        <check>If no special tags and NOT #yolo:</check>
+        <check>If no special tags and NOT #yolo and NOT #autopilot:</check>
         <ask>Continue to next step? (y/n/edit)</ask>
       </substep>
     </step>
@@ -107,6 +112,11 @@
     <mode name="normal">Full user interaction and confirmation of EVERY step at EVERY template output - NO EXCEPTIONS except yolo MODE</mode>
     <mode name="yolo">Skip all confirmations and elicitation, minimize prompts and try to produce all of the workflow automatically by
       simulating the remaining discussions with an simulated expert user</mode>
+    <mode name="autopilot">Fully automated execution for scheduled/unattended runs. Like YOLO but ALSO auto-answers all ask tags using
+      sensible defaults: auto-discovers stories from sprint-status, auto-fixes review issues, never waits for human input. Any ask tag
+      with an autopilot-default attribute uses that default. Ask tags without defaults in error/halt scenarios still HALT gracefully
+      with a logged message instead of blocking. Template-output tags are processed without pause. This mode is activated by passing
+      autopilot=true to the workflow or when invoked from an orchestrator command with autopilot enabled.</mode>
   </execution-modes>
 
   <supported-tags desc="Instructions can use these tags">

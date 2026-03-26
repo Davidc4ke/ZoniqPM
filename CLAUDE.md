@@ -51,7 +51,17 @@ This project uses the BMAD Method. Key workflow phases:
 - `bmad-bmm-create-architecture` - Create architecture decisions
 - `bmad-bmm-sprint-planning` - Generate sprint plan
 - `bmad-bmm-dev-story` - Execute story implementation
+- `bmad-bmm-automate-workflow` - **Automated pipeline**: create story + develop + code review in one go (no human intervention, ideal for scheduled runs)
 - `bmad-bmm-quick-spec` / `bmad-bmm-quick-dev` - For small one-off tasks
+
+### Autopilot Mode
+The workflow engine supports an `autopilot` execution mode for fully unattended runs:
+- Activated automatically by `bmad-bmm-automate-workflow` or by passing `autopilot=true`
+- Skips all user confirmations and `<ask>` prompts
+- Auto-discovers stories from sprint-status.yaml
+- Auto-fixes code review findings
+- HALTs gracefully on error conditions (missing sprint-status, no backlog stories)
+- Ideal for Claude Code scheduled events
 
 ## Configuration
 
