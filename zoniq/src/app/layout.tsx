@@ -1,14 +1,7 @@
 import type { Metadata } from 'next'
-import { Manrope } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from 'sonner'
 import './globals.css'
-
-const manrope = Manrope({
-  variable: '--font-manrope',
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-})
 
 export const metadata: Metadata = {
   title: 'Zoniq',
@@ -22,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={manrope.variable}>
+      <html lang="en">
         <body className="font-sans antialiased">
           {children}
           <Toaster position="top-right" richColors />

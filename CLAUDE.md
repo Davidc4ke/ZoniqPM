@@ -53,6 +53,10 @@ This project uses the BMAD Method. Key workflow phases:
 - `bmad-bmm-dev-story` - Execute story implementation
 - `bmad-bmm-quick-spec` / `bmad-bmm-quick-dev` - For small one-off tasks
 
+## Workflow Preferences
+
+- After running `bmad-bmm-create-story`, always continue immediately with `bmad-bmm-dev-story` to implement it. Do not stop between create and dev.
+
 ## Configuration
 
 - Project name: `BMAD Zoniq`
