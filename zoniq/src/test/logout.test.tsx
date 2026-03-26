@@ -3,6 +3,12 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 import DashboardLayout from '../app/(dashboard)/layout'
 
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/dashboard',
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+  redirect: vi.fn(),
+}))
+
 vi.mock('@clerk/nextjs', () => ({
   useClerk: () => ({
     signOut: vi.fn(),
