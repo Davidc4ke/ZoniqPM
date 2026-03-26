@@ -17,6 +17,13 @@ vi.mock('@clerk/nextjs', () => ({
   }),
 }))
 
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/dashboard',
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+  redirect: vi.fn(),
+  useSearchParams: () => new URLSearchParams(),
+}))
+
 vi.mock('@clerk/nextjs/server', () => ({
   auth: vi.fn(),
   currentUser: vi.fn(),

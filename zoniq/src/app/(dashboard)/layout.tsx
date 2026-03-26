@@ -18,6 +18,7 @@ export default async function DashboardLayout({
   const roles = currentUser.privateMetadata?.roles as string[] | undefined
   const role = currentUser.privateMetadata?.role as string | undefined
   const isAdmin = (roles && roles.includes('admin')) || role === 'admin'
+  const isPM = (roles && roles.includes('pm')) || role === 'pm'
 
   const userName = currentUser.firstName || currentUser.username || undefined
   const userEmail = currentUser.emailAddresses?.[0]?.emailAddress
@@ -27,6 +28,7 @@ export default async function DashboardLayout({
     <div className="min-h-screen bg-[#FAFAF9]">
       <Topbar
         isAdmin={isAdmin}
+        isPM={isPM}
         userName={userName}
         userEmail={userEmail}
         userImageUrl={userImageUrl}
