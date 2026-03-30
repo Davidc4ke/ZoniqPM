@@ -57,7 +57,7 @@ development_status:
   2-0-1-universal-ai-input-field: done
   2-0-2-dashboard-widgets: done
   2-1-customer-crud-operations: done
-  2-2-app-crud-operations: backlog
+  2-2-app-crud-operations: done
   2-3-app-detail-overview-tab: backlog
   2-4-app-environments-management: backlog
   2-5-module-crud-operations: backlog

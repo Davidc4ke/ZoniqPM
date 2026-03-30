@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useCustomer } from '@/hooks/use-customers'
 import { EditCustomerDialog } from './edit-customer-dialog'
 import { DeleteCustomerDialog } from './delete-customer-dialog'
+import { AppList } from '@/components/features/app-list/app-list'
 import { format } from 'date-fns'
 
 interface CustomerDetailProps {
@@ -119,15 +120,9 @@ export function CustomerDetail({ customerId }: CustomerDetailProps) {
             </div>
           </div>
 
-          {customer.linkedAppsCount > 0 && (
-            <div className="mt-8">
-              <h3 className="mb-3 text-sm font-semibold text-[#2D1810]">Linked Apps</h3>
-              <p className="text-sm text-[#9A948D]">
-                {/* TODO: Replace with real app list when app data is available */}
-                App management will be available in a future update.
-              </p>
-            </div>
-          )}
+          <div className="mt-8">
+            <AppList customerId={customer.id} />
+          </div>
         </div>
       </div>
 

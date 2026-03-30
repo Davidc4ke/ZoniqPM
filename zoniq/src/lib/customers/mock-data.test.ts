@@ -7,9 +7,11 @@ import {
   deleteCustomer,
   resetCustomers,
 } from './mock-data'
+import { resetApps } from '@/lib/apps/mock-data'
 
 describe('Customer mock data', () => {
   beforeEach(() => {
+    resetApps()
     resetCustomers()
   })
 

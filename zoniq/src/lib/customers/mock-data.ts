@@ -1,10 +1,28 @@
 import type { Customer, CreateCustomerInput, UpdateCustomerInput } from '@/types/customer'
+import { getLinkedAppsCount } from '@/lib/apps/mock-data'
 
 // TODO: Replace with Drizzle ORM database queries when PostgreSQL is configured
 
 let nextId = 5
 
-const customers: Customer[] = [
+interface StoredCustomer {
+  id: string
+  name: string
+  description: string | null
+  organizationId: string
+  isDeleted: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+function toCustomer(c: StoredCustomer): Customer {
+  return {
+    ...c,
+    linkedAppsCount: getLinkedAppsCount(c.id),
+  }
+}
+
+const customers: StoredCustomer[] = [
   {
     id: '1',
     name: 'Acme Insurance',
@@ -13,7 +31,6 @@ const customers: Customer[] = [
     isDeleted: false,
     createdAt: '2026-01-15T10:00:00.000Z',
     updatedAt: '2026-01-15T10:00:00.000Z',
-    linkedAppsCount: 3,
   },
   {
     id: '2',
@@ -23,7 +40,6 @@ const customers: Customer[] = [
     isDeleted: false,
     createdAt: '2026-02-01T09:00:00.000Z',
     updatedAt: '2026-02-01T09:00:00.000Z',
-    linkedAppsCount: 2,
   },
   {
     id: '3',
@@ -33,7 +49,6 @@ const customers: Customer[] = [
     isDeleted: false,
     createdAt: '2026-02-20T14:30:00.000Z',
     updatedAt: '2026-02-20T14:30:00.000Z',
-    linkedAppsCount: 0,
   },
   {
     id: '4',
@@ -43,21 +58,21 @@ const customers: Customer[] = [
     isDeleted: false,
     createdAt: '2026-03-01T08:00:00.000Z',
     updatedAt: '2026-03-01T08:00:00.000Z',
-    linkedAppsCount: 0,
   },
 ]
 
 export function getCustomers(): Customer[] {
-  return customers.filter((c) => !c.isDeleted)
+  return customers.filter((c) => !c.isDeleted).map(toCustomer)
 }
 
 export function getCustomerById(id: string): Customer | undefined {
-  return customers.find((c) => c.id === id && !c.isDeleted)
+  const c = customers.find((c) => c.id === id && !c.isDeleted)
+  return c ? toCustomer(c) : undefined
 }
 
 export function createCustomer(input: CreateCustomerInput, organizationId: string): Customer {
   const now = new Date().toISOString()
-  const customer: Customer = {
+  const stored: StoredCustomer = {
     id: String(nextId++),
     name: input.name,
     description: input.description ?? null,
@@ -65,10 +80,9 @@ export function createCustomer(input: CreateCustomerInput, organizationId: strin
     isDeleted: false,
     createdAt: now,
     updatedAt: now,
-    linkedAppsCount: 0,
   }
-  customers.push(customer)
-  return customer
+  customers.push(stored)
+  return toCustomer(stored)
 }
 
 export function updateCustomer(id: string, input: UpdateCustomerInput): Customer | undefined {
@@ -79,7 +93,7 @@ export function updateCustomer(id: string, input: UpdateCustomerInput): Customer
   if (input.description !== undefined) customer.description = input.description ?? null
   customer.updatedAt = new Date().toISOString()
 
-  return customer
+  return toCustomer(customer)
 }
 
 export function deleteCustomer(id: string): { success: boolean; error?: string } {
@@ -87,7 +101,8 @@ export function deleteCustomer(id: string): { success: boolean; error?: string }
   if (!customer) {
     return { success: false, error: 'Customer not found' }
   }
-  if (customer.linkedAppsCount > 0) {
+  const appsCount = getLinkedAppsCount(customer.id)
+  if (appsCount > 0) {
     return { success: false, error: 'Cannot delete customer with linked apps. Remove all apps first.' }
   }
   customer.isDeleted = true
@@ -106,7 +121,6 @@ export function resetCustomers(): void {
       isDeleted: false,
       createdAt: '2026-01-15T10:00:00.000Z',
       updatedAt: '2026-01-15T10:00:00.000Z',
-      linkedAppsCount: 3,
     },
     {
       id: '2',
@@ -116,7 +130,6 @@ export function resetCustomers(): void {
       isDeleted: false,
       createdAt: '2026-02-01T09:00:00.000Z',
       updatedAt: '2026-02-01T09:00:00.000Z',
-      linkedAppsCount: 2,
     },
     {
       id: '3',
@@ -126,7 +139,6 @@ export function resetCustomers(): void {
       isDeleted: false,
       createdAt: '2026-02-20T14:30:00.000Z',
       updatedAt: '2026-02-20T14:30:00.000Z',
-      linkedAppsCount: 0,
     },
     {
       id: '4',
@@ -136,7 +148,6 @@ export function resetCustomers(): void {
       isDeleted: false,
       createdAt: '2026-03-01T08:00:00.000Z',
       updatedAt: '2026-03-01T08:00:00.000Z',
-      linkedAppsCount: 0,
     },
   )
   nextId = 5
