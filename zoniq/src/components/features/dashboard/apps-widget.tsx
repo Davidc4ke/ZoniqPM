@@ -1,78 +1,12 @@
+'use client'
+
+import Link from 'next/link'
 import { Widget } from './widget'
+import { WidgetSkeleton } from './widget-skeleton'
+import { useApps } from '@/hooks/use-dashboard'
+import type { EnvironmentStatus } from '@/types/dashboard'
 
-type StatusType = 'healthy' | 'warning' | 'error' | 'offline'
-
-interface Environment {
-  name: string
-  status: StatusType
-}
-
-interface App {
-  id: string
-  name: string
-  environments: Environment[]
-  warnings: number
-}
-
-const mockApps: App[] = [
-  {
-    id: '1',
-    name: 'Claims Portal',
-    environments: [
-      { name: 'Dev', status: 'healthy' },
-      { name: 'Test', status: 'healthy' },
-      { name: 'Acc', status: 'healthy' },
-      { name: 'Prod', status: 'healthy' },
-    ],
-    warnings: 0,
-  },
-  {
-    id: '2',
-    name: 'Invoicing',
-    environments: [
-      { name: 'Dev', status: 'healthy' },
-      { name: 'Test', status: 'warning' },
-      { name: 'Acc', status: 'healthy' },
-      { name: 'Prod', status: 'error' },
-    ],
-    warnings: 2,
-  },
-  {
-    id: '3',
-    name: 'Customer Portal',
-    environments: [
-      { name: 'Dev', status: 'healthy' },
-      { name: 'Test', status: 'healthy' },
-      { name: 'Acc', status: 'warning' },
-      { name: 'Prod', status: 'offline' },
-    ],
-    warnings: 0,
-  },
-  {
-    id: '4',
-    name: 'Reporting Service',
-    environments: [
-      { name: 'Dev', status: 'healthy' },
-      { name: 'Test', status: 'healthy' },
-      { name: 'Acc', status: 'healthy' },
-      { name: 'Prod', status: 'healthy' },
-    ],
-    warnings: 1,
-  },
-  {
-    id: '5',
-    name: 'Mobile Companion',
-    environments: [
-      { name: 'Dev', status: 'healthy' },
-      { name: 'Test', status: 'healthy' },
-      { name: 'Acc', status: 'healthy' },
-      { name: 'Prod', status: 'healthy' },
-    ],
-    warnings: 0,
-  },
-]
-
-const statusColors: Record<StatusType, string> = {
+const statusColors: Record<EnvironmentStatus, string> = {
   healthy: 'bg-[#10B981]',
   warning: 'bg-[#F59E0B]',
   error: 'bg-[#EF4444]',
@@ -80,6 +14,8 @@ const statusColors: Record<StatusType, string> = {
 }
 
 export function AppsWidget() {
+  const { data: apps, isLoading } = useApps()
+
   return (
     <Widget
       title="Apps"
@@ -90,39 +26,47 @@ export function AppsWidget() {
           <path d="M2 12l10 5 10-5" />
         </svg>
       }
-      count={5}
+      count={apps?.length}
       countColor="bg-[#DBEAFE] text-[#2563EB]"
     >
-      <div className="space-y-3">
-        {mockApps.map((app) => (
-          <div
-            key={app.id}
-            className="rounded-lg bg-[#DBEAFE] p-3 hover:bg-[#BFDBFE] transition-colors cursor-pointer"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-semibold text-[#2D1810]">{app.name}</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs">
-              {app.environments.map((env) => (
-                <div key={env.name} className="flex items-center gap-1.5">
-                  <div className={`h-2 w-2 rounded-full ${statusColors[env.status]}`} />
-                  <span className="text-[#9A948D]">{env.name}</span>
+      {isLoading ? (
+        <WidgetSkeleton rows={3} />
+      ) : (
+        <>
+          <div className="space-y-3">
+            {apps?.map((app) => (
+              <Link
+                key={app.id}
+                href={`/apps/${app.id}`}
+                aria-label={app.name}
+                className="block rounded-lg bg-[#DBEAFE] p-3 hover:bg-[#BFDBFE] transition-colors"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-[#2D1810]">{app.name}</span>
                 </div>
-              ))}
-            </div>
-            {app.warnings > 0 && (
-              <div className="mt-2 flex items-center gap-1.5">
-                <span className="text-[10px] font-medium text-[#EF4444]">
-                  {app.warnings} warning{app.warnings > 1 ? 's' : ''}
-                </span>
-              </div>
-            )}
+                <div className="flex items-center gap-2 text-xs">
+                  {app.environments.map((env) => (
+                    <div key={env.name} className="flex items-center gap-1.5">
+                      <div className={`h-2 w-2 rounded-full ${statusColors[env.status]}`} />
+                      <span className="text-[#9A948D]">{env.name}</span>
+                    </div>
+                  ))}
+                </div>
+                {app.warnings > 0 && (
+                  <div className="mt-2 flex items-center gap-1.5">
+                    <span className="text-[10px] font-medium text-[#EF4444]">
+                      {app.warnings} warning{app.warnings > 1 ? 's' : ''}
+                    </span>
+                  </div>
+                )}
+              </Link>
+            ))}
           </div>
-        ))}
-      </div>
-      <button className="mt-3 flex w-full items-center justify-center gap-1 text-xs text-[#9A948D] hover:text-[#2D1810] transition-colors">
-        View All Apps →
-      </button>
+          <button className="mt-3 flex w-full items-center justify-center gap-1 text-xs text-[#9A948D] hover:text-[#2D1810] transition-colors">
+            View All Apps →
+          </button>
+        </>
+      )}
     </Widget>
   )
 }

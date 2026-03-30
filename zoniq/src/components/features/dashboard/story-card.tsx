@@ -47,6 +47,7 @@ const statusLabels = {
 export function StoryCard({ story, onClick }: StoryCardProps) {
   return (
     <div
+      data-testid="story-card"
       onClick={onClick}
       className={cn(
         'rounded-lg border border-[#E8E4E0] bg-[#F5F2EF] p-3 transition-all hover:border-[#FF6B35] hover:shadow-sm',

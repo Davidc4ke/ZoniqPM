@@ -1,50 +1,13 @@
-import { Widget } from './widget'
-import { ActivityFeed, ActivityItem } from '@/components/features/activity-feed/activity-feed'
+'use client'
 
-const mockActivity: ActivityItem[] = [
-  {
-    id: '1',
-    user: { name: 'Aisha', initials: 'A', color: 'bg-[#10B981]' },
-    action: 'moved',
-    highlight: '#47',
-    suffix: 'to Review',
-    time: '2m ago',
-  },
-  {
-    id: '2',
-    user: { name: 'Marcus', initials: 'M', color: 'bg-[#F59E0B]' },
-    action: 'created',
-    highlight: '#62',
-    suffix: '',
-    time: '15m ago',
-  },
-  {
-    id: '3',
-    user: { name: 'Tom', initials: 'T', color: 'bg-[#8B5CF6]' },
-    action: 'completed',
-    highlight: '#44',
-    suffix: '',
-    time: '1h ago',
-  },
-  {
-    id: '4',
-    user: { name: 'Aisha', initials: 'A', color: 'bg-[#10B981]' },
-    action: 'generated Dev Plan for',
-    highlight: '#52',
-    suffix: '',
-    time: '2h ago',
-  },
-  {
-    id: '5',
-    user: { name: 'David', initials: 'D', color: 'bg-[#FF6B35]' },
-    action: 'approved',
-    highlight: '#40',
-    suffix: '',
-    time: '3h ago',
-  },
-]
+import { Widget } from './widget'
+import { WidgetSkeleton } from './widget-skeleton'
+import { ActivityFeed } from '@/components/features/activity-feed/activity-feed'
+import { useTeamActivity } from '@/hooks/use-dashboard'
 
 export function TeamActivityWidget() {
+  const { data: activities, isLoading } = useTeamActivity()
+
   return (
     <Widget
       title="Team Activity — Today"
@@ -57,7 +20,11 @@ export function TeamActivityWidget() {
         </svg>
       }
     >
-      <ActivityFeed activities={mockActivity} />
+      {isLoading ? (
+        <WidgetSkeleton rows={2} />
+      ) : activities ? (
+        <ActivityFeed activities={activities} />
+      ) : null}
     </Widget>
   )
 }
