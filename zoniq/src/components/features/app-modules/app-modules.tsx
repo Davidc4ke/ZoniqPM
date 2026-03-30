@@ -5,6 +5,7 @@ import { useModules } from '@/hooks/use-modules'
 import { ModuleCard } from './module-card'
 import { ModuleDialog } from './module-dialog'
 import { DeleteModuleDialog } from './delete-module-dialog'
+import { AppFeatures } from '../app-features/app-features'
 import type { Module } from '@/types/module'
 
 function ModulesSkeleton() {
@@ -26,6 +27,7 @@ export function AppModules({ appId }: AppModulesProps) {
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [editingModule, setEditingModule] = useState<Module | null>(null)
   const [deletingModule, setDeletingModule] = useState<Module | null>(null)
+  const [selectedModule, setSelectedModule] = useState<Module | null>(null)
 
   if (isLoading) return <ModulesSkeleton />
 
@@ -34,6 +36,17 @@ export function AppModules({ appId }: AppModulesProps) {
       <div className="rounded-xl border border-[#FCA5A5] bg-[#FEF2F2] p-4 text-sm text-[#DC2626]">
         {error?.message || 'Failed to load modules'}
       </div>
+    )
+  }
+
+  if (selectedModule) {
+    return (
+      <AppFeatures
+        appId={appId}
+        moduleId={selectedModule.id}
+        moduleName={selectedModule.name}
+        onBack={() => setSelectedModule(null)}
+      />
     )
   }
 
@@ -57,6 +70,7 @@ export function AppModules({ appId }: AppModulesProps) {
               module={mod}
               onEdit={(m) => setEditingModule(m)}
               onDelete={(m) => setDeletingModule(m)}
+              onClick={(m) => setSelectedModule(m)}
             />
           ))}
         </div>
