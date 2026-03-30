@@ -25,6 +25,12 @@ vi.mock('@/hooks/use-test-coverage', () => ({
   useFeatureTestItems: vi.fn(() => ({ data: [], isLoading: false, isError: false, error: null })),
 }))
 
+vi.mock('@/hooks/use-workflows', () => ({
+  useWorkflows: vi.fn(() => ({ data: [], isLoading: false, isError: false, error: null })),
+  useWorkflowDetail: vi.fn(() => ({ data: undefined, isLoading: false, isError: false, error: null })),
+  useNodeDetail: vi.fn(() => ({ data: undefined, isLoading: false, isError: false, error: null })),
+}))
+
 vi.mock('@/hooks/use-modules', () => ({
   useModules: vi.fn(() => ({ data: [], isLoading: false, isError: false, error: null })),
   useCreateModule: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
@@ -211,6 +217,13 @@ describe('AppDetail', () => {
     renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
     fireEvent.click(screen.getByText('Tests'))
     expect(screen.getByText(/No test coverage data/)).toBeInTheDocument()
+  })
+
+  it('renders workflows component when Workflows tab clicked', () => {
+    mockUseApp.mockReturnValue({ data: mockApp, isLoading: false, isError: false, error: null } as ReturnType<typeof useApp>)
+    renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
+    fireEvent.click(screen.getByText('Workflows'))
+    expect(screen.getByText(/No workflows available/)).toBeInTheDocument()
   })
 
   it('renders View Modules link that switches to modules tab', () => {
