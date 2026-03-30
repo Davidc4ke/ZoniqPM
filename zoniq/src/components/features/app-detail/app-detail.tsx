@@ -7,6 +7,7 @@ import { EditAppDialog } from './edit-app-dialog'
 import { DeleteAppDialog } from './delete-app-dialog'
 import { AppEnvironments } from '../app-environments/app-environments'
 import { AppModules } from '../app-modules/app-modules'
+import { AppTestCoverage } from '../app-test-coverage/app-test-coverage'
 import { format } from 'date-fns'
 
 const statusColors: Record<string, string> = {
@@ -232,7 +233,11 @@ export function AppDetail({ appId }: AppDetailProps) {
             <AppModules appId={appId} />
           )}
 
-          {activeTab !== 'overview' && activeTab !== 'environments' && activeTab !== 'modules' && (
+          {activeTab === 'tests' && (
+            <AppTestCoverage appId={appId} />
+          )}
+
+          {activeTab !== 'overview' && activeTab !== 'environments' && activeTab !== 'modules' && activeTab !== 'tests' && (
             <div className="py-12 text-center">
               <p className="text-sm text-[#9A948D]">
                 {tabs.find((t) => t.key === activeTab)?.label} — Coming soon

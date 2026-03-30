@@ -19,6 +19,12 @@ vi.mock('@/hooks/use-apps', () => ({
   useDeleteApp: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
 }))
 
+vi.mock('@/hooks/use-test-coverage', () => ({
+  useModuleCoverage: vi.fn(() => ({ data: [], isLoading: false, isError: false, error: null })),
+  useFeatureCoverage: vi.fn(() => ({ data: [], isLoading: false, isError: false, error: null })),
+  useFeatureTestItems: vi.fn(() => ({ data: [], isLoading: false, isError: false, error: null })),
+}))
+
 vi.mock('@/hooks/use-modules', () => ({
   useModules: vi.fn(() => ({ data: [], isLoading: false, isError: false, error: null })),
   useCreateModule: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
@@ -198,6 +204,13 @@ describe('AppDetail', () => {
     mockUseApp.mockReturnValue({ data: oneModuleApp, isLoading: false, isError: false, error: null } as ReturnType<typeof useApp>)
     renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
     expect(screen.getByText('1 module configured')).toBeInTheDocument()
+  })
+
+  it('renders test coverage component when Tests tab clicked', () => {
+    mockUseApp.mockReturnValue({ data: mockApp, isLoading: false, isError: false, error: null } as ReturnType<typeof useApp>)
+    renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
+    fireEvent.click(screen.getByText('Tests'))
+    expect(screen.getByText(/No test coverage data/)).toBeInTheDocument()
   })
 
   it('renders View Modules link that switches to modules tab', () => {
