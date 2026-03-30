@@ -20,6 +20,7 @@ const apps: App[] = [
     createdAt: '2026-01-20T10:00:00.000Z',
     updatedAt: '2026-02-15T14:30:00.000Z',
     linkedProjectsCount: 2,
+    modulesCount: 4,
   },
   {
     id: '2',
@@ -35,6 +36,7 @@ const apps: App[] = [
     createdAt: '2026-01-25T09:00:00.000Z',
     updatedAt: '2026-01-25T09:00:00.000Z',
     linkedProjectsCount: 1,
+    modulesCount: 3,
   },
   {
     id: '3',
@@ -50,6 +52,7 @@ const apps: App[] = [
     createdAt: '2026-03-01T11:00:00.000Z',
     updatedAt: '2026-03-01T11:00:00.000Z',
     linkedProjectsCount: 0,
+    modulesCount: 1,
   },
   {
     id: '4',
@@ -65,6 +68,7 @@ const apps: App[] = [
     createdAt: '2026-02-05T08:00:00.000Z',
     updatedAt: '2026-03-10T16:00:00.000Z',
     linkedProjectsCount: 0,
+    modulesCount: 5,
   },
   {
     id: '5',
@@ -80,6 +84,7 @@ const apps: App[] = [
     createdAt: '2026-02-10T10:00:00.000Z',
     updatedAt: '2026-02-10T10:00:00.000Z',
     linkedProjectsCount: 0,
+    modulesCount: 2,
   },
 ]
 
@@ -120,6 +125,7 @@ export function createApp(input: CreateAppInput, organizationId: string): App | 
     createdAt: now,
     updatedAt: now,
     linkedProjectsCount: 0,
+    modulesCount: 0,
   }
   apps.push(app)
   return app
@@ -172,6 +178,7 @@ export function resetApps(): void {
       createdAt: '2026-01-20T10:00:00.000Z',
       updatedAt: '2026-02-15T14:30:00.000Z',
       linkedProjectsCount: 2,
+      modulesCount: 4,
     },
     {
       id: '2',
@@ -187,6 +194,7 @@ export function resetApps(): void {
       createdAt: '2026-01-25T09:00:00.000Z',
       updatedAt: '2026-01-25T09:00:00.000Z',
       linkedProjectsCount: 1,
+      modulesCount: 3,
     },
     {
       id: '3',
@@ -202,6 +210,7 @@ export function resetApps(): void {
       createdAt: '2026-03-01T11:00:00.000Z',
       updatedAt: '2026-03-01T11:00:00.000Z',
       linkedProjectsCount: 0,
+      modulesCount: 1,
     },
     {
       id: '4',
@@ -217,6 +226,7 @@ export function resetApps(): void {
       createdAt: '2026-02-05T08:00:00.000Z',
       updatedAt: '2026-03-10T16:00:00.000Z',
       linkedProjectsCount: 0,
+      modulesCount: 5,
     },
     {
       id: '5',
@@ -232,6 +242,7 @@ export function resetApps(): void {
       createdAt: '2026-02-10T10:00:00.000Z',
       updatedAt: '2026-02-10T10:00:00.000Z',
       linkedProjectsCount: 0,
+      modulesCount: 2,
     },
   )
   nextId = 6

@@ -43,6 +43,7 @@ const mockApp = {
   createdAt: '2026-01-20T10:00:00.000Z',
   updatedAt: '2026-02-15T14:30:00.000Z',
   linkedProjectsCount: 2,
+  modulesCount: 4,
 }
 
 describe('AppDetail', () => {
@@ -68,7 +69,7 @@ describe('AppDetail', () => {
     expect(screen.getByText('App not found')).toBeInTheDocument()
   })
 
-  it('renders app details', () => {
+  it('renders app details on overview tab by default', () => {
     mockUseApp.mockReturnValue({ data: mockApp, isLoading: false, isError: false, error: null } as ReturnType<typeof useApp>)
     renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
     expect(screen.getByText('Claims Portal')).toBeInTheDocument()
@@ -113,5 +114,91 @@ describe('AppDetail', () => {
     fireEvent.click(screen.getByText('Delete'))
     expect(screen.getByText(/Cannot delete/)).toBeInTheDocument()
     expect(screen.getByText(/2 linked projects/)).toBeInTheDocument()
+  })
+
+  // Tab navigation tests
+  it('renders all tab buttons', () => {
+    mockUseApp.mockReturnValue({ data: mockApp, isLoading: false, isError: false, error: null } as ReturnType<typeof useApp>)
+    renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
+    expect(screen.getByText('Overview')).toBeInTheDocument()
+    expect(screen.getByText('Modules & Features')).toBeInTheDocument()
+    expect(screen.getByText('Tests')).toBeInTheDocument()
+    expect(screen.getByText('Workflows')).toBeInTheDocument()
+    expect(screen.getByText('Context')).toBeInTheDocument()
+    expect(screen.getByText('Projects')).toBeInTheDocument()
+    expect(screen.getByText('Metrics')).toBeInTheDocument()
+  })
+
+  it('shows overview tab as active by default', () => {
+    mockUseApp.mockReturnValue({ data: mockApp, isLoading: false, isError: false, error: null } as ReturnType<typeof useApp>)
+    renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
+    const overviewTab = screen.getByText('Overview').closest('button')
+    expect(overviewTab).toHaveClass('border-[#2563EB]')
+  })
+
+  it('switches to another tab when clicked', () => {
+    mockUseApp.mockReturnValue({ data: mockApp, isLoading: false, isError: false, error: null } as ReturnType<typeof useApp>)
+    renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
+    fireEvent.click(screen.getByText('Modules & Features'))
+    expect(screen.getByText(/Coming soon/)).toBeInTheDocument()
+    // Overview content should not be visible
+    expect(screen.queryByText('mx-acme-claims-001')).not.toBeInTheDocument()
+  })
+
+  it('shows color-coded status badge for active status', () => {
+    mockUseApp.mockReturnValue({ data: mockApp, isLoading: false, isError: false, error: null } as ReturnType<typeof useApp>)
+    renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
+    const badge = screen.getByText('Active')
+    expect(badge).toHaveClass('bg-[#DCFCE7]')
+    expect(badge).toHaveClass('text-[#16A34A]')
+  })
+
+  it('shows color-coded status badge for inactive status', () => {
+    const inactiveApp = { ...mockApp, status: 'inactive' as const }
+    mockUseApp.mockReturnValue({ data: inactiveApp, isLoading: false, isError: false, error: null } as ReturnType<typeof useApp>)
+    renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
+    const badge = screen.getByText('Inactive')
+    expect(badge).toHaveClass('bg-[#F3F4F6]')
+    expect(badge).toHaveClass('text-[#6B7280]')
+  })
+
+  it('shows color-coded status badge for in-development status', () => {
+    const devApp = { ...mockApp, status: 'in-development' as const }
+    mockUseApp.mockReturnValue({ data: devApp, isLoading: false, isError: false, error: null } as ReturnType<typeof useApp>)
+    renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
+    const badge = screen.getByText('In Development')
+    expect(badge).toHaveClass('bg-[#DBEAFE]')
+    expect(badge).toHaveClass('text-[#2563EB]')
+  })
+
+  // Modules summary tests
+  it('displays modules count in overview', () => {
+    mockUseApp.mockReturnValue({ data: mockApp, isLoading: false, isError: false, error: null } as ReturnType<typeof useApp>)
+    renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
+    expect(screen.getByText('4 modules configured')).toBeInTheDocument()
+  })
+
+  it('displays no modules message when count is 0', () => {
+    const noModulesApp = { ...mockApp, modulesCount: 0 }
+    mockUseApp.mockReturnValue({ data: noModulesApp, isLoading: false, isError: false, error: null } as ReturnType<typeof useApp>)
+    renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
+    expect(screen.getByText('No modules configured')).toBeInTheDocument()
+  })
+
+  it('displays singular module text for count of 1', () => {
+    const oneModuleApp = { ...mockApp, modulesCount: 1 }
+    mockUseApp.mockReturnValue({ data: oneModuleApp, isLoading: false, isError: false, error: null } as ReturnType<typeof useApp>)
+    renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
+    expect(screen.getByText('1 module configured')).toBeInTheDocument()
+  })
+
+  it('renders View Modules link that switches to modules tab', () => {
+    mockUseApp.mockReturnValue({ data: mockApp, isLoading: false, isError: false, error: null } as ReturnType<typeof useApp>)
+    renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
+    const viewModulesBtn = screen.getByText('View Modules')
+    expect(viewModulesBtn).toBeInTheDocument()
+    fireEvent.click(viewModulesBtn)
+    // After clicking, modules tab should be active and show coming soon
+    expect(screen.getByText(/Coming soon/)).toBeInTheDocument()
   })
 })

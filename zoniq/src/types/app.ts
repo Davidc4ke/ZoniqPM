@@ -16,6 +16,7 @@ export interface App {
   createdAt: string
   updatedAt: string
   linkedProjectsCount: number
+  modulesCount: number
 }
 
 export const createAppSchema = z.object({
