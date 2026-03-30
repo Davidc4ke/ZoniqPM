@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Manrope } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
+import { QueryProvider } from '@/components/providers/query-provider'
 import { Toaster } from 'sonner'
 import './globals.css'
 
@@ -24,7 +25,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className={manrope.variable}>
         <body className="font-sans antialiased">
-          {children}
+          <QueryProvider>
+            {children}
+          </QueryProvider>
           <Toaster position="top-right" richColors />
         </body>
       </html>

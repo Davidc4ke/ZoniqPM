@@ -55,7 +55,7 @@ development_status:
   epic-2: in-progress
   2-0-home-page-dashboard-layout: done
   2-0-1-universal-ai-input-field: done
-  2-0-2-dashboard-widgets: backlog
+  2-0-2-dashboard-widgets: done
   2-1-customer-crud-operations: backlog
   2-2-app-crud-operations: backlog
   2-3-app-detail-overview-tab: backlog

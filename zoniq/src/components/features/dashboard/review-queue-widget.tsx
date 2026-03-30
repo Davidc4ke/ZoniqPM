@@ -1,60 +1,18 @@
+'use client'
+
+import { useRouter } from 'next/navigation'
 import { Widget } from './widget'
 import { StoryCard } from './story-card'
-
-const mockReviewStories = [
-  {
-    id: '4',
-    number: 44,
-    title: 'Login Flow',
-    description: 'User authentication and session management',
-    status: 'ready' as const,
-    priority: 'high' as const,
-    projectName: 'Claims Portal',
-    assignee: { id: '1', name: 'Aisha', initials: 'A' },
-  },
-  {
-    id: '5',
-    number: 45,
-    title: 'Dashboard',
-    description: 'Main dashboard with widgets and charts',
-    status: 'ready' as const,
-    priority: 'medium' as const,
-    projectName: 'Claims Portal',
-    assignee: { id: '2', name: 'Marcus', initials: 'M' },
-  },
-  {
-    id: '6',
-    number: 46,
-    title: 'API Integration',
-    description: 'External API connections and data sync',
-    status: 'ready' as const,
-    priority: 'medium' as const,
-    projectName: 'Policy Mgmt',
-    assignee: { id: '1', name: 'Aisha', initials: 'A' },
-  },
-  {
-    id: '7',
-    number: 49,
-    title: 'Search',
-    description: 'Global search with filters and sorting',
-    status: 'review' as const,
-    priority: 'low' as const,
-    projectName: 'Claims Portal',
-    assignee: { id: '3', name: 'Tom', initials: 'T' },
-  },
-  {
-    id: '8',
-    number: 51,
-    title: 'Notifications',
-    description: 'Email and in-app notification system',
-    status: 'ready' as const,
-    priority: 'low' as const,
-    projectName: 'Claims Portal',
-    assignee: { id: '1', name: 'Aisha', initials: 'A' },
-  },
-]
+import { WidgetSkeleton } from './widget-skeleton'
+import { useReviewQueue } from '@/hooks/use-dashboard'
 
 export function ReviewQueueWidget() {
+  const router = useRouter()
+  const { data, isLoading } = useReviewQueue()
+
+  const stories = data?.data
+  const total = data?.meta?.total
+
   return (
     <Widget
       title="Review Queue"
@@ -64,13 +22,21 @@ export function ReviewQueueWidget() {
           <path d="m21 21-4.3-4.3" />
         </svg>
       }
-      count={5}
+      count={total}
     >
-      <div className="space-y-3">
-        {mockReviewStories.map((story) => (
-          <StoryCard key={story.id} story={story} />
-        ))}
-      </div>
+      {isLoading ? (
+        <WidgetSkeleton rows={3} />
+      ) : (
+        <div className="space-y-3">
+          {stories?.map((story) => (
+            <StoryCard
+              key={story.id}
+              story={story}
+              onClick={() => router.push(`/stories/${story.id}`)}
+            />
+          ))}
+        </div>
+      )}
     </Widget>
   )
 }

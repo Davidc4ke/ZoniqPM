@@ -1,40 +1,15 @@
+'use client'
+
+import { useRouter } from 'next/navigation'
 import { Widget } from './widget'
 import { StoryCard } from './story-card'
-
-const mockStories = [
-  {
-    id: '1',
-    number: 47,
-    title: 'Approval Workflow',
-    description: 'Implement multi-level approval based on user role and amount',
-    status: 'in-progress' as const,
-    priority: 'high' as const,
-    projectName: 'Claims Portal',
-    assignee: { id: '1', name: 'Aisha', initials: 'A' },
-  },
-  {
-    id: '2',
-    number: 52,
-    title: 'Export Feature',
-    description: 'CSV and PDF export for reports',
-    status: 'ready' as const,
-    priority: 'medium' as const,
-    projectName: 'Policy Management',
-    assignee: { id: '1', name: 'Aisha', initials: 'A' },
-  },
-  {
-    id: '3',
-    number: 58,
-    title: 'Form Validation',
-    description: 'Client-side validation for all forms',
-    status: 'in-progress' as const,
-    priority: 'low' as const,
-    projectName: 'Claims Portal',
-    assignee: { id: '1', name: 'Aisha', initials: 'A' },
-  },
-]
+import { WidgetSkeleton } from './widget-skeleton'
+import { useAssignedStories } from '@/hooks/use-dashboard'
 
 export function AssignedStoriesWidget() {
+  const router = useRouter()
+  const { data: stories, isLoading } = useAssignedStories()
+
   return (
     <Widget
       title="Assigned to You"
@@ -45,13 +20,21 @@ export function AssignedStoriesWidget() {
           <path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z" />
         </svg>
       }
-      count={3}
+      count={stories?.length}
     >
-      <div className="space-y-3">
-        {mockStories.map((story) => (
-          <StoryCard key={story.id} story={story} />
-        ))}
-      </div>
+      {isLoading ? (
+        <WidgetSkeleton rows={3} />
+      ) : (
+        <div className="space-y-3">
+          {stories?.map((story) => (
+            <StoryCard
+              key={story.id}
+              story={story}
+              onClick={() => router.push(`/stories/${story.id}`)}
+            />
+          ))}
+        </div>
+      )}
     </Widget>
   )
 }
