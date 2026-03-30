@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useApp } from '@/hooks/use-apps'
 import { EditAppDialog } from './edit-app-dialog'
 import { DeleteAppDialog } from './delete-app-dialog'
+import { AppEnvironments } from '../app-environments/app-environments'
 import { format } from 'date-fns'
 
 const statusColors: Record<string, string> = {
@@ -21,6 +22,7 @@ const statusLabels: Record<string, string> = {
 
 const tabs = [
   { key: 'overview', label: 'Overview' },
+  { key: 'environments', label: 'Environments' },
   { key: 'modules', label: 'Modules & Features' },
   { key: 'tests', label: 'Tests' },
   { key: 'workflows', label: 'Workflows' },
@@ -221,7 +223,11 @@ export function AppDetail({ appId }: AppDetailProps) {
             </div>
           )}
 
-          {activeTab !== 'overview' && (
+          {activeTab === 'environments' && (
+            <AppEnvironments appId={appId} />
+          )}
+
+          {activeTab !== 'overview' && activeTab !== 'environments' && (
             <div className="py-12 text-center">
               <p className="text-sm text-[#9A948D]">
                 {tabs.find((t) => t.key === activeTab)?.label} — Coming soon

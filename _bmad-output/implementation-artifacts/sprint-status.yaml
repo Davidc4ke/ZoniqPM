@@ -59,7 +59,7 @@ development_status:
   2-1-customer-crud-operations: done
   2-2-app-crud-operations: done
   2-3-app-detail-overview-tab: done
-  2-4-app-environments-management: backlog
+  2-4-app-environments-management: done
   2-5-module-crud-operations: backlog
   2-6-feature-crud-operations: backlog
   2-7-app-test-coverage-tab: backlog
