@@ -19,6 +19,13 @@ vi.mock('@/hooks/use-apps', () => ({
   useDeleteApp: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
 }))
 
+vi.mock('@/hooks/use-modules', () => ({
+  useModules: vi.fn(() => ({ data: [], isLoading: false, isError: false, error: null })),
+  useCreateModule: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
+  useUpdateModule: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
+  useDeleteModule: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
+}))
+
 import { useApp } from '@/hooks/use-apps'
 const mockUseApp = vi.mocked(useApp)
 
@@ -136,11 +143,12 @@ describe('AppDetail', () => {
     expect(overviewTab).toHaveClass('border-[#2563EB]')
   })
 
-  it('switches to another tab when clicked', () => {
+  it('switches to modules tab when clicked', () => {
     mockUseApp.mockReturnValue({ data: mockApp, isLoading: false, isError: false, error: null } as ReturnType<typeof useApp>)
     renderWithProviders(React.createElement(AppDetail, { appId: '1' }))
     fireEvent.click(screen.getByText('Modules & Features'))
-    expect(screen.getByText(/Coming soon/)).toBeInTheDocument()
+    // Modules tab should render AppModules component
+    expect(screen.getByText('Modules')).toBeInTheDocument()
     // Overview content should not be visible
     expect(screen.queryByText('mx-acme-claims-001')).not.toBeInTheDocument()
   })
@@ -198,7 +206,7 @@ describe('AppDetail', () => {
     const viewModulesBtn = screen.getByText('View Modules')
     expect(viewModulesBtn).toBeInTheDocument()
     fireEvent.click(viewModulesBtn)
-    // After clicking, modules tab should be active and show coming soon
-    expect(screen.getByText(/Coming soon/)).toBeInTheDocument()
+    // After clicking, modules tab should be active and show AppModules component
+    expect(screen.getByText('Add Module')).toBeInTheDocument()
   })
 })
