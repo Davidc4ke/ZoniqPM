@@ -59,6 +59,30 @@ docs/planning/      # PRD, architecture, UX specs, HTML prototypes
 - Use `bd` (beads) for local sub-task tracking within a session only — not as canonical storage
 - See `AGENTS.md` for beads sub-task workflow
 
+## PR Template
+
+When opening a PR at the end of a story, always use this body format:
+
+```
+## What
+<1-2 sentence summary of what was implemented>
+
+## GitHub Issue
+Closes #<issue-number>
+
+## Testing Checklist
+Convert every Given/When/Then block from the issue's acceptance criteria into a checkbox:
+
+- [ ] Given <context>, when <action>, then <expected result>
+- [ ] Given <context>, when <action>, then <expected result>
+...
+
+## Notes
+<anything non-obvious about the implementation, or empty>
+```
+
+The testing checklist is what the reviewer clicks through manually before merging. One checkbox per AC scenario — keep them short and action-oriented.
+
 ## CLAUDE.md Self-Update Rule
 
 **After completing any story or feature, update this file before ending the session:**
