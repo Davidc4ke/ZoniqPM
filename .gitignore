@@ -33,3 +33,8 @@ deployment/
 
 # Beads CLI (local database state)
 .beads/
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
