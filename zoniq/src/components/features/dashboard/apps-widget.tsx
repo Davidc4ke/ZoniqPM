@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Widget } from './widget'
 
 type StatusType = 'healthy' | 'warning' | 'error' | 'offline'
@@ -95,9 +96,10 @@ export function AppsWidget() {
     >
       <div className="space-y-3">
         {mockApps.map((app) => (
-          <div
+          <Link
+            href={`/apps/${app.id}`}
             key={app.id}
-            className="rounded-lg bg-[#DBEAFE] p-3 hover:bg-[#BFDBFE] transition-colors cursor-pointer"
+            className="block rounded-lg bg-[#DBEAFE] p-3 hover:bg-[#BFDBFE] transition-colors cursor-pointer"
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-semibold text-[#2D1810]">{app.name}</span>
@@ -117,7 +119,7 @@ export function AppsWidget() {
                 </span>
               </div>
             )}
-          </div>
+          </Link>
         ))}
       </div>
       <button className="mt-3 flex w-full items-center justify-center gap-1 text-xs text-[#9A948D] hover:text-[#2D1810] transition-colors">
