@@ -1,7 +1,7 @@
 import { auth } from '@clerk/nextjs/server'
-import { getAppById } from '@/lib/apps/mock-data'
-import { getModuleById } from '@/lib/modules/mock-data'
-import { getFeaturesByModuleId, createFeature } from '@/lib/features/mock-data'
+import { getAppById } from '@/lib/apps/queries'
+import { getModuleById } from '@/lib/modules/queries'
+import { getFeaturesByModuleId, createFeature } from '@/lib/features/queries'
 import { createFeatureSchema } from '@/types/feature'
 
 export async function GET(
@@ -17,7 +17,7 @@ export async function GET(
   }
 
   const { id, moduleId } = await params
-  const app = getAppById(id)
+  const app = await getAppById(id)
   if (!app) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'App not found' } },
@@ -25,7 +25,7 @@ export async function GET(
     )
   }
 
-  const mod = getModuleById(moduleId)
+  const mod = await getModuleById(moduleId)
   if (!mod || mod.appId !== id) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'Module not found' } },
@@ -33,7 +33,7 @@ export async function GET(
     )
   }
 
-  const features = getFeaturesByModuleId(moduleId)
+  const features = await getFeaturesByModuleId(moduleId)
   return Response.json({ data: features, meta: { total: features.length } })
 }
 
@@ -50,7 +50,7 @@ export async function POST(
   }
 
   const { id, moduleId } = await params
-  const app = getAppById(id)
+  const app = await getAppById(id)
   if (!app) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'App not found' } },
@@ -58,7 +58,7 @@ export async function POST(
     )
   }
 
-  const mod = getModuleById(moduleId)
+  const mod = await getModuleById(moduleId)
   if (!mod || mod.appId !== id) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'Module not found' } },
@@ -85,6 +85,6 @@ export async function POST(
     )
   }
 
-  const feat = createFeature(moduleId, id, parsed.data)
+  const feat = await createFeature(moduleId, id, parsed.data)
   return Response.json({ data: feat }, { status: 201 })
 }

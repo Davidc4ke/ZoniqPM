@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
-import { getAppById } from '@/lib/apps/mock-data'
-import { getModulesByAppId, createModule } from '@/lib/modules/mock-data'
+import { getAppById } from '@/lib/apps/queries'
+import { getModulesByAppId, createModule } from '@/lib/modules/queries'
 import { createModuleSchema } from '@/types/module'
 
 export async function GET(
@@ -16,7 +16,7 @@ export async function GET(
   }
 
   const { id } = await params
-  const app = getAppById(id)
+  const app = await getAppById(id)
   if (!app) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'App not found' } },
@@ -24,7 +24,7 @@ export async function GET(
     )
   }
 
-  const modules = getModulesByAppId(id)
+  const modules = await getModulesByAppId(id)
   return Response.json({ data: modules, meta: { total: modules.length } })
 }
 
@@ -41,7 +41,7 @@ export async function POST(
   }
 
   const { id } = await params
-  const app = getAppById(id)
+  const app = await getAppById(id)
   if (!app) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'App not found' } },
@@ -68,6 +68,6 @@ export async function POST(
     )
   }
 
-  const mod = createModule(id, parsed.data)
+  const mod = await createModule(id, parsed.data)
   return Response.json({ data: mod }, { status: 201 })
 }

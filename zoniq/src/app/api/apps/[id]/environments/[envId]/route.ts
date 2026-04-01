@@ -1,5 +1,5 @@
 import { auth } from '@clerk/nextjs/server'
-import { updateEnvironment, deleteEnvironment, getEnvironmentById } from '@/lib/environments/mock-data'
+import { updateEnvironment, deleteEnvironment } from '@/lib/environments/queries'
 import { updateEnvironmentSchema } from '@/types/environment'
 
 export async function PUT(
@@ -35,7 +35,7 @@ export async function PUT(
     )
   }
 
-  const env = updateEnvironment(envId, parsed.data)
+  const env = await updateEnvironment(envId, parsed.data)
   if (!env) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'Environment not found' } },
@@ -60,7 +60,7 @@ export async function DELETE(
 
   const { envId } = await params
 
-  const result = deleteEnvironment(envId)
+  const result = await deleteEnvironment(envId)
   if (!result.success) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: result.error! } },

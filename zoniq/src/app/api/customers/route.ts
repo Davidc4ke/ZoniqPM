@@ -1,5 +1,5 @@
 import { auth } from '@clerk/nextjs/server'
-import { getCustomers, createCustomer } from '@/lib/customers/mock-data'
+import { getCustomers, createCustomer } from '@/lib/customers/queries'
 import { createCustomerSchema } from '@/types/customer'
 
 export async function GET() {
@@ -11,8 +11,7 @@ export async function GET() {
     )
   }
 
-  // TODO: Replace with database query filtered by organization
-  const customers = getCustomers()
+  const customers = await getCustomers()
   return Response.json({ data: customers, meta: { total: customers.length } })
 }
 
@@ -44,7 +43,6 @@ export async function POST(request: Request) {
     )
   }
 
-  // TODO: Replace with database insert, use real organizationId from Clerk
-  const customer = createCustomer(parsed.data, `org_${userId}`)
+  const customer = await createCustomer(parsed.data, `org_${userId}`)
   return Response.json({ data: customer }, { status: 201 })
 }

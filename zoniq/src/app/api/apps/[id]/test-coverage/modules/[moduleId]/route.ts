@@ -1,5 +1,5 @@
 import { auth } from '@clerk/nextjs/server'
-import { getAppById } from '@/lib/apps/mock-data'
+import { getAppById } from '@/lib/apps/queries'
 import { getFeatureCoverage } from '@/lib/test-coverage/mock-data'
 
 export async function GET(
@@ -15,7 +15,7 @@ export async function GET(
   }
 
   const { id, moduleId } = await params
-  const app = getAppById(id)
+  const app = await getAppById(id)
   if (!app) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'App not found' } },

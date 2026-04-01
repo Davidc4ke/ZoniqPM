@@ -9,6 +9,13 @@ vi.mock('@clerk/nextjs/server', () => ({
   auth: () => mockAuth(),
 }))
 
+vi.mock('@/lib/apps/queries', async () => {
+  const mock = await vi.importActual<typeof import('@/lib/apps/mock-data')>('@/lib/apps/mock-data')
+  return {
+    getAppById: async (id: string) => mock.getAppById(id),
+  }
+})
+
 function makeParams(id: string) {
   return { params: Promise.resolve({ id }) }
 }

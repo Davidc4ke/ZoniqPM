@@ -1,11 +1,23 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { GET, PUT, DELETE } from './route'
 import { resetCustomers } from '@/lib/customers/mock-data'
+import { resetApps } from '@/lib/apps/mock-data'
 
 const mockAuth = vi.fn()
 vi.mock('@clerk/nextjs/server', () => ({
   auth: () => mockAuth(),
 }))
+
+vi.mock('@/lib/customers/queries', async () => {
+  const mock = await vi.importActual<typeof import('@/lib/customers/mock-data')>('@/lib/customers/mock-data')
+  return {
+    getCustomers: async () => mock.getCustomers(),
+    getCustomerById: async (id: string) => mock.getCustomerById(id),
+    createCustomer: async (input: Parameters<typeof mock.createCustomer>[0], orgId: string) => mock.createCustomer(input, orgId),
+    updateCustomer: async (id: string, input: Parameters<typeof mock.updateCustomer>[1]) => mock.updateCustomer(id, input),
+    deleteCustomer: async (id: string) => mock.deleteCustomer(id),
+  }
+})
 
 function makeRequest(method: string, body?: unknown) {
   return new Request('http://localhost/api/customers/1', {
@@ -23,6 +35,7 @@ describe('/api/customers/[id]', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     resetCustomers()
+    resetApps()
   })
 
   describe('GET', () => {

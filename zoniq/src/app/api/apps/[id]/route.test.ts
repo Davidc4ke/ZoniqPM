@@ -8,6 +8,18 @@ vi.mock('@clerk/nextjs/server', () => ({
   auth: () => mockAuth(),
 }))
 
+vi.mock('@/lib/apps/queries', async () => {
+  const mock = await vi.importActual<typeof import('@/lib/apps/mock-data')>('@/lib/apps/mock-data')
+  return {
+    getApps: async (customerId?: string) => mock.getApps(customerId),
+    getAppById: async (id: string) => mock.getAppById(id),
+    createApp: async (input: Parameters<typeof mock.createApp>[0], orgId: string) => mock.createApp(input, orgId),
+    updateApp: async (id: string, input: Parameters<typeof mock.updateApp>[1]) => mock.updateApp(id, input),
+    deleteApp: async (id: string) => mock.deleteApp(id),
+    getLinkedAppsCount: async (customerId: string) => mock.getLinkedAppsCount(customerId),
+  }
+})
+
 function makeParams(id: string) {
   return { params: Promise.resolve({ id }) }
 }

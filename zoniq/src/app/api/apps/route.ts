@@ -1,5 +1,5 @@
 import { auth } from '@clerk/nextjs/server'
-import { getApps, createApp } from '@/lib/apps/mock-data'
+import { getApps, createApp } from '@/lib/apps/queries'
 import { createAppSchema } from '@/types/app'
 
 export async function GET(request: Request) {
@@ -14,8 +14,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const customerId = searchParams.get('customerId') ?? undefined
 
-  // TODO: Replace with database query filtered by organization
-  const apps = getApps(customerId)
+  const apps = await getApps(customerId)
   return Response.json({ data: apps, meta: { total: apps.length } })
 }
 
@@ -47,8 +46,7 @@ export async function POST(request: Request) {
     )
   }
 
-  // TODO: Replace with database insert, use real organizationId from Clerk
-  const result = createApp(parsed.data, `org_${userId}`)
+  const result = await createApp(parsed.data, `org_${userId}`)
   if ('error' in result) {
     return Response.json(
       { error: { code: 'VALIDATION_ERROR', message: result.error } },
