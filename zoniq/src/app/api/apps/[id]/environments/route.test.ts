@@ -9,6 +9,24 @@ vi.mock('@clerk/nextjs/server', () => ({
   auth: () => mockAuth(),
 }))
 
+vi.mock('@/lib/apps/queries', async () => {
+  const mock = await vi.importActual<typeof import('@/lib/apps/mock-data')>('@/lib/apps/mock-data')
+  return {
+    getAppById: async (id: string) => mock.getAppById(id),
+  }
+})
+
+vi.mock('@/lib/environments/queries', async () => {
+  const mock = await vi.importActual<typeof import('@/lib/environments/mock-data')>('@/lib/environments/mock-data')
+  return {
+    getEnvironmentsByAppId: async (appId: string) => mock.getEnvironmentsByAppId(appId),
+    getEnvironmentById: async (id: string) => mock.getEnvironmentById(id),
+    createEnvironment: async (appId: string, input: Parameters<typeof mock.createEnvironment>[1]) => mock.createEnvironment(appId, input),
+    updateEnvironment: async (id: string, input: Parameters<typeof mock.updateEnvironment>[1]) => mock.updateEnvironment(id, input),
+    deleteEnvironment: async (id: string) => mock.deleteEnvironment(id),
+  }
+})
+
 function makeParams(id: string) {
   return { params: Promise.resolve({ id }) }
 }
@@ -48,7 +66,6 @@ describe('/api/apps/[id]/environments', () => {
 
     it('returns empty array for app with no environments', async () => {
       mockAuth.mockResolvedValue({ userId: 'user_123' })
-      // App 3 exists but after reset all apps have environments; create a new app
       const request = new Request('http://localhost/api/apps/1/environments')
       const response = await GET(request, makeParams('1'))
       expect(response.status).toBe(200)

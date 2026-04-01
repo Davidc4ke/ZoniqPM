@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
-import { getAppById } from '@/lib/apps/mock-data'
-import { getEnvironmentsByAppId, createEnvironment } from '@/lib/environments/mock-data'
+import { getAppById } from '@/lib/apps/queries'
+import { getEnvironmentsByAppId, createEnvironment } from '@/lib/environments/queries'
 import { createEnvironmentSchema } from '@/types/environment'
 
 export async function GET(
@@ -16,7 +16,7 @@ export async function GET(
   }
 
   const { id } = await params
-  const app = getAppById(id)
+  const app = await getAppById(id)
   if (!app) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'App not found' } },
@@ -24,7 +24,7 @@ export async function GET(
     )
   }
 
-  const environments = getEnvironmentsByAppId(id)
+  const environments = await getEnvironmentsByAppId(id)
   return Response.json({ data: environments, meta: { total: environments.length } })
 }
 
@@ -41,7 +41,7 @@ export async function POST(
   }
 
   const { id } = await params
-  const app = getAppById(id)
+  const app = await getAppById(id)
   if (!app) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'App not found' } },
@@ -68,6 +68,6 @@ export async function POST(
     )
   }
 
-  const env = createEnvironment(id, parsed.data)
+  const env = await createEnvironment(id, parsed.data)
   return Response.json({ data: env }, { status: 201 })
 }

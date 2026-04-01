@@ -1,7 +1,7 @@
 import { auth } from '@clerk/nextjs/server'
-import { getAppById } from '@/lib/apps/mock-data'
-import { getModuleById } from '@/lib/modules/mock-data'
-import { getFeatureById, updateFeature, deleteFeature, getLinkedStoriesByFeatureId } from '@/lib/features/mock-data'
+import { getAppById } from '@/lib/apps/queries'
+import { getModuleById } from '@/lib/modules/queries'
+import { getFeatureById, updateFeature, deleteFeature } from '@/lib/features/queries'
 import { updateFeatureSchema } from '@/types/feature'
 
 export async function GET(
@@ -17,7 +17,7 @@ export async function GET(
   }
 
   const { id, moduleId, featureId } = await params
-  const app = getAppById(id)
+  const app = await getAppById(id)
   if (!app) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'App not found' } },
@@ -25,7 +25,7 @@ export async function GET(
     )
   }
 
-  const mod = getModuleById(moduleId)
+  const mod = await getModuleById(moduleId)
   if (!mod || mod.appId !== id) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'Module not found' } },
@@ -33,7 +33,7 @@ export async function GET(
     )
   }
 
-  const feat = getFeatureById(featureId)
+  const feat = await getFeatureById(featureId)
   if (!feat || feat.moduleId !== moduleId) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'Feature not found' } },
@@ -41,8 +41,8 @@ export async function GET(
     )
   }
 
-  const linkedStories = getLinkedStoriesByFeatureId(featureId)
-  return Response.json({ data: { ...feat, linkedStories } })
+  // linkedStories will be populated when stories table exists (Epic 4)
+  return Response.json({ data: { ...feat, linkedStories: [] } })
 }
 
 export async function PUT(
@@ -58,7 +58,7 @@ export async function PUT(
   }
 
   const { id, moduleId, featureId } = await params
-  const app = getAppById(id)
+  const app = await getAppById(id)
   if (!app) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'App not found' } },
@@ -66,7 +66,7 @@ export async function PUT(
     )
   }
 
-  const mod = getModuleById(moduleId)
+  const mod = await getModuleById(moduleId)
   if (!mod || mod.appId !== id) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'Module not found' } },
@@ -93,7 +93,7 @@ export async function PUT(
     )
   }
 
-  const feat = updateFeature(featureId, parsed.data)
+  const feat = await updateFeature(featureId, parsed.data)
   if (!feat || feat.moduleId !== moduleId) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'Feature not found' } },
@@ -117,7 +117,7 @@ export async function DELETE(
   }
 
   const { id, moduleId, featureId } = await params
-  const app = getAppById(id)
+  const app = await getAppById(id)
   if (!app) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'App not found' } },
@@ -125,7 +125,7 @@ export async function DELETE(
     )
   }
 
-  const mod = getModuleById(moduleId)
+  const mod = await getModuleById(moduleId)
   if (!mod || mod.appId !== id) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'Module not found' } },
@@ -133,7 +133,7 @@ export async function DELETE(
     )
   }
 
-  const result = deleteFeature(featureId)
+  const result = await deleteFeature(featureId)
   if (!result.success) {
     if (result.error?.includes('linked stories')) {
       return Response.json(

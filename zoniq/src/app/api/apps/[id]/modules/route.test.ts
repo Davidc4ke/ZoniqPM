@@ -9,6 +9,29 @@ vi.mock('@clerk/nextjs/server', () => ({
   auth: () => mockAuth(),
 }))
 
+vi.mock('@/lib/apps/queries', async () => {
+  const mock = await vi.importActual<typeof import('@/lib/apps/mock-data')>('@/lib/apps/mock-data')
+  return {
+    getApps: async (customerId?: string) => mock.getApps(customerId),
+    getAppById: async (id: string) => mock.getAppById(id),
+    createApp: async (input: Parameters<typeof mock.createApp>[0], orgId: string) => mock.createApp(input, orgId),
+    updateApp: async (id: string, input: Parameters<typeof mock.updateApp>[1]) => mock.updateApp(id, input),
+    deleteApp: async (id: string) => mock.deleteApp(id),
+    getLinkedAppsCount: async (customerId: string) => mock.getLinkedAppsCount(customerId),
+  }
+})
+
+vi.mock('@/lib/modules/queries', async () => {
+  const mock = await vi.importActual<typeof import('@/lib/modules/mock-data')>('@/lib/modules/mock-data')
+  return {
+    getModulesByAppId: async (appId: string) => mock.getModulesByAppId(appId),
+    getModuleById: async (id: string) => mock.getModuleById(id),
+    createModule: async (appId: string, input: Parameters<typeof mock.createModule>[1]) => mock.createModule(appId, input),
+    updateModule: async (id: string, input: Parameters<typeof mock.updateModule>[1]) => mock.updateModule(id, input),
+    deleteModule: async (id: string) => mock.deleteModule(id),
+  }
+})
+
 function makeParams(id: string) {
   return { params: Promise.resolve({ id }) }
 }

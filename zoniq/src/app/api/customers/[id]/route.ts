@@ -1,5 +1,5 @@
 import { auth } from '@clerk/nextjs/server'
-import { getCustomerById, updateCustomer, deleteCustomer } from '@/lib/customers/mock-data'
+import { getCustomerById, updateCustomer, deleteCustomer } from '@/lib/customers/queries'
 import { updateCustomerSchema } from '@/types/customer'
 
 export async function GET(
@@ -15,7 +15,7 @@ export async function GET(
   }
 
   const { id } = await params
-  const customer = getCustomerById(id)
+  const customer = await getCustomerById(id)
   if (!customer) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'Customer not found' } },
@@ -59,8 +59,7 @@ export async function PUT(
     )
   }
 
-  // TODO: Replace with database update
-  const customer = updateCustomer(id, parsed.data)
+  const customer = await updateCustomer(id, parsed.data)
   if (!customer) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'Customer not found' } },
@@ -85,8 +84,7 @@ export async function DELETE(
 
   const { id } = await params
 
-  // TODO: Replace with database soft-delete
-  const result = deleteCustomer(id)
+  const result = await deleteCustomer(id)
   if (!result.success) {
     const isNotFound = result.error?.includes('not found')
     return Response.json(

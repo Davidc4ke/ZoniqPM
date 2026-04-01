@@ -9,6 +9,17 @@ vi.mock('@clerk/nextjs/server', () => ({
   auth: () => mockAuth(),
 }))
 
+vi.mock('@/lib/environments/queries', async () => {
+  const mock = await vi.importActual<typeof import('@/lib/environments/mock-data')>('@/lib/environments/mock-data')
+  return {
+    getEnvironmentsByAppId: async (appId: string) => mock.getEnvironmentsByAppId(appId),
+    getEnvironmentById: async (id: string) => mock.getEnvironmentById(id),
+    createEnvironment: async (appId: string, input: Parameters<typeof mock.createEnvironment>[1]) => mock.createEnvironment(appId, input),
+    updateEnvironment: async (id: string, input: Parameters<typeof mock.updateEnvironment>[1]) => mock.updateEnvironment(id, input),
+    deleteEnvironment: async (id: string) => mock.deleteEnvironment(id),
+  }
+})
+
 function makeParams(id: string, envId: string) {
   return { params: Promise.resolve({ id, envId }) }
 }

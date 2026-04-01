@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
-import { getAppById } from '@/lib/apps/mock-data'
-import { getModuleById, updateModule, deleteModule } from '@/lib/modules/mock-data'
+import { getAppById } from '@/lib/apps/queries'
+import { getModuleById, updateModule, deleteModule } from '@/lib/modules/queries'
 import { updateModuleSchema } from '@/types/module'
 
 export async function GET(
@@ -16,7 +16,7 @@ export async function GET(
   }
 
   const { id, moduleId } = await params
-  const app = getAppById(id)
+  const app = await getAppById(id)
   if (!app) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'App not found' } },
@@ -24,7 +24,7 @@ export async function GET(
     )
   }
 
-  const mod = getModuleById(moduleId)
+  const mod = await getModuleById(moduleId)
   if (!mod || mod.appId !== id) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'Module not found' } },
@@ -48,7 +48,7 @@ export async function PUT(
   }
 
   const { id, moduleId } = await params
-  const app = getAppById(id)
+  const app = await getAppById(id)
   if (!app) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'App not found' } },
@@ -75,7 +75,7 @@ export async function PUT(
     )
   }
 
-  const mod = updateModule(moduleId, parsed.data)
+  const mod = await updateModule(moduleId, parsed.data)
   if (!mod || mod.appId !== id) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'Module not found' } },
@@ -99,7 +99,7 @@ export async function DELETE(
   }
 
   const { id, moduleId } = await params
-  const app = getAppById(id)
+  const app = await getAppById(id)
   if (!app) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'App not found' } },
@@ -107,7 +107,7 @@ export async function DELETE(
     )
   }
 
-  const result = deleteModule(moduleId)
+  const result = await deleteModule(moduleId)
   if (!result.success) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: result.error || 'Module not found' } },

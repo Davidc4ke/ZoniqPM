@@ -1,5 +1,5 @@
 import { auth } from '@clerk/nextjs/server'
-import { getAppById, updateApp, deleteApp } from '@/lib/apps/mock-data'
+import { getAppById, updateApp, deleteApp } from '@/lib/apps/queries'
 import { updateAppSchema } from '@/types/app'
 
 export async function GET(
@@ -15,7 +15,7 @@ export async function GET(
   }
 
   const { id } = await params
-  const app = getAppById(id)
+  const app = await getAppById(id)
   if (!app) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'App not found' } },
@@ -59,8 +59,7 @@ export async function PUT(
     )
   }
 
-  // TODO: Replace with database update
-  const app = updateApp(id, parsed.data)
+  const app = await updateApp(id, parsed.data)
   if (!app) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: 'App not found' } },
@@ -85,8 +84,7 @@ export async function DELETE(
 
   const { id } = await params
 
-  // TODO: Replace with database soft-delete
-  const result = deleteApp(id)
+  const result = await deleteApp(id)
   if (!result.success) {
     const isNotFound = result.error?.includes('not found')
     return Response.json(
