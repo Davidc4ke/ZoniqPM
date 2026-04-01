@@ -53,11 +53,10 @@ docs/planning/      # PRD, architecture, UX specs, HTML prototypes
 
 ## Agent Instructions
 
-- Read `docs/planning/epics.md` to find acceptance criteria for the current story
+- All acceptance criteria are in the GitHub issue body — read the issue, not epics.md
+- `docs/planning/epics.md` is the original source but is 2500 lines — avoid reading it whole
 - Always `cd zoniq/` before running npm commands
 - Run `npm run build` before declaring a story done — it must pass clean
-- Use `bd` (beads) for local sub-task tracking within a session only — not as canonical storage
-- See `AGENTS.md` for beads sub-task workflow
 
 ## PR Template
 
