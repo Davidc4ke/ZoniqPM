@@ -42,7 +42,7 @@ docs/planning/      # PRD, architecture, UX specs, HTML prototypes
 
 1. Pick a **GitHub Issue** (canonical task store)
 2. Create branch: `git checkout -b story/ZPM-<id>-<short-slug>`
-3. Open Claude Code — reference the issue number and `docs/planning/epics.md` for full acceptance criteria
+3. Open Claude Code — reference the issue number for full acceptance criteria
 4. Agent implements; developer checks in at ~30% and ~80% progress
 5. Build must pass: `cd zoniq && npm run build`
 6. Tests must pass: `npm run test`
@@ -57,6 +57,21 @@ docs/planning/      # PRD, architecture, UX specs, HTML prototypes
 - `docs/planning/epics.md` is the original source but is 2500 lines — avoid reading it whole
 - Always `cd zoniq/` before running npm commands
 - Run `npm run build` before declaring a story done — it must pass clean
+
+### Discovered issues
+If you find a bug, missing dependency, or unexpected blocker mid-session:
+1. Create a new GitHub Issue in `davidc4ke/ZoniqPM` describing what you found
+2. Add the `blocked` label to the current issue if it can't proceed, with a comment linking to the new issue
+3. Continue with what you can, or stop cleanly if fully blocked
+
+### Mid-session handoff
+If a session ends before the story is complete (build fails, scope too large, etc.):
+1. Leave a comment on the GitHub issue with: current status, what's done, what's left, any gotchas
+2. Push the WIP branch so work isn't lost
+3. Do NOT open a PR for incomplete work
+
+### Blocked label protocol
+Before starting, check if the issue has a `blocked` label — if so, read the comments to understand why and do not proceed until the blocker is resolved.
 
 ## PR Template
 
