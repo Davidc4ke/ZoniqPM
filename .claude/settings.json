@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"Stop\", \"additionalContext\": \"SELF-UPDATE CHECK: If you completed a GitHub issue or story in this session, you must now update the Current App State section in CLAUDE.md before finishing — mark the story as done, update the next milestone line, and add any new packages to the Tech Stack section.\"}}'",
+            "statusMessage": "Checking if CLAUDE.md needs updating..."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -59,6 +59,16 @@ docs/planning/      # PRD, architecture, UX specs, HTML prototypes
 - Use `bd` (beads) for local sub-task tracking within a session only — not as canonical storage
 - See `AGENTS.md` for beads sub-task workflow
 
+## CLAUDE.md Self-Update Rule
+
+**After completing any story or feature, update this file before ending the session:**
+
+1. Move the completed story from "Not started" to "Done" in `## Current App State`
+2. Update the "Next milestone" line to reflect what's next
+3. If a new package was added to the stack, add it to `## Tech Stack`
+
+This keeps every new session accurately informed about where the project stands.
+
 ## Design System
 
 Prototypes in `docs/planning/` — reference these when building UI.
