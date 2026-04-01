@@ -31,5 +31,5 @@ npm-debug.log*
 deployment/
 	releases/
 
-# Beads CLI (local database state)
-.beads/
+# Beads CLI - exclude only local embedded dolt binary cache
+.beads/embeddeddolt/
