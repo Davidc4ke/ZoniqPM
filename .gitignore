@@ -40,3 +40,6 @@ deployment/
 .beads-credential-key
 
 config.yaml
+
+config.yaml
+.doltcfg/
