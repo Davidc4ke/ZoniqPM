@@ -41,7 +41,7 @@ Key docs in `docs/planning/`:
 
 ## Task Tracking
 
-This project uses [beads](https://github.com/gastownhall/beads) for issue and task tracking. See `AGENT_INSTRUCTIONS.md` for agent workflow guidance.
+This project uses [beads](https://github.com/gastownhall/beads) for issue and task tracking. See `AGENTS.md` for agent workflow guidance.
 
 ## Configuration
 
