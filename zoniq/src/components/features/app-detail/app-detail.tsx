@@ -9,7 +9,7 @@ import { AppEnvironments } from '../app-environments/app-environments'
 import { AppModules } from '../app-modules/app-modules'
 import { AppTestCoverage } from '../app-test-coverage/app-test-coverage'
 import { WorkflowsTab } from '../apps/workflows-tab'
-import { AppContexts } from '../app-contexts/app-contexts'
+import { AppContext } from '../app-context/app-context'
 import { format } from 'date-fns'
 
 const statusColors: Record<string, string> = {
@@ -244,7 +244,7 @@ export function AppDetail({ appId }: AppDetailProps) {
           )}
 
           {activeTab === 'context' && (
-            <AppContexts appId={appId} />
+            <AppContext appId={appId} />
           )}
 
           {activeTab !== 'overview' && activeTab !== 'environments' && activeTab !== 'modules' && activeTab !== 'tests' && activeTab !== 'workflows' && activeTab !== 'context' && (

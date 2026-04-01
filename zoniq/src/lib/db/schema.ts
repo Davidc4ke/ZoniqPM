@@ -84,6 +84,21 @@ export const environments = pgTable('environments', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
+// ── Context Items (notes, documents, URLs linked to apps) ─────────────────────
+
+export const contextItemTypeEnum = pgEnum('context_item_type', ['note', 'document', 'url'])
+
+export const contextItems = pgTable('context_items', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  appId: uuid('app_id').notNull().references(() => apps.id),
+  type: contextItemTypeEnum('type').notNull(),
+  title: varchar('title', { length: 200 }).notNull(),
+  content: text('content').notNull(),
+  url: text('url'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
 // ── App Environments (dashboard health tracking) ───────────────────────────────
 
 export const appEnvironments = pgTable('app_environments', {
