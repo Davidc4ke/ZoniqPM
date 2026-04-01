@@ -1,14 +1,16 @@
+export const dynamic = 'force-dynamic'
+
 import type { Metadata } from 'next'
-import { Manrope } from 'next/font/google'
+import localFont from 'next/font/local'
 import { ClerkProvider } from '@clerk/nextjs'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { Toaster } from 'sonner'
 import './globals.css'
 
-const manrope = Manrope({
+const manrope = localFont({
+  src: '../fonts/manrope-latin-variable.woff2',
   variable: '--font-manrope',
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
