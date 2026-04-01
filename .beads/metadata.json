@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "server",
+  "dolt_database": "ZoniqPM",
+  "project_id": "46812c6f-8a1e-4d19-9c0b-464ea0f0dedb"
+}
