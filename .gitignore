@@ -38,3 +38,5 @@ deployment/
 .dolt/
 *.db
 .beads-credential-key
+
+config.yaml
