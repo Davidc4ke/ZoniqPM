@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { getAppById } from '@/lib/apps/queries'
 import type { ContextItem } from '@/types/app-context'
 import { createContextItemSchema } from '@/types/app-context'
 
@@ -54,23 +55,53 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { userId } = await auth()
+  if (!userId) {
+    return Response.json(
+      { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
+      { status: 401 }
+    )
+  }
+
   const { id } = await params
-  void id
-  return NextResponse.json({ data: mockContextItems, meta: { total: mockContextItems.length } })
+  const app = await getAppById(id)
+  if (!app) {
+    return Response.json(
+      { error: { code: 'NOT_FOUND', message: 'App not found' } },
+      { status: 404 }
+    )
+  }
+
+  const items = mockContextItems.map((item) => ({ ...item, appId: id }))
+  return Response.json({ data: items, meta: { total: items.length } })
 }
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { userId } = await auth()
+  if (!userId) {
+    return Response.json(
+      { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
+      { status: 401 }
+    )
+  }
+
   const { id } = await params
-  void id
+  const app = await getAppById(id)
+  if (!app) {
+    return Response.json(
+      { error: { code: 'NOT_FOUND', message: 'App not found' } },
+      { status: 404 }
+    )
+  }
 
   let body: unknown
   try {
     body = await request.json()
   } catch {
-    return NextResponse.json(
+    return Response.json(
       { error: { code: 'INVALID_REQUEST', message: 'Invalid JSON body' } },
       { status: 400 }
     )
@@ -79,7 +110,7 @@ export async function POST(
   const parsed = createContextItemSchema.safeParse(body)
   if (!parsed.success) {
     const message = parsed.error.issues.map((i) => i.message).join(', ')
-    return NextResponse.json(
+    return Response.json(
       { error: { code: 'VALIDATION_ERROR', message } },
       { status: 400 }
     )
@@ -96,5 +127,6 @@ export async function POST(
     updatedAt: now,
   }
 
-  return NextResponse.json({ data: newItem }, { status: 201 })
+  mockContextItems.push(newItem)
+  return Response.json({ data: newItem }, { status: 201 })
 }
