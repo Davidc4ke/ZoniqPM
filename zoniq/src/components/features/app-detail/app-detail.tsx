@@ -8,6 +8,7 @@ import { DeleteAppDialog } from './delete-app-dialog'
 import { AppEnvironments } from '../app-environments/app-environments'
 import { AppModules } from '../app-modules/app-modules'
 import { AppTestCoverage } from '../app-test-coverage/app-test-coverage'
+import { WorkflowsTab } from '../apps/workflows-tab'
 import { format } from 'date-fns'
 
 const statusColors: Record<string, string> = {
@@ -237,7 +238,11 @@ export function AppDetail({ appId }: AppDetailProps) {
             <AppTestCoverage appId={appId} />
           )}
 
-          {activeTab !== 'overview' && activeTab !== 'environments' && activeTab !== 'modules' && activeTab !== 'tests' && (
+          {activeTab === 'workflows' && (
+            <WorkflowsTab appId={appId} />
+          )}
+
+          {activeTab !== 'overview' && activeTab !== 'environments' && activeTab !== 'modules' && activeTab !== 'tests' && activeTab !== 'workflows' && (
             <div className="py-12 text-center">
               <p className="text-sm text-[#9A948D]">
                 {tabs.find((t) => t.key === activeTab)?.label} — Coming soon
