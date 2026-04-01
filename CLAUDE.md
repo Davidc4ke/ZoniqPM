@@ -4,30 +4,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**BMAD Zoniq** is an AI-powered requirements and project management tool for Mendix low-code development teams. It transforms documentation into a speed advantage by converting unstructured notes into acceptance criteria, development plans, and automated test scripts.
+**ZoniqPM** is an AI-powered requirements and project management tool for Mendix low-code development teams. It transforms documentation into a speed advantage by converting unstructured notes into acceptance criteria, development plans, and automated test scripts.
 
 ## Project Structure
 
 ```
-_bmad/                  # BMAD Method framework (do not modify)
-  core/                 # Core workflows and tasks
-  bmm/                  # BMAD Method Module (project management workflows)
-  _memory/              # Agent memory and documentation standards
-
-_bmad-output/           # Generated artifacts (planning & implementation)
-  planning-artifacts/   # PRD, UX specs, architecture, design prototypes
-  implementation-artifacts/  # Sprint plans, stories, code (when implemented)
-
-docs/                   # Project knowledge documentation
+zoniq/              # Main Next.js application
+docs/
+  planning/         # PRD, UX specs, architecture, design prototypes
+.beads/             # Project issue tracking (beads CLI)
 ```
 
 ## Design Prototypes
 
-HTML prototypes are in `_bmad-output/planning-artifacts/`:
+HTML prototypes are in `docs/planning/`:
 - `design-home-page.html` - Main dashboard view
 - `design-kanban-board.html` - Kanban board view
 - `design-story-details.html` - Story detail view
-- `design-project-details.html` - Project details
+- `design-project-modules.html` - Project details
 - `design-app-management.html` - App management
 - `design-context-library.html` - Context library
 - `shared-styles.css` - Shared design system styles
@@ -37,25 +31,20 @@ HTML prototypes are in `_bmad-output/planning-artifacts/`:
 - Dark: `#2D1810`
 - Font: Manrope
 
-## BMAD Workflows
+## Planning Documents
 
-This project uses the BMAD Method. Key workflow phases:
+Key docs in `docs/planning/`:
+- `prd.md` - Product Requirements Document
+- `architecture.md` - Architecture decisions
+- `epics.md` - Epics and user stories breakdown
+- `ux-design-specification.md` - UX specifications
 
-1. **Analysis** - Product briefs, research (market/domain/technical)
-2. **Planning** - PRD creation, UX design
-3. **Solutioning** - Architecture, epics/stories, implementation readiness
-4. **Implementation** - Sprint planning, story development, code review
+## Task Tracking
 
-### Key Workflow Commands
-- `bmad-bmm-create-prd` - Create Product Requirements Document
-- `bmad-bmm-create-architecture` - Create architecture decisions
-- `bmad-bmm-sprint-planning` - Generate sprint plan
-- `bmad-bmm-dev-story` - Execute story implementation
-- `bmad-bmm-quick-spec` / `bmad-bmm-quick-dev` - For small one-off tasks
+This project uses [beads](https://github.com/gastownhall/beads) for issue and task tracking. See `AGENT_INSTRUCTIONS.md` for agent workflow guidance.
 
 ## Configuration
 
-- Project name: `BMAD Zoniq`
+- Project name: `ZoniqPM`
 - User: David
-- Output folder: `_bmad-output/`
 - Language: English

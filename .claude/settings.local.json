@@ -2,12 +2,8 @@
   "permissions": {
     "allow": [
       "*",
-      "Bash(ls -lt .ralph/logs/claude_output_*.log | head -1)",
-      "Bash(ls -lt .ralph/logs/claude_output_*.log 2>/dev/null | head -1 || echo \"No logs found\")",
-      "Bash(ralph --reset-circuit)",
       "Bash(mkdir:*)",
       "Bash(npm run lint:*)",
-      "Bash(dir \"C:\\Users\\David\\Mendix\\BMAD Zoniq\\.dev-session\")",
       "Bash(dir:*)",
       "Bash(npm run build:*)",
       "Bash(npm run test)",

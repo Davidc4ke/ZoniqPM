@@ -31,5 +31,5 @@ npm-debug.log*
 deployment/
 	releases/
 
-# Dev sessions (atomized workflow)
-.dev-session/*/
+# Beads CLI (local database state)
+.beads/
