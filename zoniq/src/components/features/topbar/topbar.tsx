@@ -9,12 +9,13 @@ import { ProfileDropdown } from './profile-dropdown'
 
 interface TopbarProps {
   isAdmin?: boolean
+  isPMOrAdmin?: boolean
   userName?: string
   userEmail?: string
   userImageUrl?: string
 }
 
-export function Topbar({ isAdmin, userName, userEmail, userImageUrl }: TopbarProps) {
+export function Topbar({ isAdmin, isPMOrAdmin, userName, userEmail, userImageUrl }: TopbarProps) {
   const pathname = usePathname()
 
   return (
@@ -78,11 +79,10 @@ export function Topbar({ isAdmin, userName, userEmail, userImageUrl }: TopbarPro
               }
               isActive={pathname === '/apps'}
             />
-            {isAdmin && (
-              <>
-                <NavItem
-                  href="/masterdata"
-                  label="Masterdata"
+            {isPMOrAdmin && (
+              <NavItem
+                href="/customers"
+                label="Masterdata"
                   icon={
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <ellipse cx="12" cy="5" rx="9" ry="3" />
@@ -90,22 +90,23 @@ export function Topbar({ isAdmin, userName, userEmail, userImageUrl }: TopbarPro
                       <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
                     </svg>
                   }
-                  isActive={pathname === '/masterdata'}
-                />
-                <NavItem
-                  href="/admin/users"
-                  label="Accounts"
-                  icon={
-                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                      <circle cx="9" cy="7" r="4" />
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                    </svg>
-                  }
-                  isActive={pathname === '/admin/users'}
-                />
-              </>
+                isActive={pathname.startsWith('/customers')}
+              />
+            )}
+            {isAdmin && (
+              <NavItem
+                href="/admin/users"
+                label="Accounts"
+                icon={
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                }
+                isActive={pathname === '/admin/users'}
+              />
             )}
           </nav>
         </div>
