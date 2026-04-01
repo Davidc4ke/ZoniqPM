@@ -150,3 +150,17 @@
     opacity: 1;
   }
 }
+
+/* Log streaming highlight animation */
+@keyframes logHighlight {
+  0% {
+    background-color: #FFF7ED;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.animate-log-highlight {
+  animation: logHighlight 1.5s ease-out;
+}

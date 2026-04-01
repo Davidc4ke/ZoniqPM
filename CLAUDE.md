@@ -25,8 +25,8 @@ docs/planning/      # PRD, architecture, UX specs, HTML prototypes
 
 ## Current App State
 
-- **Done:** Epic 1 (Auth + User Management) + Epic 2 core (Dashboard, Customer/App/Module/Feature CRUD, Test Coverage, AI Chat)
-- **Not started:** Epics 3–9 (Project management, Story management, AI generation, Deployment, etc.)
+- **Done:** Epic 1 (Auth + User Management) + Epic 2 core (Dashboard, Customer/App/Module/Feature CRUD, Test Coverage, AI Chat) + Epic 9 Story 9.1 (Live Log Streaming on Metrics tab)
+- **Not started:** Epics 3–8, remaining Epic 9 stories (Project management, Story management, AI generation, Deployment, etc.)
 - All API routes currently return mock data — no DB connected
 - See `docs/planning/epics.md` for full story list and acceptance criteria
 
