@@ -231,7 +231,7 @@ export function AppDetail({ appId }: AppDetailProps) {
           )}
 
           {activeTab === 'modules' && (
-            <AppModules appId={appId} />
+            <AppModules appId={appId} appName={app.name} appDescription={app.description ?? ''} />
           )}
 
           {activeTab === 'tests' && (

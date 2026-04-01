@@ -31,3 +31,9 @@ export interface ChatResponseMeta {
   intent: ChatIntent
   actions?: ChatActionButton[]
 }
+
+export interface ModuleSuggestion {
+  id: string
+  name: string
+  description: string
+}

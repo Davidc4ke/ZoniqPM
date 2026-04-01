@@ -5,6 +5,7 @@ import { useModules } from '@/hooks/use-modules'
 import { ModuleCard } from './module-card'
 import { ModuleDialog } from './module-dialog'
 import { DeleteModuleDialog } from './delete-module-dialog'
+import { GenerateModulesPanel } from './generate-modules-panel'
 import { AppFeatures } from '../app-features/app-features'
 import type { Module } from '@/types/module'
 
@@ -20,11 +21,14 @@ function ModulesSkeleton() {
 
 interface AppModulesProps {
   appId: string
+  appName?: string
+  appDescription?: string
 }
 
-export function AppModules({ appId }: AppModulesProps) {
+export function AppModules({ appId, appName = '', appDescription = '' }: AppModulesProps) {
   const { data: modules, isLoading, isError, error } = useModules(appId)
   const [showAddDialog, setShowAddDialog] = useState(false)
+  const [showGeneratePanel, setShowGeneratePanel] = useState(false)
   const [editingModule, setEditingModule] = useState<Module | null>(null)
   const [deletingModule, setDeletingModule] = useState<Module | null>(null)
   const [selectedModule, setSelectedModule] = useState<Module | null>(null)
@@ -54,12 +58,23 @@ export function AppModules({ appId }: AppModulesProps) {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-[#2D1810]">Modules</h2>
-        <button
-          onClick={() => setShowAddDialog(true)}
-          className="rounded-lg bg-[#FF6B35] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#E55A2B]"
-        >
-          Add Module
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowGeneratePanel(true)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[#FF6B35] px-3 py-2 text-sm font-medium text-[#FF6B35] transition-colors hover:bg-[#FFF7ED]"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            AI Generate Modules
+          </button>
+          <button
+            onClick={() => setShowAddDialog(true)}
+            className="rounded-lg bg-[#FF6B35] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#E55A2B]"
+          >
+            Add Module
+          </button>
+        </div>
       </div>
 
       {modules && modules.length > 0 ? (
@@ -99,6 +114,15 @@ export function AppModules({ appId }: AppModulesProps) {
         module={deletingModule}
         isOpen={!!deletingModule}
         onClose={() => setDeletingModule(null)}
+      />
+
+      <GenerateModulesPanel
+        appId={appId}
+        appName={appName}
+        appDescription={appDescription}
+        existingModuleNames={modules?.map((m) => m.name) ?? []}
+        isOpen={showGeneratePanel}
+        onClose={() => setShowGeneratePanel(false)}
       />
     </div>
   )
