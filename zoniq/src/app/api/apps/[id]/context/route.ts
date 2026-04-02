@@ -1,7 +1,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { getAppById } from '@/lib/apps/queries'
-import { getContextItemsByAppId, createContextItem } from '@/lib/context-items/queries'
-import { createContextItemSchema } from '@/types/context-item'
+import { getContextsByAppId, createContext } from '@/lib/contexts/queries'
+import { createContextSchema } from '@/types/context'
 
 export async function GET(
   _request: Request,
@@ -24,8 +24,8 @@ export async function GET(
     )
   }
 
-  const items = await getContextItemsByAppId(id)
-  return Response.json({ data: items, meta: { total: items.length } })
+  const contexts = await getContextsByAppId(id)
+  return Response.json({ data: contexts, meta: { total: contexts.length } })
 }
 
 export async function POST(
@@ -59,7 +59,7 @@ export async function POST(
     )
   }
 
-  const parsed = createContextItemSchema.safeParse(body)
+  const parsed = createContextSchema.safeParse(body)
   if (!parsed.success) {
     const message = parsed.error.issues.map((i) => i.message).join(', ')
     return Response.json(
@@ -68,6 +68,6 @@ export async function POST(
     )
   }
 
-  const item = await createContextItem(id, parsed.data)
-  return Response.json({ data: item }, { status: 201 })
+  const context = await createContext(id, parsed.data)
+  return Response.json({ data: context }, { status: 201 })
 }

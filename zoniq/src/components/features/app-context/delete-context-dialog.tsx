@@ -2,18 +2,18 @@
 
 import { useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
-import { useDeleteContextItem } from '@/hooks/use-context-items'
-import type { ContextItem } from '@/types/context-item'
+import { useDeleteContext } from '@/hooks/use-contexts'
+import type { ContextItem } from '@/types/context'
 
 interface DeleteContextDialogProps {
   appId: string
-  contextItem: ContextItem | null
+  context: ContextItem | null
   isOpen: boolean
   onClose: () => void
 }
 
-export function DeleteContextDialog({ appId, contextItem, isOpen, onClose }: DeleteContextDialogProps) {
-  const deleteMutation = useDeleteContextItem(appId)
+export function DeleteContextDialog({ appId, context, isOpen, onClose }: DeleteContextDialogProps) {
+  const deleteMutation = useDeleteContext(appId)
 
   const handleClose = useCallback(() => {
     if (!deleteMutation.isPending) onClose()
@@ -28,18 +28,18 @@ export function DeleteContextDialog({ appId, contextItem, isOpen, onClose }: Del
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isOpen, handleClose])
 
-  if (!isOpen || !contextItem) return null
+  if (!isOpen || !context) return null
 
   const handleDelete = () => {
-    deleteMutation.mutate(contextItem.id, {
+    deleteMutation.mutate(context.id, {
       onSuccess: () => {
         onClose()
-        toast.success('Context item deleted', {
-          description: `${contextItem.title} has been removed`,
+        toast.success('Context deleted', {
+          description: `${context.name} has been removed`,
         })
       },
       onError: (err) => {
-        toast.error('Failed to delete context item', { description: err.message })
+        toast.error('Failed to delete context', { description: err.message })
       },
     })
   }
@@ -49,14 +49,14 @@ export function DeleteContextDialog({ appId, contextItem, isOpen, onClose }: Del
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="delete-ctx-title"
+      aria-labelledby="delete-context-title"
     >
       <div className="w-full max-w-md rounded-xl border border-[#E8E4E0] bg-white p-6 shadow-xl">
-        <h2 id="delete-ctx-title" className="mb-2 text-xl font-bold text-[#2D1810]">
-          Delete Context Item
+        <h2 id="delete-context-title" className="mb-2 text-xl font-bold text-[#2D1810]">
+          Delete Context
         </h2>
         <p className="mb-6 text-sm text-[#9A948D]">
-          Are you sure you want to delete <strong className="text-[#2D1810]">{contextItem.title}</strong>?
+          Are you sure you want to delete <strong className="text-[#2D1810]">{context.name}</strong>?
           This action cannot be undone.
         </p>
 

@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
-import { updateContextItem, deleteContextItem } from '@/lib/context-items/queries'
-import { updateContextItemSchema } from '@/types/context-item'
+import { updateContext, deleteContext } from '@/lib/contexts/queries'
+import { updateContextSchema } from '@/types/context'
 
 export async function PUT(
   request: Request,
@@ -26,7 +26,7 @@ export async function PUT(
     )
   }
 
-  const parsed = updateContextItemSchema.safeParse(body)
+  const parsed = updateContextSchema.safeParse(body)
   if (!parsed.success) {
     const message = parsed.error.issues.map((i) => i.message).join(', ')
     return Response.json(
@@ -35,15 +35,15 @@ export async function PUT(
     )
   }
 
-  const item = await updateContextItem(contextId, parsed.data)
-  if (!item) {
+  const context = await updateContext(contextId, parsed.data)
+  if (!context) {
     return Response.json(
-      { error: { code: 'NOT_FOUND', message: 'Context item not found' } },
+      { error: { code: 'NOT_FOUND', message: 'Context not found' } },
       { status: 404 }
     )
   }
 
-  return Response.json({ data: item })
+  return Response.json({ data: context })
 }
 
 export async function DELETE(
@@ -60,7 +60,7 @@ export async function DELETE(
 
   const { contextId } = await params
 
-  const result = await deleteContextItem(contextId)
+  const result = await deleteContext(contextId)
   if (!result.success) {
     return Response.json(
       { error: { code: 'NOT_FOUND', message: result.error! } },

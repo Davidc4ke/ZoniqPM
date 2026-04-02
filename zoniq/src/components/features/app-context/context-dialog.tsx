@@ -2,21 +2,21 @@
 
 import { useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
-import { useCreateContextItem, useUpdateContextItem } from '@/hooks/use-context-items'
+import { useCreateContext, useUpdateContext } from '@/hooks/use-contexts'
 import { ContextForm } from './context-form'
-import type { ContextItem, ContextItemType } from '@/types/context-item'
+import type { ContextItem } from '@/types/context'
 
 interface ContextDialogProps {
   appId: string
   isOpen: boolean
   onClose: () => void
-  contextItem?: ContextItem | null
+  context?: ContextItem | null
 }
 
-export function ContextDialog({ appId, isOpen, onClose, contextItem }: ContextDialogProps) {
-  const createMutation = useCreateContextItem(appId)
-  const updateMutation = useUpdateContextItem(appId)
-  const isEdit = !!contextItem
+export function ContextDialog({ appId, isOpen, onClose, context }: ContextDialogProps) {
+  const createMutation = useCreateContext(appId)
+  const updateMutation = useUpdateContext(appId)
+  const isEdit = !!context
   const isPending = createMutation.isPending || updateMutation.isPending
 
   const handleClose = useCallback(() => {
@@ -34,39 +34,32 @@ export function ContextDialog({ appId, isOpen, onClose, contextItem }: ContextDi
 
   if (!isOpen) return null
 
-  const handleSubmit = (data: { type: ContextItemType; title: string; content: string; url: string }) => {
-    const payload = {
-      type: data.type,
-      title: data.title,
-      content: data.content,
-      url: data.url || undefined,
-    }
-
-    if (isEdit && contextItem) {
+  const handleSubmit = (data: { name: string; type: 'note' | 'document' | 'url'; content: string }) => {
+    if (isEdit && context) {
       updateMutation.mutate(
-        { contextId: contextItem.id, input: payload },
+        { contextId: context.id, input: data },
         {
           onSuccess: () => {
             onClose()
-            toast.success('Context item updated', {
-              description: `${data.title} has been updated successfully`,
+            toast.success('Context updated', {
+              description: `${data.name} has been updated successfully`,
             })
           },
           onError: (err) => {
-            toast.error('Failed to update context item', { description: err.message })
+            toast.error('Failed to update context', { description: err.message })
           },
         }
       )
     } else {
-      createMutation.mutate(payload, {
+      createMutation.mutate(data, {
         onSuccess: () => {
           onClose()
-          toast.success('Context item created', {
-            description: `${data.title} has been added successfully`,
+          toast.success('Context created', {
+            description: `${data.name} has been added successfully`,
           })
         },
         onError: (err) => {
-          toast.error('Failed to create context item', { description: err.message })
+          toast.error('Failed to create context', { description: err.message })
         },
       })
     }
@@ -77,17 +70,16 @@ export function ContextDialog({ appId, isOpen, onClose, contextItem }: ContextDi
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="ctx-dialog-title"
+      aria-labelledby="context-dialog-title"
     >
-      <div className="w-full max-w-lg rounded-xl border border-[#E8E4E0] bg-white p-6 shadow-xl">
-        <h2 id="ctx-dialog-title" className="mb-4 text-xl font-bold text-[#2D1810]">
-          {isEdit ? 'Edit Context Item' : 'Add Context'}
+      <div className="w-full max-w-md rounded-xl border border-[#E8E4E0] bg-white p-6 shadow-xl">
+        <h2 id="context-dialog-title" className="mb-4 text-xl font-bold text-[#2D1810]">
+          {isEdit ? 'Edit Context' : 'Add Context'}
         </h2>
         <ContextForm
-          initialType={contextItem?.type}
-          initialTitle={contextItem?.title}
-          initialContent={contextItem?.content}
-          initialUrl={contextItem?.url}
+          initialName={context?.name}
+          initialType={context?.type}
+          initialContent={context?.content}
           onSubmit={handleSubmit}
           onCancel={handleClose}
           isPending={isPending}

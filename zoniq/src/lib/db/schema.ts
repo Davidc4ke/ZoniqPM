@@ -2,6 +2,7 @@ import { pgTable, uuid, text, varchar, boolean, timestamp, integer, pgEnum } fro
 
 export const appStatusEnum = pgEnum('app_status', ['active', 'inactive', 'in-development'])
 export const environmentStatusEnum = pgEnum('environment_status', ['online', 'offline', 'deploying'])
+export const contextTypeEnum = pgEnum('context_type', ['note', 'document', 'url'])
 
 // ── Users (synced from Clerk) ──────────────────────────────────────────────────
 
@@ -106,6 +107,18 @@ export const appEnvironments = pgTable('app_environments', {
   appId: uuid('app_id').notNull().references(() => apps.id),
   environmentName: varchar('environment_name', { length: 100 }).notNull(),
   status: varchar('status', { length: 20 }).notNull().default('offline'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ── Contexts (notes, documents, URLs linked to apps) ──────────────────────────
+
+export const contexts = pgTable('contexts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  appId: uuid('app_id').notNull().references(() => apps.id),
+  name: varchar('name', { length: 100 }).notNull(),
+  type: contextTypeEnum('type').notNull().default('note'),
+  content: text('content').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
